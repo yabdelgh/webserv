@@ -1,23 +1,28 @@
 ### What we have as a config:
-    - Choose the port and host of each ’server’.
-    - Setup the server_names or not.
-    - The first server for a host:port will be the default for this host:port (reply unbelonging request)
-    - Setup default error pages.
-    - Limit client body size.
-    - Setup routes with one or multiple of the following rules/configuration (no regexp):
-        + Define a list of accepted HTTP methods for the route.
-        + Define a HTTP redirection.
-        + Define a directory or a file from where the file should be searched
-            * example: if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto is /tmp/www/pouic/toto).
-    - Turn on or off directory listing.
 
-    - Set a default file to answer if the request is a directory.
-    - Execute CGI based on certain file extension (for example .php).
-    - Make the route able to accept uploaded files and configure where they should be saved.
+- Choose the port and host of each ’server’.
+- Setup the server_names or not.
+- The first server for a host:port will be the default for this host:port (reply unbelonging request)
+- Setup default error pages.
+- Limit client body size.
+- Setup routes with one or multiple of the following rules/configuration (no regexp):
+    + Define a list of accepted HTTP methods for the route.
+    + Define a HTTP redirection.
+    + Define a directory or a file from where the file should be searched
+        * example: if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto is /tmp/www/pouic/toto).
+- Turn on or off directory listing.
+- Set a default file to answer if the request is a directory.
+- Execute CGI based on certain file extension (for example .php).
+- Make the route able to accept uploaded files and configure where they should be saved.
+
 
 ### Items types for we have in the config :
-    * port: number `integer`
-    * host, server_names: number `string`
+
+- port: number `integer`
+- host, server_names : word `string`
+- error pages: {errors:`array`, location:`string`}
+- body size limit : number `integer` with `char` like: `100M`
+- directory listing: `location / {autoindex off|on }`
 
 ### CGI
     ∗ Do you wonder what a CGI is?
@@ -27,11 +32,3 @@
     ∗ Your program should call the CGI with the file requested as first argument.
     ∗ The CGI should be run in the correct directory for relative path file access.
     ∗ Your server should work with one CGI (php-CGI, Python, and so forth).
-
-
-    i have learn a lot of languages and technologies as you can see in my cv 
-but am not experienced in any of those technologies, but i have the ability to be good in one of them in a small amount of time, i hope you can give me the chance to see what i can do and how fast i can learn .
-
-in all cases i will say thanks. maybe for reading this or maybe for given me the chance.
-
-Thanks 

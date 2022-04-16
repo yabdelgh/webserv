@@ -12,7 +12,6 @@ namespace rgx {
     public:
         Single(char c, int min = 1, int max = -1);
         ~Single();
-        bool parse(string const &str, size_t &idx);
         bool parse(string const &str, size_t &idx, stringstream &ss);
     };
 }

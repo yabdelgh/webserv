@@ -11,7 +11,6 @@ namespace rgx {
     public:
         Sequence(std::string const &seq, int min = -1, int max = -1);
         ~Sequence();
-        bool parse(string const&str, size_t &idx) = 0;
         bool parse(string const &str, size_t &idx, stringstream &ss);
 
     };

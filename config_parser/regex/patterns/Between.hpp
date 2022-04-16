@@ -12,7 +12,6 @@ namespace rgx {
     public:
         Between(char c_min, char c_max, int min = -1, int max = -1);
         ~Between();
-        bool parse(string const&str, size_t &idx) = 0;
         bool parse(string const &str, size_t &idx, stringstream &ss);
         
     };

@@ -13,14 +13,14 @@ namespace rgx {
         this->max = (max == -1 ? min : max);
     }
 
-    bool Between::parse(std::string const &str, size_t &idx) {
+    bool Between::parse(std::string const &str, size_t &idx, stringstream &ss) {
         for (size_t i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || !between(str[idx], c_min, c_max)) {
-                return false;
-            }
+            if (idx >= str.size() || !between(str[idx], c_min, c_max))
+                break;
+            ss << str[idx];
             idx++;
         }
-        return true;
+        return is_valid_parse(idx);
     }
 }

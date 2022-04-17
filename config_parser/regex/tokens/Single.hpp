@@ -1,10 +1,10 @@
 #ifndef SINGLE_HPP
 #define SINGLE_HPP
 
-#include "./APattern.hpp"
+#include "./AToken.hpp"
 
 namespace rgx {
-    class Single: public APattern
+    class Single: public AToken
     {
     private:
         char c;

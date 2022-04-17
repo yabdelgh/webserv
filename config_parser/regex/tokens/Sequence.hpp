@@ -1,15 +1,16 @@
 #ifndef SEQUENCE_HPP
 #define SEQUENCE_HPP
 
-#include "./APattern.hpp"
+#include "./AToken.hpp"
 
 namespace rgx {
-    class Sequence: public APattern
+    class Sequence: public AToken
     {
     private:
         std::string seq;
     public:
         Sequence(std::string const &seq, int min = -1, int max = -1);
+        Sequence(string const &token);
         ~Sequence();
         bool parse(string const &str, size_t &idx, stringstream &ss);
 

@@ -6,7 +6,7 @@ namespace rgx {
 
     Regex::~Regex() {}
 
-    Regex &Regex::append(APattern const &pattern) {
+    Regex &Regex::append(AToken const &pattern) {
         patterns.push_back(pattern);
     }
 

@@ -6,12 +6,12 @@ namespace rgx
     class Regex
     {
     private:
-        std::vector<APattern> patterns;
+        std::vector<AToken> patterns;
         size_t idx;
     public:
         Regex();
         ~Regex();
-        Regex &append(APattern const &pattern);
+        Regex &append(AToken const &pattern);
         bool parse(std::string const &str);
     };
 }

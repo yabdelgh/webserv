@@ -16,7 +16,7 @@
 - Make the route able to accept uploaded files and configure where they should be saved.
 
 
-### Items types for we have in the config :
+### Items types for what we have in the config :
 
 - port: number `integer`
 - host, server_names : word `string`

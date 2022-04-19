@@ -14,7 +14,7 @@ namespace rgx {
         Between(string const &token);
         ~Between();
         bool find(string const &str, size_t &idx, stringstream &ss);
-        
+        bool match(string const &str, size_t &idx);
     };
 }
 

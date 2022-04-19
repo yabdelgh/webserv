@@ -22,6 +22,7 @@ namespace rgx {
         virtual ~AToken();
         virtual bool parse(string const&str, size_t &idx);
         virtual bool parse(string const&str, size_t &idx, stringstream &ss) = 0;
+        virtual AToken *clone() const = 0;
 
     protected:
         bool get_more(size_t idx);

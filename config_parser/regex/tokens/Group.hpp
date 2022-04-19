@@ -1,24 +1,16 @@
-#ifndef OR_HPP
-# define OR_HPP
+#ifndef GROUP_HPP
+# define GROUP_HPP
 
 #include "./ANestedToken.hpp"
 
 namespace rgx {
-    class Or : public ANestedToken
+    class Group : public ANestedToken
     {
     public:
-        Or();
-        ~Or();
+        Group();
+        ~Group();
         bool parse(string const &str, size_t &idx, stringstream &ss);
         AToken *clone() const;
     };
-
-    Or::Or(/* args */)
-    {
-    }
-
-    Or::~Or()
-    {
-    }
 }
 #endif

@@ -7,7 +7,7 @@
 namespace rgx {
     class ANestedToken: public AToken
     {
-    private:
+    protected:
         vector<AToken *> tokens;
     public:
         ANestedToken(int min = -1, int max = -1);

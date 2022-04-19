@@ -13,7 +13,7 @@ namespace rgx {
         Between(char c_min, char c_max, int min = -1, int max = -1);
         Between(string const &token);
         ~Between();
-        bool parse(string const &str, size_t &idx, stringstream &ss);
+        bool find(string const &str, size_t &idx, stringstream &ss);
         
     };
 }

@@ -25,12 +25,22 @@ namespace rgx {
         }
     }
 
-    bool Between::parse(std::string const &str, size_t &idx, stringstream &ss) {
+    bool Between::find(std::string const &str, size_t &idx, stringstream &ss) {
         for (size_t i = 0; get_more(i) ; i++)
         {
             if (idx >= str.size() || !between(str[idx], c_min, c_max))
                 break;
             ss << str[idx];
+            idx++;
+        }
+        return is_matched(idx);
+    }
+
+    bool Between::match(string const &str, size_t &idx) {
+        for (size_t i = 0; get_more(i) ; i++)
+        {
+            if (idx >= str.size() || !between(str[idx], c_min, c_max))
+                break;
             idx++;
         }
         return is_matched(idx);

@@ -8,9 +8,9 @@ namespace rgx {
 
     AToken::~AToken() {}
 
-    bool AToken::parse(string const&str, size_t &idx) {
+    bool AToken::find(string const&str, size_t &idx) {
         stringstream ss;
-        parse(str, idx, ss);
+        find(str, idx, ss);
         content = ss.str();
     }
 

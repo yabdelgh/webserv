@@ -12,7 +12,6 @@ namespace rgx {
     class AToken
     {
     protected:
-        static unordered_map<string, struct Pattern> parse_patterns;
         int min;
         int max;
         string content;
@@ -20,8 +19,9 @@ namespace rgx {
     public:
         AToken(int min = - 1, int max = -1);
         virtual ~AToken();
-        virtual bool parse(string const&str, size_t &idx);
-        virtual bool parse(string const&str, size_t &idx, stringstream &ss) = 0;
+        virtual bool match(string const&str, size_t &idx) = 0;
+        virtual bool find(string const&str, size_t &idx);
+        virtual bool find(string const&str, size_t &idx, stringstream &ss) = 0;
         virtual AToken *clone() const = 0;
 
     protected:

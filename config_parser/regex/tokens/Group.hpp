@@ -7,9 +7,10 @@ namespace rgx {
     class Group : public ANestedToken
     {
     public:
-        Group();
+        Group(int min = -1, int max = -1);
         ~Group();
-        bool parse(string const &str, size_t &idx, stringstream &ss);
+        bool find(string const &str, size_t &idx, stringstream &ss);
+        bool match(string const &str, size_t &idx);
         AToken *clone() const;
     };
 }

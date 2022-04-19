@@ -24,6 +24,36 @@
 - body size limit : number `integer` with `char` like: `100M`
 - directory listing: `location / {autoindex off|on }`
 
++ host:port examples
+    * `listen 127.0.0.1:8000;`
+    * `listen 127.0.0.1;`
+    * `listen 8000;`
+    * `listen *:8000;`
+    * `listen localhost:8000;`
+
++ server_name example
+    * `server_name youpi;`
+
++ error pages example
+    * `error_page 404 403 500 503 /error-page.html;`
+
++ body size limit examples
+    * `client_body_buffer_size 20;`
+    * `client_body_buffer_size 20k;`
+    * `client_body_buffer_size 20m;`
+
++ default file to answer examples
+    * `index index.html;`
+    * `index index.html index.php home.html;`
+
++ location example
+    * ```
+        location /put_test {
+            allow_methods PUT POST
+            root ./YoupiBanane/put_here
+            return 301 $scheme://service-new.company.com/$request_uri
+        }
+
 ### CGI
     ∗ Do you wonder what a CGI is?
     ∗ Because you won’t call the CGI directly, use the full path as PATH_INFO.

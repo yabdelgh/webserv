@@ -23,12 +23,22 @@ namespace rgx {
         }
     }
 
-    bool Sequence::parse(std::string const &str, size_t &idx, stringstream &ss) {
+    bool Sequence::find(std::string const &str, size_t &idx, stringstream &ss) {
         for (size_t i = 0; get_more(i) ; i++)
         {
             if (seq.compare(0, seq.size(), str) != 0)
                 break;
             ss << seq;
+            idx += seq.size();
+        }
+        return is_matched(idx);
+    }
+
+    bool Sequence::match(string const &str, size_t &idx) {
+        for (size_t i = 0; get_more(i) ; i++)
+        {
+            if (seq.compare(0, seq.size(), str) != 0)
+                break;
             idx += seq.size();
         }
         return is_matched(idx);

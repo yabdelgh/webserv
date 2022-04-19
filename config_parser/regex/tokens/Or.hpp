@@ -7,18 +7,11 @@ namespace rgx {
     class Or : public ANestedToken
     {
     public:
-        Or();
+        Or(int min = -1, int max = -1);
         ~Or();
-        bool parse(string const &str, size_t &idx, stringstream &ss);
+        bool find(string const &str, size_t &idx, stringstream &ss);
+        bool match(string const &str, size_t &idx);
         AToken *clone() const;
     };
-
-    Or::Or(/* args */)
-    {
-    }
-
-    Or::~Or()
-    {
-    }
 }
 #endif

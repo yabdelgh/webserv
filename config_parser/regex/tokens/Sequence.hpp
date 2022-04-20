@@ -10,7 +10,8 @@ namespace rgx {
         std::string seq;
     public:
         Sequence(std::string const &seq, int min = -1, int max = -1);
-        Sequence(string const &token);
+        Sequence(Sequence const &);
+        Sequence &operator=(Sequence const &);
         ~Sequence();
         bool find(string const &str, size_t &idx, stringstream &ss);
         bool match(string const &str, size_t &idx);

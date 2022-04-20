@@ -8,6 +8,8 @@ namespace rgx {
     {
     public:
         Or(int min = -1, int max = -1);
+        Or(Or const &);
+        Or &operator=(Or const &);
         ~Or();
         bool find(string const &str, size_t &idx, stringstream &ss);
         bool match(string const &str, size_t &idx);

@@ -5,13 +5,22 @@ namespace rgx {
     {
     }
 
-    Group::~Group()
-    {
+    Group::Group(Group const &other) {
+        *this = other;
     }
 
+    Group &Group::operator=(Group const &other) {
+        if (this != &other) {
+            ANestedToken::operator=(other);
+        }
+        return *this;
+    }
+
+    Group::~Group() {}
+
     bool Group::find(string const &str, size_t &idx, stringstream &ss) {
-        stringstream ss;
-        for (size_t i = 0; get_more(i) ; i++)
+        size_t i;
+        for (i = 0; get_more(i) ; i++)
         {
             for (size_t i = 0; i < tokens.size(); i++)
             {
@@ -21,11 +30,12 @@ namespace rgx {
             if (i != tokens.size())
                 break;
         }
-        return is_matched(idx);
+        return is_matched(i);
     }
 
     bool Group::match(string const &str, size_t &idx) {
-        for (size_t i = 0; get_more(i) ; i++)
+        size_t i;
+        for (i = 0; get_more(i) ; i++)
         {
             for (size_t i = 0; i < tokens.size(); i++)
             {
@@ -35,10 +45,10 @@ namespace rgx {
             if (i != tokens.size())
                 break;
         }
-        return is_matched(idx);
+        return is_matched(i);
     }
     
     AToken *Group::clone() const {
-        return (new Group());
+        return (new Group(*this));
     }
 }

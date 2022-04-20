@@ -3,13 +3,22 @@
 namespace rgx {
     Or::Or(int min, int max):ANestedToken(min, max) {}
 
-    Or::~Or()
-    {
+    Or::Or(Or const &other) {
+        *this = other;
     }
 
+    Or &Or::operator=(Or const &other) {
+        if (this != &other) {
+            ANestedToken::operator=(other);
+        }
+        return *this;
+    }
+
+    Or::~Or() {}
+
     bool Or::find(string const &str, size_t &idx, stringstream &ss) {
-        stringstream ss;
-        for (size_t i = 0; get_more(i) ; i++)
+        size_t i;
+        for (i = 0; get_more(i) ; i++)
         {
             for (size_t i = 0; i < tokens.size(); i++)
             {
@@ -19,11 +28,12 @@ namespace rgx {
             if (i == tokens.size())
                 break;
         }
-        return is_matched(idx);
+        return is_matched(i);
     }
 
     bool Or::match(string const &str, size_t &idx) {
-        for (size_t i = 0; get_more(i) ; i++)
+        size_t i;
+        for (i = 0; get_more(i) ; i++)
         {
             for (size_t i = 0; i < tokens.size(); i++)
             {
@@ -33,10 +43,10 @@ namespace rgx {
             if (i == tokens.size())
                 break;
         }
-        return is_matched(idx);
+        return is_matched(i);
     }
 
     AToken *Or::clone() const {
-        return (new Or());
+        return (new Or(*this));
     }
 }

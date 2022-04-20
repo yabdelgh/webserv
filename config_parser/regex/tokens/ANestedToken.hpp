@@ -11,6 +11,8 @@ namespace rgx {
         vector<AToken *> tokens;
     public:
         ANestedToken(int min = -1, int max = -1);
+        ANestedToken(ANestedToken const &);
+        ANestedToken &operator=(ANestedToken const &);
         ~ANestedToken();
         ANestedToken &append(AToken const &token);
     };

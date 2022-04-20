@@ -3,8 +3,9 @@
 
 # include <string>
 # include <sstream>
+# include <iostream>
 
-#define between(x, min, max) (x >= min && x<= max)
+#define between(x, min, max) (x >= min && x <= max)
 
 namespace rgx {
     using namespace std;
@@ -17,7 +18,9 @@ namespace rgx {
         string content;
 
     public:
-        AToken(int min = - 1, int max = -1);
+        AToken(int min = -1, int max = -1);
+        AToken(AToken const &);
+        AToken &operator=(AToken const &);
         virtual ~AToken();
         virtual bool match(string const&str, size_t &idx) = 0;
         virtual bool find(string const&str, size_t &idx);

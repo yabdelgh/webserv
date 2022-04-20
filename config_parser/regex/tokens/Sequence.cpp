@@ -43,4 +43,8 @@ namespace rgx {
         }
         return is_matched(idx);
     }
+
+    AToken *Sequence::clone() const {
+        return (new Sequence());
+    }
 }

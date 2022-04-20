@@ -7,13 +7,14 @@ namespace rgx {
     class Single: public AToken
     {
     private:
-        char c;
+        string chars;
 
     public:
-        Single(char c, int min = 1, int max = -1);
+        Single(string const &chars, int min = 1, int max = -1);
         ~Single();
         bool find(string const &str, size_t &idx, stringstream &ss);
         bool match(string const &str, size_t &idx);
+        AToken *clone() const;
     };
 }
 

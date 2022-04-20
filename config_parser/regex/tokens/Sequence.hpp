@@ -14,6 +14,7 @@ namespace rgx {
         ~Sequence();
         bool find(string const &str, size_t &idx, stringstream &ss);
         bool match(string const &str, size_t &idx);
+        AToken *clone() const;
     };
 }
 

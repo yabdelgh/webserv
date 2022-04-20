@@ -45,4 +45,8 @@ namespace rgx {
         }
         return is_matched(idx);
     }
+
+    AToken *Between::clone() const {
+        return (new Between());
+    }
 }

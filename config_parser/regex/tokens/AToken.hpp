@@ -26,6 +26,8 @@ namespace rgx {
         virtual bool find(string const&str, size_t &idx);
         virtual bool find(string const&str, size_t &idx, stringstream &ss) = 0;
         virtual AToken *clone() const = 0;
+        AToken &set_min(int min);
+        AToken &set_max(int max);
 
     protected:
         bool get_more(size_t idx);

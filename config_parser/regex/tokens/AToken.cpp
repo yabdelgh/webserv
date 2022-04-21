@@ -46,4 +46,14 @@ namespace rgx {
             return times_count >= min;
         return between(times_count, min, max);
     }
+
+    AToken &AToken::set_min(int min) {
+        this->min = min;
+        return *this;
+    }
+    
+    AToken &AToken::set_max(int max) {
+        this->max = max;
+        return *this;
+    }
 }

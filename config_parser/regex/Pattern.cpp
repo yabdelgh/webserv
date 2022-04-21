@@ -35,7 +35,7 @@ namespace rgx {
             if (tokens[i]->find(str, idx, ss) == false)
                 return false;
         }
-        return idx == str.size();
+        return true;
     }
 
     bool Pattern::match(std::string const &str) {

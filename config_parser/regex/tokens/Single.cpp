@@ -6,6 +6,12 @@ namespace rgx {
         this->chars = chars;
     }
 
+    Single::Single(string const &chars, MatchDir match_dir, int min, int max)
+                   :AToken(match_dir, min, max)
+    {
+        this->chars = chars;
+    }
+
     Single::Single(Single const &other) {
         *this = other;
     }

@@ -11,6 +11,7 @@ namespace rgx {
 
     public:
         Single(string const &chars, int min = -1, int max = -1);
+        Single(string const &chars, MatchDir match_dir, int min = -1, int max = -1);
         Single(Single const &);
         Single &operator=(Single const &);
         ~Single();

@@ -10,15 +10,22 @@
 namespace rgx {
     using namespace std;
 
+    enum MatchDir {
+        MATCH_IN,
+        MATCH_OUT
+    };
+
     class AToken
     {
     protected:
         int min;
         int max;
         string content;
+        MatchDir match_dir;
 
     public:
         AToken(int min = -1, int max = -1);
+        AToken(MatchDir match_dir, int min = -1, int max = -1);
         AToken(AToken const &);
         AToken &operator=(AToken const &);
         virtual ~AToken();

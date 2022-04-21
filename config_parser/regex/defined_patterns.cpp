@@ -5,11 +5,25 @@ unordered_map<string, Pattern> get_patterns()
 {
 	unordered_map<string, Pattern> patterns;
 
-	Pattern number;
-	number.append(Between('0', '9', 1));
-	patterns.insert(pair<string, Pattern>("number", number));
+	Between number('0', '9', 1);
+	Single any(" ", MATCH_OUT, 1);
+	Single space(" ", 1);
 
-	Pattern ip;
+	Or body_size_unit;
+	body_size_unit.append(Sequence("o"))
+				  .append(Sequence("O"))
+				  .append(Sequence("k"))
+				  .append(Sequence("K"))
+				  .append(Sequence("m"))
+				  .append(Sequence("M"))
+				  .append(Sequence("g"))
+				  .append(Sequence("G"));
+
+	Group body_size_limit;
+	body_size_limit.append(number)
+		  		   .append(body_size_unit.set_max(1).set_min(1));
+
+	Group ip;
 	ip.append(Single(" "))
 	  .append(Between('0', '9', 1, 3))
 	  .append(Single(".", 1, 1))
@@ -19,6 +33,20 @@ unordered_map<string, Pattern> get_patterns()
 	  .append(Single(".", 1, 1))
 	  .append(Between('0', '9', 1, 3))
 	  .append(Single(" "));
+
+	Or request_methods;
+	request_methods.append(Sequence("POST"))
+				   .append(Sequence("GET"))
+				   .append(Sequence("DELETE"));
+	Or on_off;
+	on_off.append(Sequence("on"))
+		  .append(Sequence("off"));
+
+	Group http_error_code;
+	http_error_code.append(number.set_min(3).set_max(3))
+				   .append(space);
+
+	patterns.insert(pair<string, Pattern>("number", number));
 	patterns.insert(pair<string, Pattern>("ip", ip));
 	
 	return patterns;

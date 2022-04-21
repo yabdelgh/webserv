@@ -2,8 +2,15 @@
 
 namespace rgx {
     AToken::AToken(int min, int max) {
-        this->min = min;
-        this->max = max;
+        this->match_dir = MATCH_IN;
+        set_min(min);
+        set_max(max);
+    }
+
+    AToken::AToken(MatchDir match_dir, int min, int max) {
+        this->match_dir = match_dir;
+        set_min(min);
+        set_max(max);
     }
 
     AToken::AToken(AToken const &other) {
@@ -15,6 +22,7 @@ namespace rgx {
             this->content = other.content;
             this->min = other.min;
             this->max = other.max;
+            this->match_dir = other.match_dir;
         }
         return *this;
     }
@@ -48,12 +56,18 @@ namespace rgx {
     }
 
     AToken &AToken::set_min(int min) {
-        this->min = min;
+        if (min < 0)
+            this->min = -1;
+        else
+            this->min = min;
         return *this;
     }
     
     AToken &AToken::set_max(int max) {
-        this->max = max;
+        if (max < 0)
+            this->max = -1;
+        else
+            this->max = max;
         return *this;
     }
 }

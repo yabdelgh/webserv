@@ -1,13 +1,18 @@
-#include<string>
-#include<vector>
+#ifndef ACOMPLEX_TYPE_HPP
+#define ACOMPLEX_TYPE_HPP
 
-#define INVALID_TYPE_ERROR "INVALID TYPE"
+#include "../IParseable.hpp"
+#include "Pattern.hpp"
 
-class IParseable
+class AComplexType: public IParseable
 {
-private:
-    /* data */
+protected:
+    rgx::Pattern pattern;
+
 public:
+    AComplexType(rgx::Pattern const &pattern);
+    ~AComplexType();
+
     virtual int get_int();
     virtual double get_double();
     virtual std::string &get_string();
@@ -15,7 +20,8 @@ public:
     virtual std::vector<int> &get_int_array();
     virtual std::vector<double> &get_double_array();
     virtual IParseable &operator[](std::string);
-    virtual IParseable &operator[](size_t idx);
-    virtual bool parse(std::string &str, size_t &idx);
-    virtual ~IParseable();
 };
+
+
+
+#endif

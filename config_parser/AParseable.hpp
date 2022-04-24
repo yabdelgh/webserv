@@ -18,6 +18,8 @@ public:
     virtual std::vector<int> &get_int_array();
     virtual std::vector<double> &get_double_array();
     virtual IParseable &operator[](std::string);
+    virtual IParseable &operator[](size_t idx);
+    virtual size_t size();
 };
 
 #endif

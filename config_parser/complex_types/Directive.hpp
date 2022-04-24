@@ -11,12 +11,16 @@ private:
 
 public:
     Directive(rgx::Pattern const &pattern);
+    Directive(Directive const &other);
     ~Directive();
+    Directive &operator=(Directive const &other);
     Directive &push_parseable(std::string const &name, IParseable const& parseable);
     Directive &push_parseable(IParseable const& parseable);
-    virtual bool parse(std::string &str, size_t &idx);
-    virtual IParseable &operator[](std::string);
-    virtual IParseable &operator[](size_t idx);
+    bool parse(std::string &str, size_t &idx);
+    IParseable &operator[](std::string);
+    IParseable &operator[](size_t idx);
+    size_t size();
+    IParseable *clone() const;
 };
 
 

@@ -1,25 +1,18 @@
 #ifndef ACOMPLEX_TYPE_HPP
 #define ACOMPLEX_TYPE_HPP
 
-#include "../IParseable.hpp"
+#include "../AParseable.hpp"
 #include "Pattern.hpp"
+#include <stdexcept>
 
-class AComplexType: public IParseable
+class AComplexType: public AParseable
 {
 protected:
-    rgx::Pattern pattern;
+    AComplexType();
 
 public:
     AComplexType(rgx::Pattern const &pattern);
     ~AComplexType();
-
-    virtual int get_int();
-    virtual double get_double();
-    virtual std::string &get_string();
-    virtual std::vector<std::string> &get_str_array();
-    virtual std::vector<int> &get_int_array();
-    virtual std::vector<double> &get_double_array();
-    virtual IParseable &operator[](std::string);
 };
 
 

@@ -8,12 +8,15 @@ namespace rgx
     private:
         std::vector<AToken *> tokens;
         size_t idx;
+        string content;
     public:
         // Pattern(string const &ptrn);
         Pattern();
         ~Pattern();
         Pattern &append(AToken const &pattern);
         bool find(std::string const &str);
+        bool find(std::string const &str, size_t &idx);
         bool match(std::string const &str);
+        string const &get_content();
     };
 }

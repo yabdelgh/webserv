@@ -30,11 +30,17 @@ namespace rgx {
     bool Pattern::find(std::string const &str) {
         stringstream ss;
         idx = 0;
+        find(str, idx);
+    }
+
+    bool Pattern::find(std::string const &str, size_t &idx) {
+        stringstream ss;
         for (size_t i = 0; i < tokens.size(); i++)
         {
             if (tokens[i]->find(str, idx, ss) == false)
                 return false;
         }
+        content = ss.str();
         return true;
     }
 
@@ -46,5 +52,9 @@ namespace rgx {
                 return false;
         }
         return idx == str.size();
+    }
+
+    string const &Pattern::get_content() {
+        return content;
     }
 }

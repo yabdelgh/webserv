@@ -1,30 +1,72 @@
 #include "./Context.hpp"
+#include "tools.hpp"
+
+using namespace rgx;
 
 Context::Context(rgx::Pattern const &pattern):AComplexType(pattern) {}
 
+Context::Context(Context const &other) 
+{
+    *this = other;
+}
+
 Context::~Context() {}
 
-bool Context::parse(std::string &str, size_t &idx)
+Context &Context::operator=(Context const &other) 
 {
-    // parse the context opening
-    // parse key form 
-    //      while parse key equal to one of the keys from the list
-    //          parse item by key
-    // parse the context closing 
+    if (this != &other)
+    {
+        this->opening_ptrn  = other.opening_ptrn;
+        this->closing_ptrn = other.closing_ptrn;
+        this->key_ptrn = other.key_ptrn;
+
+        unordered_map<string, IParseable*>::const_iterator it = parseables.begin();
+        while (it != parseables.end())
+            delete it->second;
+        parseables.clear();
+
+        it = other.parseables.begin();
+        while (it != other.parseables.end())
+            insert_parseables(it->first, *it->second);
+    }
+}
+
+bool Context::parse(string &str, size_t &idx)
+{
+    unordered_map<string, IParseable *>::iterator it;
+    if (opening_ptrn.find(str, idx))
+    {
+        key_ptrn.find(str, idx);
+        string key = trim(key_ptrn.get_content());
+        it = parseables.find(key);
+        if (it != parseables.end())
+        {
+            if ( it->second->parse(str, idx) == false)
+                return false;
+        }
+        else if (closing_ptrn.match(key) == false)
+            return false;
+    }
+    else 
+        return false;
     return true;
 }
 
-IParseable &Context::operator[](std::string key) {
-    std::unordered_map<std::string, IParseable *>::iterator it;
+IParseable &Context::operator[](string key) {
+    unordered_map<string, IParseable *>::iterator it;
     it = parseables.find(key);
     if (it != parseables.end())
         return *it->second;
-    throw std::runtime_error("IParseable key not " + key + " found");
+    throw runtime_error("IParseable key not " + key + " found");
 }
 
 
-Context &Context::insert_parseables(std::string const &key, IParseable const& parseable)
+Context &Context::insert_parseables(string const &key, IParseable const& parseable)
 {
-    parseables.insert(std::pair<std::string, IParseable *>(key, &parseable));
+    parseables.insert(pair<string, IParseable *>(key, parseable.clone()));
     return *this;
+}
+
+IParseable *Context::clone() const {
+    return new Context(*this);
 }

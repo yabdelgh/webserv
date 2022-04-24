@@ -8,14 +8,20 @@ class Context: public AComplexType
 {
 
 private:
+    rgx::Pattern opening_ptrn;
+    rgx::Pattern closing_ptrn;
+    rgx::Pattern key_ptrn;
     std::unordered_map<std::string, IParseable*> parseables;
 
 public:
     Context(rgx::Pattern const &pattern);
+    Context(Context const &other);
     ~Context();
+    Context &operator=(Context const &other);
     Context &insert_parseables(std::string const &name, IParseable const& parseable);
-    virtual bool parse(std::string &str, size_t &idx);
-    virtual IParseable &operator[](std::string);
+    bool parse(std::string &str, size_t &idx);
+    IParseable &operator[](std::string);
+    IParseable *Context::clone() const;
 };
 
 

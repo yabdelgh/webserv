@@ -12,8 +12,8 @@ private:
 public:
     Directive(rgx::Pattern const &pattern);
     ~Directive();
-    void push_parseable(std::string const &name, IParseable const& parseable);
-    void push_parseable(IParseable const& parseable);
+    Directive &push_parseable(std::string const &name, IParseable const& parseable);
+    Directive &push_parseable(IParseable const& parseable);
     virtual bool parse(std::string &str, size_t &idx);
     virtual IParseable &operator[](std::string);
     virtual IParseable &operator[](size_t idx);

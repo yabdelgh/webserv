@@ -1,7 +1,8 @@
 #include "./Frequent.hpp"
 
-Frequent::Frequent() {}
-Frequent::Frequent(rgx::Pattern const &pattern):AComplexType(pattern) {}
+
+Frequent::Frequent(IParseable const &parseable):parseable(parseable.clone()) {}
+
 Frequent::Frequent(Frequent const &other) 
 {
     *this = other;
@@ -34,7 +35,7 @@ IParseable &Frequent::operator[](size_t idx) {
 }
 
 size_t Frequent::size() {
-    parseables.size();
+    return parseables.size();
 }
 
 IParseable *Frequent::clone() const 

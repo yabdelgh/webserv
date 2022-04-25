@@ -14,14 +14,14 @@ private:
     std::unordered_map<std::string, IParseable*> parseables;
 
 public:
-    Context(rgx::Pattern const &pattern);
+    Context(rgx::Pattern const &opening, rgx::Pattern const &closing, rgx::Pattern const &key);
     Context(Context const &other);
     ~Context();
     Context &operator=(Context const &other);
     Context &insert_parseables(std::string const &name, IParseable const& parseable);
     bool parse(std::string &str, size_t &idx);
     IParseable &operator[](std::string);
-    IParseable *Context::clone() const;
+    IParseable *clone() const;
 };
 
 

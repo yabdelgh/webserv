@@ -6,17 +6,34 @@ CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 CPPFLAGS =  -fsanitize=address -g -O3 -std=c++11
 CPPFLAGS =  -O3 -std=c++98
 
+CPPINCLUDE =	-I ./regex\
+		     	-I ./config_parser\
+				-I ./tools
 
-SRC =	config_parser/regex/tokens/ANestedToken.cpp\
-		config_parser/regex/tokens/AToken.cpp\
-		config_parser/regex/tokens/Between.cpp\
-		config_parser/regex/tokens/Group.cpp\
-		config_parser/regex/tokens/Or.cpp\
-		config_parser/regex/tokens/OutSequence.cpp\
-		config_parser/regex/tokens/Sequence.cpp\
-		config_parser/regex/tokens/Single.cpp\
-		config_parser/regex/defined_patterns.cpp\
-		config_parser/regex/Pattern.cpp\
+
+# ./regex/defined_patterns.cpp
+# config_parser/Parser.cpp\
+
+SRC =	tools/trim.cpp\
+		regex/Pattern.cpp\
+		regex/tokens/OutSequence.cpp\
+		regex/tokens/Or.cpp\
+		regex/tokens/Single.cpp\
+		regex/tokens/ANestedToken.cpp\
+		regex/tokens/Between.cpp\
+		regex/tokens/AToken.cpp\
+		regex/tokens/Sequence.cpp\
+		regex/tokens/Group.cpp\
+		config_parser/simple_types/IntArray.cpp\
+		config_parser/simple_types/String.cpp\
+		config_parser/simple_types/Int.cpp\
+		config_parser/simple_types/ASimpleType.cpp\
+		config_parser/simple_types/StringArray.cpp\
+		config_parser/complex_types/Directive.cpp\
+		config_parser/complex_types/Context.cpp\
+		config_parser/complex_types/AComplexType.cpp\
+		config_parser/complex_types/Frequent.cpp\
+		config_parser/AParseable.cpp\
 		main.cpp
 
 OBJ_DIR = objs/
@@ -30,7 +47,7 @@ $(NAME): $(OBJS)
 
 $(OBJ_DIR)%.o : %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CPPINCLUDE) -c -o $@ $<
 
 
 clean :

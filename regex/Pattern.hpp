@@ -10,7 +10,6 @@ namespace rgx
         size_t idx;
         string content;
     public:
-        // Pattern(string const &ptrn);
         Pattern();
         ~Pattern();
         Pattern &append(AToken const &pattern);

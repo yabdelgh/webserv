@@ -2,7 +2,7 @@
 
 namespace rgx {
 
-    Pattern::Pattern():idx(0) {}
+    Pattern::Pattern() {}
 
     // Pattern::Pattern(string const &ptrn):idx(0) {
     //     vector<string> tokens;
@@ -30,7 +30,7 @@ namespace rgx {
     bool Pattern::find(std::string const &str) {
         stringstream ss;
         idx = 0;
-        find(str, idx);
+        return find(str, idx);
     }
 
     bool Pattern::find(std::string const &str, size_t &idx) {

@@ -1,7 +1,8 @@
 #ifndef APARSEABLE_HPP
 #define APARSEABLE_HPP
 
-#include "../IParseable.hpp"
+#include "./IParseable.hpp"
+#include <stdexcept>
 
 class AParseable : public IParseable
 {
@@ -9,7 +10,7 @@ private:
     /* data */
 public:
     AParseable(/* args */);
-    ~AParseable();
+    virtual ~AParseable();
 
     virtual int get_int();
     virtual double get_double();
@@ -19,7 +20,7 @@ public:
     virtual std::vector<double> &get_double_array();
     virtual IParseable &operator[](std::string);
     virtual IParseable &operator[](size_t idx);
-    virtual size_t size();
+    virtual size_t size() const;
 };
 
 #endif

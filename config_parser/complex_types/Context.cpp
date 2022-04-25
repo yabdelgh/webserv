@@ -3,7 +3,8 @@
 
 using namespace rgx;
 
-Context::Context(rgx::Pattern const &pattern):AComplexType(pattern) {}
+Context::Context(Pattern const &opening, Pattern const &closing, Pattern const &key):
+            opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key) {}
 
 Context::Context(Context const &other) 
 {
@@ -29,6 +30,7 @@ Context &Context::operator=(Context const &other)
         while (it != other.parseables.end())
             insert_parseables(it->first, *it->second);
     }
+    return *this;
 }
 
 bool Context::parse(string &str, size_t &idx)

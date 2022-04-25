@@ -13,9 +13,11 @@ protected:
 
 public:
     IntArray(rgx::Pattern const &pattern);
+    IntArray(IntArray const &other);
     ~IntArray();
+    IntArray &operator=(IntArray const &other);
     std::vector<int> &get_int_array();
-
+    IParseable *clone() const;
 };
 
 #endif

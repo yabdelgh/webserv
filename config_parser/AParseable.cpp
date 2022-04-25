@@ -39,12 +39,12 @@ IParseable &AParseable::operator[](std::string)
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }
 
-IParseable &IParseable::operator[](size_t idx) 
+IParseable &AParseable::operator[](size_t idx) 
 {
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }
 
-size_t IParseable::size() 
+size_t AParseable::size() const
 {
     return 0;
 }

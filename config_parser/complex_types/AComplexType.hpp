@@ -3,16 +3,13 @@
 
 #include "../AParseable.hpp"
 #include "Pattern.hpp"
-#include <stdexcept>
 
 class AComplexType: public AParseable
 {
-protected:
-    AComplexType();
 
 public:
-    AComplexType(rgx::Pattern const &pattern);
-    ~AComplexType();
+    AComplexType();
+    virtual ~AComplexType();
 };
 
 

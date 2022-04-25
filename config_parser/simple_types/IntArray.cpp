@@ -2,7 +2,23 @@
 
 IntArray::IntArray(rgx::Pattern const &pattern):ASimpleType(pattern) {}
 
+IntArray::IntArray(IntArray const &other)
+{
+    *this = other;
+}
+
 IntArray::~IntArray() {}
+
+IntArray &IntArray::operator=(IntArray const &other)
+{
+    if (this != &other)
+    {
+        this->value.clear();
+        this->value = other.value;
+        ASimpleType::operator=(*this);
+    }
+    return *this;
+}
 
 void    IntArray::set_value(std::string const &raw) 
 {
@@ -15,8 +31,14 @@ void    IntArray::set_value(std::string const &raw)
     }
 }
 
+
 std::vector<int> &IntArray::get_int_array() 
 {
     return value;
+}
+
+IParseable *IntArray::clone() const 
+{
+    return new IntArray(*this);
 }
 

@@ -2,7 +2,7 @@
 
 using namespace rgx;
 
-Directive::Directive(Pattern const &pattern):AComplexType(pattern) {}
+Directive::Directive() {}
 
 Directive::Directive(Directive const &other)
 {
@@ -66,7 +66,7 @@ Directive &Directive::push_parseable(IParseable const& parseable)
 }
 
 size_t Directive::size() {
-    parseables.size();
+    return parseables.size();
 }
 
 IParseable *Directive::clone() const

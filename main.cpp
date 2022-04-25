@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "./config_parser/regex/defined_patterns.hpp"
+#include "./regex/defined_patterns.hpp"
 
 int main() {
     // vector<string> tokens;
@@ -19,24 +19,26 @@ int main() {
     //     cout << ptrn.substr(start + 1, end - (start + 1)) << endl;
     // }
 
-    unordered_map<string, Pattern> patterns = get_patterns();
+    // unordered_map<string, Pattern> patterns = get_patterns();
 
-    string g_ip = " good ip";
-    string b_ip = " bad ip";
-    string ip = "10.10.10.10";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "000.0.0.0";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "   000.000.000.000   ";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "0.0.0.0";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = ".000.000.000";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "0.0.0.0000";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "   0.0.0.00.00   ";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-    ip = "   0.0.0    ";
-    cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // string g_ip = " good ip";
+    // string b_ip = " bad ip";
+    // string ip = "10.10.10.10";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "000.0.0.0";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "   000.000.000.000   ";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "0.0.0.0";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = ".000.000.000";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "0.0.0.0000";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "   0.0.0.00.00   ";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+    // ip = "   0.0.0    ";
+    // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
+
+    std::cout << "hello world!" << std::endl;
 }

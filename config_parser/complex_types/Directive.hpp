@@ -10,7 +10,7 @@ private:
     std::vector<std::pair<std::string, IParseable*> > parseables;
 
 public:
-    Directive(rgx::Pattern const &pattern);
+    Directive();
     Directive(Directive const &other);
     ~Directive();
     Directive &operator=(Directive const &other);

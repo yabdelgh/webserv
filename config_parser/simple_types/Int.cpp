@@ -5,6 +5,26 @@ Int::Int(rgx::Pattern const &pattern):ASimpleType(pattern) {}
 
 Int::~Int() {}
 
+Int::Int(Int const &other)
+{
+    *this = other;
+}
+
+Int &Int::operator=(Int const &other)
+{
+    if (this != &other) 
+    {
+        value = other.value;
+        ASimpleType::operator=(other);
+    }
+    return *this;
+}
+
+IParseable *Int::clone() const
+{
+    return new Int(*this);
+}
+
 void    Int::set_value(std::string const &raw) 
 {
     // you may need to save the raw just in case you need the remainder.

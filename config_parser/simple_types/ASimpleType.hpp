@@ -3,21 +3,25 @@
 
 #include <stdexcept>
 
-#include "../IParseable.hpp"
+#include "../AParseable.hpp"
 #include "Pattern.hpp"
 
-class ASimpleType : public IParseable
+class ASimpleType : public AParseable
 {
 protected:
     rgx::Pattern pattern;
 
 protected:
     virtual void    set_value(std::string const &raw) = 0;
+    ASimpleType();
 
 public:
     ASimpleType(rgx::Pattern const &pattern);
+    ASimpleType(ASimpleType const &other);
     virtual ~ASimpleType();
-    virtual bool                        parse(std::string &str, size_t &idx);
+
+    ASimpleType &operator=(ASimpleType const &other);
+    virtual bool parse(std::string &str, size_t &idx);
 };
 
 #endif

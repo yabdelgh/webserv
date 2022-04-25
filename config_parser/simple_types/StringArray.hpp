@@ -14,9 +14,12 @@ protected:
 
 public:
     StringArray(rgx::Pattern const &pattern);
+    StringArray(StringArray const &other);
     ~StringArray();
-    std::vector<std::string> &get_str_array();
 
+    StringArray &operator=(StringArray const &other);
+    std::vector<std::string> &get_str_array();
+    IParseable *clone() const;
 };
 
 #endif

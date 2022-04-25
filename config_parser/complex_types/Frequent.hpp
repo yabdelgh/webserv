@@ -10,11 +10,8 @@ private:
     std::vector<IParseable*> parseables;
     IParseable* parseable;
 
-private:
-    Frequent();
-
 public:
-    Frequent(rgx::Pattern const &pattern);
+    Frequent(IParseable const &parseable);
     Frequent(Frequent const &other);
     ~Frequent();
     Frequent &operator=(Frequent const &other);

@@ -8,16 +8,16 @@ class IParseable
 private:
     /* data */
 public:
-    virtual int get_int();
-    virtual double get_double();
-    virtual std::string &get_string();
-    virtual std::vector<std::string> &get_str_array();
-    virtual std::vector<int> &get_int_array();
-    virtual std::vector<double> &get_double_array();
-    virtual IParseable &operator[](std::string);
-    virtual IParseable &operator[](size_t idx);
-    virtual size_t size() const;
-    virtual IParseable *clone(bool deep = true) const;
-    virtual bool parse(std::string &str, size_t &idx);
-    virtual ~IParseable();
+    virtual int get_int() = 0;
+    virtual double get_double() = 0;
+    virtual std::string &get_string() = 0;
+    virtual std::vector<std::string> &get_str_array() = 0;
+    virtual std::vector<int> &get_int_array() = 0;
+    virtual std::vector<double> &get_double_array() = 0;
+    virtual IParseable &operator[](std::string) = 0;
+    virtual IParseable &operator[](size_t idx) = 0;
+    virtual size_t size() const = 0;
+    virtual IParseable *clone() const = 0;
+    virtual bool parse(std::string &str, size_t &idx) = 0;
+    virtual ~IParseable() {};
 };

@@ -13,8 +13,11 @@ protected:
 
 public:
     String(rgx::Pattern const &pattern);
+    String(String const &other);
     ~String();
+    String &operator=(String const &other);
     std::string &get_string();
+    IParseable *clone() const;
 };
 
 #endif

@@ -13,8 +13,11 @@ protected:
 
 public:
     Int(rgx::Pattern const &pattern);
+    Int(Int const &other);
     ~Int();
+    Int & operator=(Int const &other);
     int get_int();
+    IParseable *clone() const;
 };
 
 #endif

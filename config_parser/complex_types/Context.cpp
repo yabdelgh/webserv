@@ -45,6 +45,7 @@ bool Context::parse(string &str, size_t &idx)
         {
             if ( it->second->parse(str, idx) == false)
                 return false;
+            // skip whitespaces
         }
         else if (closing_ptrn.match(key) == false)
             return false;

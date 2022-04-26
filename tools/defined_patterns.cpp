@@ -18,6 +18,7 @@ unordered_map<string, Pattern> get_patterns()
 	Single colon(":", 1, 1);
 	Single space(" ", 1);
 	Single white_space(" \n\r\t\f\v");
+	Single not_white_space(" \n\r\t\f\v", MATCH_OUT, 1);
 
 	Group spaced_number;
 	spaced_number.append(space)
@@ -29,9 +30,9 @@ unordered_map<string, Pattern> get_patterns()
 				 			.append(number));
 
 	Group str_array;
-	str_array.append(any)
+	str_array.append(not_white_space)
 			 .append(Group().append(space)
-				 			.append(any));
+				 			.append(not_white_space));
 
 	Or body_size_units;
 	body_size_units.append(Sequence("o"))
@@ -41,7 +42,7 @@ unordered_map<string, Pattern> get_patterns()
 				   .append(Sequence("m"))
 				   .append(Sequence("M"))
 				   .append(Sequence("g"))
-				   .append(Sequence("G")).set_max(1).set_min(1);
+				   .append(Sequence("G"));
 
 	Group body_size_limit;
 	body_size_limit.append(number)
@@ -68,16 +69,16 @@ unordered_map<string, Pattern> get_patterns()
 				   .append(Group().append(space)
 				 				  .append(request_method));
 
-	Or on_off;
+	Or on_off(1, 1);
 	on_off.append(Sequence("on"))
 		  .append(Sequence("off"));
 
 	Group http_error_code;
-	http_error_code.append(number.set_min(3).set_max(3))
+	http_error_code.append(Between(number).set_min(3).set_max(3))
 				   .append(space);
 
 	Group key;
-		key.append(space).append(any);
+		key.append(any).append(any);
 
 	Group context_opening;
 		context_opening.append(space).append(Single("{", 1));
@@ -101,6 +102,8 @@ unordered_map<string, Pattern> get_patterns()
 	patterns.insert(pair<string, Pattern>("key", Pattern().append(key)));
 	patterns.insert(pair<string, Pattern>(" *{", Pattern().append(context_opening)));
 	patterns.insert(pair<string, Pattern>(" *}", Pattern().append(context_closing)));
+	patterns.insert(pair<string, Pattern>("\\S", Pattern().append(not_white_space)));
+	
 	
 	
 	return patterns;

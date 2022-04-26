@@ -18,8 +18,9 @@
 
 IParseable *get_server_config()
 {
-    unordered_map<string, Pattern> p = get_patterns();
+    unordered_map<string, Pattern> p;
 
+     p = get_patterns();
     Directive listen;
     listen.push_parseable("host", String(p["spaces"]));
     listen.push_parseable(String(p["ip"]));
@@ -28,22 +29,22 @@ IParseable *get_server_config()
 
     Directive server_name;
     server_name.push_parseable(String(p["spaces"]));
-    server_name.push_parseable(String(p["not_spaces"]));
+    server_name.push_parseable(String(p["\\S"]));
 
     Directive error_page;
     error_page.push_parseable(String(p["spaces"]))
               .push_parseable("codes", IntArray(p["int_array"]))
               .push_parseable(String(p["spaces"]))
-              .push_parseable("page", String(p["not_spaces"]));
+              .push_parseable("page", String(p["\\S"]));
 
     Directive body_size_limit;
     body_size_limit.push_parseable(String(p["spaces"]))
                    .push_parseable("limit",Int(p["number"]))
-                   .push_parseable("unit",Int(p["units"]));
+                   .push_parseable("unit",String(p["units"]));
     
     Directive root;
     root.push_parseable(String(p["spaces"]))
-         .push_parseable(String(p["not_spaces"]));
+         .push_parseable(String(p["\\S"]));
 
     Directive index;
     index.push_parseable(String(p["spaces"]))
@@ -57,7 +58,7 @@ IParseable *get_server_config()
     redirect.push_parseable(String(p["spaces"]));
     redirect.push_parseable(String(p["number"]));
     redirect.push_parseable(String(p["spaces"]));
-    redirect.push_parseable(String(p["not_spaces"]));
+    redirect.push_parseable(String(p["\\S"]));
 
     Directive autoindex;
     autoindex.push_parseable(String(p["spaces"]));
@@ -70,13 +71,14 @@ IParseable *get_server_config()
     location_context.insert_parseables("index", index);
     location_context.insert_parseables("client_body_buffer_size", body_size_limit);
     location_context.insert_parseables("error_page", Frequent(error_page));
+    location_context.insert_parseables("autoindex", autoindex);
 
     Directive location;
     location.push_parseable("uri", root);
     location.push_parseable("context", location_context);
 
     Context server_context(p[" *{"],p[" *}"],p["key"]);
-    server_context.insert_parseables("listen", listen);
+    server_context.insert_parseables("listen", Frequent(listen));
     server_context.insert_parseables("server_name", server_name);
     server_context.insert_parseables("error_page", error_page);
     server_context.insert_parseables("client_body_buffer_size", body_size_limit);
@@ -84,6 +86,8 @@ IParseable *get_server_config()
     server_context.insert_parseables("root", root);
     server_context.insert_parseables("return", redirect);
     server_context.insert_parseables("location", location);
+    server_context.insert_parseables("autoindex", autoindex);
+
 
     Context server_config(Pattern(), Pattern(), p["key"]);
     server_config.insert_parseables("server", server_context);

@@ -13,7 +13,6 @@ Frequent &Frequent::operator=(Frequent const &other) {
     {
         delete this->parseable;
         this->parseable = other.parseable->clone();
-        AComplexType::operator=(other);
     }
     return *this;
 }

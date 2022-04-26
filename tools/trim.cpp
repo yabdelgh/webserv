@@ -18,5 +18,5 @@ std::string trim(const std::string &s)
     size_t end = s.find_last_not_of(WHITESPACE);
     if (start == -1 || end == -1)
         return "";
-    return s.substr(start, end);
+    return s.substr(start, end + 1);
 }

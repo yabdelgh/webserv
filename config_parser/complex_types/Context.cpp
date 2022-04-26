@@ -27,12 +27,12 @@ Context &Context::operator=(Context const &other)
         this->ws_ptrn = other.ws_ptrn;
 
         unordered_map<string, IParseable*>::const_iterator it = parseables.begin();
-        while (it != parseables.end())
+        for ( ; it != parseables.end(); it++)
             delete it->second;
         parseables.clear();
 
         it = other.parseables.begin();
-        while (it != other.parseables.end())
+        for ( ; it != other.parseables.end(); it++)
             insert_parseables(it->first, *it->second);
     }
     return *this;
@@ -43,18 +43,22 @@ bool Context::parse(string &str, size_t &idx)
     unordered_map<string, IParseable *>::iterator it;
     if (opening_ptrn.find(str, idx))
     {
-        ws_ptrn.find(str, idx); // skip white_space
-        key_ptrn.find(str, idx);
-        string key = trim(key_ptrn.get_content());
-        it = parseables.find(key);
-        if (it != parseables.end())
+        while (idx < str.size())
         {
-            if ( it->second->parse(str, idx) == false)
-                return false;
             ws_ptrn.find(str, idx); // skip white_space
+            key_ptrn.find(str, idx);
+            string key = trim(key_ptrn.get_content());
+            it = parseables.find(key);
+            if (it != parseables.end())
+            {
+                if (it->second->parse(str, idx) == false)
+                    return false;
+            }
+            else if (closing_ptrn.match(key) == false)
+                return false;
+            else
+                break;
         }
-        else if (closing_ptrn.match(key) == false)
-            return false;
     }
     else 
         return false;

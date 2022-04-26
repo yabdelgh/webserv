@@ -28,26 +28,37 @@ namespace rgx {
 
     bool Single::find(string const &str, size_t &idx, stringstream &ss) {
         size_t i;
+        size_t tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || (chars.find(str[idx]) == -1) ^ match_dir)
+            if (tmp_idx >= str.size() || (chars.find(str[tmp_idx]) == -1) ^ match_dir)
                 break;
-            ss << str[idx];
-            idx++;
+            ss << str[tmp_idx];
+            tmp_idx++;
         }
-        return is_matched(i);
+        if (is_matched(i))
+        {
+            idx = tmp_idx;
+            return true;
+        }
+        return false;
     }
     
     bool Single::match(string const &str, size_t &idx) {
         size_t i;
+        size_t tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || (chars.find(str[idx]) == -1) ^ match_dir)
+            if (tmp_idx >= str.size() || (chars.find(str[tmp_idx]) == -1) ^ match_dir)
                 break;
-            idx++;
+            tmp_idx++;
         }
-        // cout << endl << "single match " << i << "  " << min << ":" <<  max << endl;
-        return is_matched(i);
+        if (is_matched(i))
+        {
+            idx = tmp_idx;
+            return true;
+        }
+        return false;
     }
     
     AToken *Single::clone() const {

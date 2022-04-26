@@ -24,26 +24,38 @@ namespace rgx {
 
     bool Between::find(std::string const &str, size_t &idx, stringstream &ss) {
         size_t i;
+        size_t tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || !between(str[idx], c_min, c_max))
+            if (tmp_idx >= str.size() || !between(str[tmp_idx], c_min, c_max))
                 break;
-            ss << str[idx];
-            idx++;
+            ss << str[tmp_idx];
+            tmp_idx++;
         }
-        return is_matched(i);
+        if (is_matched(i))
+        {
+            idx = tmp_idx;
+            return true;
+        }
+        return false;
     }
 
     bool Between::match(string const &str, size_t &idx) {
         size_t i;
+        size_t tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || !between(str[idx], c_min, c_max))
+            if (tmp_idx >= str.size() || !between(str[tmp_idx], c_min, c_max))
                 break;
-            idx++;
+            tmp_idx++;
         }
         // cout << endl << "between match " << i << "  " << min << ":" <<  max << endl;
-        return is_matched(i);
+        if (is_matched(i))
+        {
+            idx = tmp_idx;
+            return true;
+        }
+        return false;
     }
 
     AToken *Between::clone() const {

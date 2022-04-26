@@ -14,7 +14,6 @@ namespace rgx {
             vector<AToken *>::const_iterator end = other.tokens.end();
             for (; it != end ; it++)
                 tokens.push_back((*it)->clone());
-            ANestedToken::operator=(other);
         }
         return *this;
     }

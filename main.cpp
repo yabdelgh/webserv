@@ -1,8 +1,9 @@
 #include <string>
 #include <iostream>
 #include "defined_patterns.hpp"
+#include "tools.hpp"
 
-int main() {
+int main(int ac, char **av) {
     // vector<string> tokens;
     // string ptrn("[11][22][44][[][]");
     // size_t idx = 0;
@@ -39,6 +40,13 @@ int main() {
     // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
     // ip = "   0.0.0    ";
     // cout << ip << (patterns.find("ip")->second.match(ip) ? g_ip : b_ip) << endl;
-
-    std::cout << "hello world!" << std::endl;
+    if (ac > 1)
+    {
+        std::string content;
+        get_file_contents(av[1], content);
+        std::cout << content << std::endl;
+        IParseable *server_config = get_server_config();
+        size_t idx = 0;
+        server_config->parse(content, idx);
+    }
 }

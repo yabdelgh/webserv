@@ -4,7 +4,7 @@ CXX = g++
 
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 CPPFLAGS =  -fsanitize=address -g -O3 -std=c++11
-CPPFLAGS =  -O3 -std=c++98
+CPPFLAGS =  -g -O3 -std=c++98
 
 CPPINCLUDE =	-I ./regex\
 		     	-I ./config_parser\
@@ -15,6 +15,7 @@ CPPINCLUDE =	-I ./regex\
 
 SRC =	tools/trim.cpp\
 		tools/defined_patterns.cpp\
+		tools/get_file_content.cpp\
 		regex/Pattern.cpp\
 		regex/tokens/OutSequence.cpp\
 		regex/tokens/Or.cpp\

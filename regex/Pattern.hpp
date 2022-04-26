@@ -1,3 +1,6 @@
+#ifndef PATTERN_HPP
+#define PATTERN_HPP
+
 #include <vector>
 #include "./tokens/AToken.hpp"
 
@@ -19,3 +22,5 @@ namespace rgx
         string const &get_content();
     };
 }
+
+#endif 

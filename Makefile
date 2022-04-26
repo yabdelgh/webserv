@@ -11,10 +11,10 @@ CPPINCLUDE =	-I ./regex\
 				-I ./tools
 
 
-# ./regex/defined_patterns.cpp
 # config_parser/Parser.cpp\
 
 SRC =	tools/trim.cpp\
+		tools/defined_patterns.cpp\
 		regex/Pattern.cpp\
 		regex/tokens/OutSequence.cpp\
 		regex/tokens/Or.cpp\
@@ -34,6 +34,7 @@ SRC =	tools/trim.cpp\
 		config_parser/complex_types/AComplexType.cpp\
 		config_parser/complex_types/Frequent.cpp\
 		config_parser/AParseable.cpp\
+		server_config.cpp\
 		main.cpp
 
 OBJ_DIR = objs/

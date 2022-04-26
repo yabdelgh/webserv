@@ -30,7 +30,7 @@ namespace rgx {
         size_t i;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || chars.find(str[idx]) == -1)
+            if (idx >= str.size() || (chars.find(str[idx]) == -1) ^ match_dir)
                 break;
             ss << str[idx];
             idx++;
@@ -42,7 +42,7 @@ namespace rgx {
         size_t i;
         for (i = 0; get_more(i) ; i++)
         {
-            if (idx >= str.size() || chars.find(str[idx]) == -1)
+            if (idx >= str.size() || (chars.find(str[idx]) == -1) ^ match_dir)
                 break;
             idx++;
         }

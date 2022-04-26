@@ -11,6 +11,7 @@ private:
     rgx::Pattern opening_ptrn;
     rgx::Pattern closing_ptrn;
     rgx::Pattern key_ptrn;
+    rgx::Pattern ws_ptrn;
     std::unordered_map<std::string, IParseable*> parseables;
 
 public:

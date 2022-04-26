@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "./regex/defined_patterns.hpp"
+#include "defined_patterns.hpp"
 
 int main() {
     // vector<string> tokens;

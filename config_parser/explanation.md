@@ -49,9 +49,9 @@
 + location example
     * ```
         location /put_test {
-            allow_methods PUT POST
-            root ./YoupiBanane/put_here
-            return 301 $scheme://service-new.company.com/$request_uri
+                allow_methods PUT POST
+                root ./YoupiBanane/put_here
+                return 301 $scheme://service-new.company.com/$request_uri
         }
 
 ### CGI

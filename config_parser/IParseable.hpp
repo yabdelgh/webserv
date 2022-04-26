@@ -1,3 +1,6 @@
+#ifndef IPARSEABLE_HPP
+#define IPARSEABLE_HPP
+
 #include<string>
 #include<vector>
 
@@ -21,3 +24,5 @@ public:
     virtual bool parse(std::string &str, size_t &idx) = 0;
     virtual ~IParseable() {};
 };
+
+#endif

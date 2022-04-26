@@ -16,7 +16,7 @@
 
 #include "defined_patterns.hpp"
 
-IParseable * get_server_config()
+IParseable *get_server_config()
 {
     unordered_map<string, Pattern> p = get_patterns();
 
@@ -39,12 +39,15 @@ IParseable * get_server_config()
     Directive body_size_limit;
     body_size_limit.push_parseable(String(p["spaces"]))
                    .push_parseable("limit",Int(p["number"]))
-                   .push_parseable("unit",Int(p["unit"]));
+                   .push_parseable("unit",Int(p["units"]));
     
+    Directive root;
+    root.push_parseable(String(p["spaces"]))
+         .push_parseable(String(p["not_spaces"]));
+
     Directive index;
     index.push_parseable(String(p["spaces"]))
-         .push_parseable(String(p["not_spaces"]));
-    Directive root(index);
+         .push_parseable(String(p["str_array"]));
 
     Directive allowed_methods;
     allowed_methods.push_parseable(String(p["spaces"]));
@@ -55,13 +58,36 @@ IParseable * get_server_config()
     redirect.push_parseable(String(p["number"]));
     redirect.push_parseable(String(p["spaces"]));
     redirect.push_parseable(String(p["not_spaces"]));
+
+    Directive autoindex;
+    autoindex.push_parseable(String(p["spaces"]));
+    autoindex.push_parseable(String(p["off|on"]));
     
-    Context server();
-    server.insert_parseables();
+    Context location_context(p[" *{"],p[" *}"],p["key"]);
+    location_context.insert_parseables("root", root);
+    location_context.insert_parseables("allow_methods", allowed_methods);
+    location_context.insert_parseables("return", redirect);
+    location_context.insert_parseables("index", index);
+    location_context.insert_parseables("client_body_buffer_size", body_size_limit);
+    location_context.insert_parseables("error_page", Frequent(error_page));
+
+    Directive location;
+    location.push_parseable("uri", root);
+    location.push_parseable("context", location_context);
+
+    Context server_context(p[" *{"],p[" *}"],p["key"]);
+    server_context.insert_parseables("listen", listen);
+    server_context.insert_parseables("server_name", server_name);
+    server_context.insert_parseables("error_page", error_page);
+    server_context.insert_parseables("client_body_buffer_size", body_size_limit);
+    server_context.insert_parseables("index", index);
+    server_context.insert_parseables("root", root);
+    server_context.insert_parseables("return", redirect);
+    server_context.insert_parseables("location", location);
+
+    Context server_config(Pattern(), Pattern(), p["key"]);
+    server_config.insert_parseables("server", server_context);
+
+    return server_config.clone();
 }
-
-
-
-
-
 

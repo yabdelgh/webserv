@@ -15,7 +15,7 @@ IntArray &IntArray::operator=(IntArray const &other)
     {
         this->value.clear();
         this->value = other.value;
-        ASimpleType::operator=(*this);
+        ASimpleType::operator=(other);
     }
     return *this;
 }

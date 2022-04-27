@@ -45,6 +45,10 @@ namespace rgx {
         return true;
     }
 
+    string const &AToken::get_content() const {
+        return content;
+    }
+
     bool AToken::is_matched(size_t times_count) {
         if (min == -1 && max == -1)
             return true;

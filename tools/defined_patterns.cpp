@@ -24,9 +24,9 @@ unordered_map<string, Pattern> get_patterns()
 	spaced_number.append(space)
 				 .append(number);
 
-	Group int_array;
+	Group int_array(1, 1);
 	int_array.append(number)
-			 .append(Group().append(space)
+			 .append(Group().append(Single(space).set_min(-1))
 				 			.append(number));
 
 	Group str_array;
@@ -35,14 +35,14 @@ unordered_map<string, Pattern> get_patterns()
 				 			.append(not_white_space));
 
 	Or body_size_units;
-	body_size_units.append(Sequence("o"))
-				   .append(Sequence("O"))
-				   .append(Sequence("k"))
-				   .append(Sequence("K"))
-				   .append(Sequence("m"))
-				   .append(Sequence("M"))
-				   .append(Sequence("g"))
-				   .append(Sequence("G"));
+	body_size_units.append(Sequence("o", 1, 1))
+				   .append(Sequence("O", 1, 1))
+				   .append(Sequence("k", 1, 1))
+				   .append(Sequence("K", 1, 1))
+				   .append(Sequence("m", 1, 1))
+				   .append(Sequence("M", 1, 1))
+				   .append(Sequence("g", 1, 1))
+				   .append(Sequence("G", 1, 1));
 
 	Group body_size_limit;
 	body_size_limit.append(number)
@@ -60,9 +60,9 @@ unordered_map<string, Pattern> get_patterns()
 	  .append(Single(" "));
 
 	Or request_method(1);
-	request_method.append(Sequence("POST"))
-				   .append(Sequence("GET"))
-				   .append(Sequence("DELETE"));
+	request_method.append(Sequence("POST", 1, 1))
+				   .append(Sequence("GET", 1, 1))
+				   .append(Sequence("DELETE", 1, 1));
 
 	Group request_methods;
 	request_methods.append(request_method)
@@ -70,21 +70,23 @@ unordered_map<string, Pattern> get_patterns()
 				 				  .append(request_method));
 
 	Or on_off(1, 1);
-	on_off.append(Sequence("on"))
-		  .append(Sequence("off"));
+	on_off.append(Sequence("on",1 ,1))
+		  .append(Sequence("off",1 ,1));
 
 	Group http_error_code;
 	http_error_code.append(Between(number).set_min(3).set_max(3))
 				   .append(space);
 
 	Group key;
-		key.append(any).append(any);
+		key.append(not_white_space);
 
 	Group context_opening;
-		context_opening.append(space).append(Single("{", 1));
+		context_opening.append(Single(space).set_max(-1).set_min(-1))
+					   .append(Single("{", 1));
 	
 	Group context_closing;
-		context_closing.append(space).append(Single("}", 1));
+		context_closing.append(Single(space).set_max(-1).set_min(-1))
+					   .append(Single("}", 1));
 
 	patterns.insert(pair<string, Pattern>("number", Pattern().append(number)));
 	patterns.insert(pair<string, Pattern>("not_spaces", Pattern().append(any)));

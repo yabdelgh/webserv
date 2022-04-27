@@ -47,6 +47,6 @@ int main(int ac, char **av) {
         std::cout << content << std::endl;
         IParseable *server_config = get_server_config();
         size_t idx = 0;
-        server_config->parse(content, idx);
+        std::cout << (server_config->parse(content, idx) ? "good" : "bad") << std::endl;
     }
 }

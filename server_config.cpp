@@ -31,11 +31,11 @@ IParseable *get_server_config()
     server_name.push_parseable(String(p["spaces"]));
     server_name.push_parseable(String(p["\\S"]));
 
-    Directive error_page;
-    error_page.push_parseable(String(p["spaces"]))
-              .push_parseable("codes", IntArray(p["int_array"]))
-              .push_parseable(String(p["spaces"]))
-              .push_parseable("page", String(p["\\S"]));
+     Directive error_page;
+     error_page.push_parseable(String(p["spaces"]));
+     error_page.push_parseable("codes", IntArray(p["int_array"]));
+     error_page.push_parseable(String(p["spaces"]));
+     error_page.push_parseable("page", String(p["\\S"]));
 
     Directive body_size_limit;
     body_size_limit.push_parseable(String(p["spaces"]))

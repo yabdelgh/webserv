@@ -22,7 +22,7 @@ bool ASimpleType::parse(std::string &str, size_t &idx)
     if (pattern.find(str, idx))
     {
         set_value(pattern.get_content());
-        std::cout << "find :" << pattern.get_content() << std::endl;
+        std::cout << "find :|" << pattern.get_content() << "|" << std::endl;
         return true;
     }
     return false;

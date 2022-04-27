@@ -22,13 +22,16 @@ namespace rgx {
         size_t i;
         for (i = 0; get_more(i) ; i++)
         {
-            for (size_t i = 0; i < tokens.size(); i++)
+            stringstream tmp_ss;
+            size_t j = 0;
+            for (; j < tokens.size(); j++)
             {
-                if (tokens[i]->find(str, idx, ss) == false)
+                if (tokens[j]->find(str, idx, tmp_ss) == false)
                     break;
             }
-            if (i != tokens.size())
+            if (j != tokens.size())
                 break;
+            ss << tmp_ss.str();
         }
         return is_matched(i);
     }

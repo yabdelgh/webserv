@@ -19,13 +19,13 @@ namespace rgx {
     bool Or::find(string const &str, size_t &idx, stringstream &ss) {
         size_t i;
         for (i = 0; get_more(i) ; i++)
-        {
-            for (size_t i = 0; i < tokens.size(); i++)
+        {   size_t j = 0;
+            for (; j < tokens.size(); j++)
             {
-                if (tokens[i]->find(str, idx, ss) == true)
+                if (tokens[j]->find(str, idx, ss) == true)
                     break;
             }
-            if (i == tokens.size())
+            if (j == tokens.size())
                 break;
         }
         return is_matched(i);

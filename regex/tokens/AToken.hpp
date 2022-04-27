@@ -35,6 +35,7 @@ namespace rgx {
         virtual AToken *clone() const = 0;
         AToken &set_min(int min);
         AToken &set_max(int max);
+        string const &get_content() const;
 
     protected:
         bool get_more(size_t idx);

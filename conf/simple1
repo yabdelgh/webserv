@@ -1,5 +1,8 @@
 server {
-	autoindex on
+	error_page 500 505 303 102 000 wioerownkjwneknkjwe.dfkndfg
+
+	
+	autoindex off
 	listen 0.0.0.0:8000
 	listen 127.0.0.1:8001
 
@@ -10,8 +13,55 @@ server {
 
 	client_body_buffer_size 10
 	
+	error_page 5008979 505 303 102 000 wioerownkjwneknkjwe.dfkndfg
 
 	location *.test {
-		
+		client_body_buffer_size 20
+		client_body_buffer_size 20k
+		index index.html
+		root test_us/root
+		autoindex off
+	}
+
+	location *.test {
+		client_body_buffer_size 20
+		client_body_buffer_size 20k
+		index index.html
+		root test_us/root
+		autoindex off
+	}
+}
+
+server {
+	error_page 500 505 303 102 000 wioerownkjwneknkjwe.dfkndfg
+
+	
+	autoindex off
+	listen 0.0.0.0:8000
+	listen 127.0.0.1:8001
+
+	root test_us/root
+	server_name weebserv
+
+	index index.html
+
+	client_body_buffer_size 10
+	
+	error_page 5008979 505 303 102 000 wioerownkjwneknkjwe.dfkndfg
+
+	location *.test {
+		client_body_buffer_size 20
+		client_body_buffer_size 20k
+		index index.html
+		root test_us/root
+		autoindex off
+	}
+	
+	location *.test {
+		client_body_buffer_size 20
+		client_body_buffer_size 20k
+		index index.html
+		root test_us/root
+		autoindex off
 	}
 }

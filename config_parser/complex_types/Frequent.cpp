@@ -3,7 +3,7 @@
 
 Frequent::Frequent(IParseable const &parseable):parseable(parseable.clone()) {}
 
-Frequent::Frequent(Frequent const &other) 
+Frequent::Frequent(Frequent const &other):parseable(nullptr)
 {
     *this = other;
 }

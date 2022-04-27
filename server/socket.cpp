@@ -15,6 +15,8 @@ sock::sock(const char *addr, short port, bool status)
 	_sin.sin_port = htons(port);
 	_size = sizeof(_sin);
 	_status = status;
+	if (status)
+		this->default_config();
 }
 
 sock::sock(const sock &copy)

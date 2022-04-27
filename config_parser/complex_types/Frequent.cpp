@@ -13,6 +13,15 @@ Frequent &Frequent::operator=(Frequent const &other) {
     {
         delete this->parseable;
         this->parseable = other.parseable->clone();
+        for (size_t i = 0 ; i < parseables.size() ; i++)
+        {
+            delete parseables[i];
+        }
+        parseables.clear();
+        for (size_t i = 0 ; i < other.parseables.size() ; i++)
+        {
+            parseables.push_back(other.parseables[i]->clone());
+        }
     }
     return *this;
 }
@@ -21,9 +30,13 @@ Frequent::~Frequent() {}
 
 bool Frequent::parse(std::string &str, size_t &idx)
 {
-    if (parseable->parse(str, idx) == false)
+    IParseable *clone = parseable->clone();
+    if (clone->parse(str, idx) == false)
+    {
+        delete clone;    
         return false;
-    parseables.push_back(parseable->clone());
+    }
+    parseables.push_back(clone);
     return true;
 }
 
@@ -33,7 +46,7 @@ IParseable &Frequent::operator[](size_t idx) {
     throw std::out_of_range("IParseable out of range index");
 }
 
-size_t Frequent::size() {
+size_t Frequent::size() const{
     return parseables.size();
 }
 

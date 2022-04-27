@@ -8,6 +8,7 @@ class Directive: public AComplexType
 
 private:
     std::vector<std::pair<std::string, IParseable*> > parseables;
+    size_t last_index;
 
 public:
     Directive();
@@ -17,7 +18,8 @@ public:
     Directive &push_parseable(std::string const &name, IParseable const& parseable);
     Directive &push_parseable(IParseable const& parseable);
     bool parse(std::string &str, size_t &idx);
-    IParseable &operator[](std::string);
+    bool cont_parse(std::string &str, size_t &idx);
+    IParseable &operator[](std::string const &);
     IParseable &operator[](size_t idx);
     size_t size();
     IParseable *clone() const;

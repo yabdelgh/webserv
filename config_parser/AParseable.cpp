@@ -34,7 +34,7 @@ std::vector<double> &AParseable::get_double_array()
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }
 
-IParseable &AParseable::operator[](std::string) 
+IParseable &AParseable::operator[](std::string const &) 
 {
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }
@@ -46,5 +46,10 @@ IParseable &AParseable::operator[](size_t idx)
 
 size_t AParseable::size() const
 {
-    return 0;
+    return -1;
+}
+
+bool AParseable::cont_parse(std::string &str, size_t &idx)
+{
+    return parse(str, idx);
 }

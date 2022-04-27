@@ -21,7 +21,7 @@ namespace rgx {
 
     bool Sequence::find(std::string const &str, size_t &idx, stringstream &ss) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (seq.compare(0, str.size(), &str[tmp_idx], seq.size()) != 0)
@@ -29,6 +29,7 @@ namespace rgx {
             ss << seq;
             tmp_idx += seq.size();
         }
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;
@@ -39,13 +40,14 @@ namespace rgx {
 
     bool Sequence::match(string const &str, size_t &idx) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (seq.compare(0, seq.size(), str) != 0)
                 break;
             tmp_idx += seq.size();
         }
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;

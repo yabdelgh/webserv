@@ -20,6 +20,7 @@ namespace rgx {
 
     ANestedToken::~ANestedToken() {}
     ANestedToken &ANestedToken::append(AToken const &token) {
+        token.clone();
         tokens.push_back(token.clone());
         return *this;
     }

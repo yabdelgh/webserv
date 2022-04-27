@@ -28,7 +28,7 @@ namespace rgx {
 
     bool Single::find(string const &str, size_t &idx, stringstream &ss) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (tmp_idx >= str.size() || (chars.find(str[tmp_idx]) == -1) ^ match_dir)
@@ -36,6 +36,7 @@ namespace rgx {
             ss << str[tmp_idx];
             tmp_idx++;
         }
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;
@@ -46,13 +47,14 @@ namespace rgx {
     
     bool Single::match(string const &str, size_t &idx) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (tmp_idx >= str.size() || (chars.find(str[tmp_idx]) == -1) ^ match_dir)
                 break;
             tmp_idx++;
         }
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;

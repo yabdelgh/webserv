@@ -2,7 +2,7 @@
 
 using namespace rgx;
 
-Directive::Directive() {}
+Directive::Directive():last_index(0) {}
 
 Directive::Directive(Directive const &other)
 {
@@ -13,6 +13,7 @@ Directive &Directive::operator=(Directive const &other)
 {
     if (this != &other)
     {
+        last_index = other.last_index;
         for (size_t i = 0 ; i < parseables.size() ; i++)
         {
             delete parseables[i].second;
@@ -38,7 +39,20 @@ bool Directive::parse(string &str, size_t &idx)
     return true;
 }
 
-IParseable &Directive::operator[](string name) {
+bool Directive::cont_parse(std::string &str, size_t &idx)
+{   
+    size_t i = last_index;
+    for (; i < parseables.size() ; i++)
+    {
+        if ((*this)[i].parse(str, idx) == false)
+            return false;
+    }
+    if (i == parseables.size())
+        last_index = 0;
+    return true;
+}
+
+IParseable &Directive::operator[](string const &name) {
     for (size_t i = 0; i < parseables.size() ; i++)
     {
         if (parseables[i].first == name)

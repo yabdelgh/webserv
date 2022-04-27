@@ -17,7 +17,7 @@ public:
     Frequent &operator=(Frequent const &other);
     bool parse(std::string &str, size_t &idx);
     IParseable &operator[](size_t idx);
-    size_t size();
+    size_t size() const;
     IParseable *clone() const;
 };
 

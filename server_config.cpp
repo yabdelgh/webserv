@@ -22,8 +22,8 @@ IParseable *get_server_config()
 
      p = get_patterns();
     Directive listen;
-    listen.push_parseable("host", String(p["spaces"]));
-    listen.push_parseable(String(p["ip"]));
+    listen.push_parseable(String(p["spaces"]));
+    listen.push_parseable("host",String(p["ip"]));
     listen.push_parseable(String(p["colon"]));
     listen.push_parseable("port", Int(p["number"]));
 
@@ -90,7 +90,7 @@ IParseable *get_server_config()
 
 
     Context server_config(Pattern(), Pattern(), p["key"]);
-    server_config.insert_parseables("server", server_context);
+    server_config.insert_parseables("server", Frequent(server_context));
 
     return server_config.clone();
 }

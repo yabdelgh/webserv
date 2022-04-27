@@ -19,36 +19,46 @@ namespace rgx {
     Group::~Group() {}
 
     bool Group::find(string const &str, size_t &idx, stringstream &ss) {
-        size_t i;
+        size_t i,j;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             stringstream tmp_ss;
-            size_t j = 0;
-            for (; j < tokens.size(); j++)
+            for (j = 0 ; j < tokens.size(); j++)
             {
-                if (tokens[j]->find(str, idx, tmp_ss) == false)
+                if (tokens[j]->find(str, tmp_idx, tmp_ss) == false)
                     break;
             }
             if (j != tokens.size())
                 break;
             ss << tmp_ss.str();
         }
-        return is_matched(i);
+        reached_end = tokens[j]->is_reached_end();
+        if (is_matched(i) == false)
+            return false;
+        idx = tmp_idx;
+        return true;
     }
 
     bool Group::match(string const &str, size_t &idx) {
-        size_t i;
+        size_t i,j;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
-            for (size_t i = 0; i < tokens.size(); i++)
+            for (j = 0 ; j < tokens.size(); j++)
             {
-                if (tokens[i]->match(str, idx) == false)
+                if (tokens[j]->find(str, tmp_idx) == false)
                     break;
             }
-            if (i != tokens.size())
+            if (j != tokens.size())
                 break;
+            idx = tmp_idx;
         }
-        return is_matched(i);
+        reached_end = tokens[j]->is_reached_end();
+        if (is_matched(i) == false)
+            return false;
+        idx = tmp_idx;
+        return true;
     }
     
     AToken *Group::clone() const {

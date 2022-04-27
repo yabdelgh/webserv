@@ -17,18 +17,25 @@ namespace rgx {
     Or::~Or() {}
 
     bool Or::find(string const &str, size_t &idx, stringstream &ss) {
-        size_t i;
+        size_t i, j;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
-        {   size_t j = 0;
-            for (; j < tokens.size(); j++)
+        {
+            stringstream tmp_ss;
+            for (j = 0 ; j < tokens.size(); j++)
             {
-                if (tokens[j]->find(str, idx, ss) == true)
+                if (tokens[j]->find(str, tmp_idx, tmp_ss) == true)
                     break;
+                reached_end |= tokens[j]->is_reached_end();
             }
             if (j == tokens.size())
                 break;
+            ss << tmp_ss;
         }
-        return is_matched(i);
+        if (is_matched(i) == false)
+            return false;
+        idx = tmp_idx;
+        return true;
     }
 
     bool Or::match(string const &str, size_t &idx) {
@@ -37,13 +44,16 @@ namespace rgx {
         {
             for (size_t i = 0; i < tokens.size(); i++)
             {
-                if (tokens[i]->match(str, idx) == true)
+                if (tokens[i]->match(str, tmp_idx) == true)
                     break;
             }
             if (i == tokens.size())
                 break;
         }
-        return is_matched(i);
+        if (is_matched(i) == false)
+            return false;
+        idx = tmp_idx;
+        return true;
     }
 
     AToken *Or::clone() const {

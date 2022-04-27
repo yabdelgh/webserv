@@ -59,6 +59,10 @@ namespace rgx {
         return between(times_count, min, max);
     }
 
+    bool AToken::is_reached_end() const {
+        return reached_end;
+    }
+
     AToken &AToken::set_min(int min) {
         if (min < 0)
             this->min = -1;

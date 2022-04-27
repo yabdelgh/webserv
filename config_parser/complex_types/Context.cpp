@@ -65,7 +65,7 @@ bool Context::parse(string &str, size_t &idx)
     return true;
 }
 
-IParseable &Context::operator[](string key) {
+IParseable &Context::operator[](string const & key) {
     unordered_map<string, IParseable *>::iterator it;
     it = parseables.find(key);
     if (it != parseables.end())

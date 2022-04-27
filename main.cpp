@@ -45,8 +45,10 @@ int main(int ac, char **av) {
         std::string content;
         get_file_contents(av[1], content);
         std::cout << content << std::endl;
-        IParseable *server_config = get_server_config();
+        IParseable &server_config = *get_server_config();
         size_t idx = 0;
-        std::cout << (server_config->parse(content, idx) ? "good" : "bad") << std::endl;
+        std::cout << (server_config.parse(content, idx) ? "good" : "bad") << std::endl;
+        std::cout << "servers: " <<  server_config["server"][1]["listen"].size() << std::endl;
+        std::cout << "port:" << server_config["server"][0]["listen"][0]["host"].get_string() << std::endl;
     }
 }

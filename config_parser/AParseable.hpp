@@ -18,8 +18,9 @@ public:
     virtual std::vector<std::string> &get_str_array();
     virtual std::vector<int> &get_int_array();
     virtual std::vector<double> &get_double_array();
-    virtual IParseable &operator[](std::string);
+    virtual IParseable &operator[](std::string const &);
     virtual IParseable &operator[](size_t idx);
+    virtual bool cont_parse(std::string &str, size_t &idx);
     virtual size_t size() const;
 };
 

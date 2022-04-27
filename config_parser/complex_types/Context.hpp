@@ -21,7 +21,8 @@ public:
     Context &operator=(Context const &other);
     Context &insert_parseables(std::string const &name, IParseable const& parseable);
     bool parse(std::string &str, size_t &idx);
-    IParseable &operator[](std::string);
+    // bool cont_parse(std::string &str, size_t &idx);
+    IParseable &operator[](std::string const &);
     IParseable *clone() const;
 };
 

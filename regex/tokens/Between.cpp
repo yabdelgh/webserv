@@ -24,7 +24,7 @@ namespace rgx {
 
     bool Between::find(std::string const &str, size_t &idx, stringstream &ss) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (tmp_idx >= str.size() || !between(str[tmp_idx], c_min, c_max))
@@ -32,6 +32,7 @@ namespace rgx {
             ss << str[tmp_idx];
             tmp_idx++;
         }
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;
@@ -42,14 +43,14 @@ namespace rgx {
 
     bool Between::match(string const &str, size_t &idx) {
         size_t i;
-        size_t tmp_idx = idx;
+        tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             if (tmp_idx >= str.size() || !between(str[tmp_idx], c_min, c_max))
                 break;
             tmp_idx++;
         }
-        // cout << endl << "between match " << i << "  " << min << ":" <<  max << endl;
+        reached_end = tmp_idx == str.size();
         if (is_matched(i))
         {
             idx = tmp_idx;

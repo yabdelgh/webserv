@@ -3,8 +3,7 @@ server {
 
 	
 	autoindex off
-	listen 127.0.0.1:8001
-	listen 0.0.0.0:8000
+	listen 10.12.9.9:80
 
 	root test_us/root
 	server_name weebserv
@@ -37,9 +36,7 @@ server {
 
 	
 	autoindex off
-	listen 0.0.0.0:8000
-	listen 127.0.0.1:8001
-	listen 127.0.0.1:8001
+	listen 127.0.0.1:80
 
 	root test_us/root
 	server_name weebserv

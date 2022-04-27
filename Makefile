@@ -2,9 +2,9 @@ NAME = webserv
 
 CXX = g++
 
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98
-CPPFLAGS =  -fsanitize=address -g -O3 -std=c++11
-CPPFLAGS =  -g -O3 -std=c++98
+#CPPFLAGS = -Wall -Wextra -Werror -std=c++98
+#CPPFLAGS =  -fsanitize=address -g -O3 -std=c++11
+#CPPFLAGS =  -g -O3 -std=c++98
 
 CPPINCLUDE =	-I ./regex\
 		     	-I ./config_parser\
@@ -36,7 +36,9 @@ SRC =	tools/trim.cpp\
 		config_parser/complex_types/Frequent.cpp\
 		config_parser/AParseable.cpp\
 		server_config.cpp\
-		main.cpp
+		server/server.cpp\
+		server/socket.cpp\
+		server/waiter.cpp
 
 OBJ_DIR = objs/
 OBJS = $(addprefix $(OBJ_DIR),$(SRC:.cpp=.o))

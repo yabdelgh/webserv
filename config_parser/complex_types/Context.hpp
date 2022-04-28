@@ -2,7 +2,15 @@
 #define Context_HPP
 
 #include "./AComplexType.hpp"
-#include <unordered_map>
+#include <map>
+
+struct CaseInsensitiveCom
+{
+    bool operator()(const std::string& a, const std::string& b) const
+    {
+        return ::strcasecmp(a.c_str(), b.c_str()) < 0;
+    }
+};
 
 class Context: public AComplexType
 {
@@ -13,10 +21,11 @@ private:
     rgx::Pattern key_ptrn;
     rgx::Pattern ws_ptrn;
     std::string last_key;
-    std::unordered_map<std::string, IParseable*> parseables;
+    std::map<std::string, IParseable*, CaseInsensitiveCom> parseables;
 
 public:
     Context(rgx::Pattern const &opening, rgx::Pattern const &closing, rgx::Pattern const &key);
+    Context(rgx::Pattern const &opening, rgx::Pattern const &closing, rgx::Pattern const &key, rgx::Pattern const &ws_ptr);
     Context(Context const &other);
     ~Context();
     Context &operator=(Context const &other);

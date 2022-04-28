@@ -1,26 +1,21 @@
-#include "./Context.hpp"
-#include "tools.hpp"
-#include "tokens/Single.hpp"
+#include "./Pair.hpp"
 
 using namespace rgx;
 
-Context::Context(Pattern const &opening, Pattern const &closing, Pattern const &key):
+Pair::Pair(Pattern const &opening, Pattern const &closing, Pattern const &key):
             opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key)
 {
     ws_ptrn = Pattern().append(Single(WHITESPACE));
 }
 
-Context::Context(Pattern const &opening, Pattern const &closing, Pattern const &key):
-            opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key), ws_ptrn(ws_ptrn) {}
-
-Context::Context(Context const &other) 
+Pair::Pair(Pair const &other) 
 {
     *this = other;
 }
 
-Context::~Context() {}
+Pair::~Pair() {}
 
-Context &Context::operator=(Context const &other) 
+Pair &Pair::operator=(Pair const &other) 
 {
     if (this != &other)
     {
@@ -29,7 +24,7 @@ Context &Context::operator=(Context const &other)
         this->key_ptrn = other.key_ptrn;
         this->ws_ptrn = other.ws_ptrn;
 
-        map<string, IParseable*>::const_iterator it = parseables.begin();
+        unordered_map<string, IParseable*>::const_iterator it = parseables.begin();
         for ( ; it != parseables.end(); it++)
             delete it->second;
         parseables.clear();
@@ -41,19 +36,19 @@ Context &Context::operator=(Context const &other)
     return *this;
 }
 
-bool Context::parse(string &str, size_t &idx)
+bool Pair::parse(string &str, size_t &idx)
 {
     if (opening_ptrn.find(str, idx))
         return core_parse(str, idx);
     return false;
 }
 
-bool Context::cont_parse(std::string &str, size_t &idx) 
+bool Pair::cont_parse(std::string &str, size_t &idx) 
 {
     reached_end = false;
     if (last_key != "")
     {
-        map<string, IParseable *>::iterator it = parseables.find(last_key);
+        unordered_map<string, IParseable *>::iterator it = parseables.find(last_key);
         if (it != parseables.end())
         {
             if (it->second->parse(str, idx) == false)
@@ -62,17 +57,6 @@ bool Context::cont_parse(std::string &str, size_t &idx)
                 return false;
             }
         }
-        else if(parseables.find("") != parseables.end())
-        {
-            IParseable *clone = parseables[""]->clone();
-            if (clone->parse(str, idx) == false)
-            {   
-                delete clone;
-                reached_end = clone->is_reached_end();
-                return false;
-            }
-            parseables.insert(std::pair<string, IParseable*>(last_key, clone));
-        }
         return core_parse(str, idx);
     }
     if (opening_ptrn.find(str, idx))
@@ -80,9 +64,9 @@ bool Context::cont_parse(std::string &str, size_t &idx)
     return false;
 }
 
-bool Context::core_parse(std::string &str, size_t &idx) 
+bool Pair::core_parse(std::string &str, size_t &idx) 
 {
-    map<string, IParseable *>::iterator it;
+    unordered_map<string, IParseable *>::iterator it;
     string key;
     while (idx < str.size())
     {
@@ -99,18 +83,6 @@ bool Context::core_parse(std::string &str, size_t &idx)
                 return false;
             }
         }
-        else if(parseables.find("") != parseables.end())
-        {
-            IParseable *clone = parseables[""]->clone();
-            if (clone->parse(str, idx) == false)
-            {   
-                delete clone;
-                last_key = key;
-                reached_end = clone->is_reached_end();
-                return false;
-            }
-            parseables.insert(std::pair<string, IParseable*>(key, clone));
-        }
         else if (closing_ptrn.match(key) == false)
             return false;
         else
@@ -119,8 +91,8 @@ bool Context::core_parse(std::string &str, size_t &idx)
     return true;
 }
 
-IParseable &Context::operator[](string const & key) {
-    map<string, IParseable *>::iterator it;
+IParseable &Pair::operator[](string const & key) {
+    unordered_map<string, IParseable *>::iterator it;
     it = parseables.find(key);
     if (it != parseables.end())
         return *it->second;
@@ -128,12 +100,12 @@ IParseable &Context::operator[](string const & key) {
 }
 
 
-Context &Context::insert_parseables(string const &key, IParseable const& parseable)
+Pair &Pair::insert_parseables(string const &key, IParseable const& parseable)
 {
     parseables.insert(pair<string, IParseable *>(key, parseable.clone()));
     return *this;
 }
 
-IParseable *Context::clone() const {
-    return new Context(*this);
+IParseable *Pair::clone() const {
+    return new Pair(*this);
 }

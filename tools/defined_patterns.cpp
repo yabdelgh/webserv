@@ -9,6 +9,7 @@
 #include "tokens/Single.hpp"
 
 using namespace rgx;
+
 unordered_map<string, Pattern> get_patterns()
 {
 	unordered_map<string, Pattern> patterns;
@@ -61,8 +62,8 @@ unordered_map<string, Pattern> get_patterns()
 
 	Or request_method(1);
 	request_method.append(Sequence("POST", 1, 1))
-				   .append(Sequence("GET", 1, 1))
-				   .append(Sequence("DELETE", 1, 1));
+				  .append(Sequence("GET", 1, 1))
+				  .append(Sequence("DELETE", 1, 1));
 
 	Group request_methods;
 	request_methods.append(request_method)
@@ -87,13 +88,24 @@ unordered_map<string, Pattern> get_patterns()
 	Group context_closing;
 		context_closing.append(Single(space).set_max(-1).set_min(-1))
 					   .append(Single("}", 1));
+	
+	Or alpha;
+	alpha.append(Between('a', 'z', 1))
+		 .append(Between('A', 'Z', 1));
+	
+	Group http_header_key;
+	http_header_key.append(alpha)
+				   .append(Group().append(Single("-",1 ,1)))
+				   				  .append(alpha);
 
 	patterns.insert(pair<string, Pattern>("number", Pattern().append(number)));
 	patterns.insert(pair<string, Pattern>("not_spaces", Pattern().append(any)));
 	patterns.insert(pair<string, Pattern>("spaces", Pattern().append(space.set_min(-1))));
 	patterns.insert(pair<string, Pattern>("white_spaces", Pattern().append(white_space)));
 	patterns.insert(pair<string, Pattern>("colon", Pattern().append(colon)));
+	patterns.insert(pair<string, Pattern>(": ", Pattern().append(Sequence(": ", 1, 1))));
 	patterns.insert(pair<string, Pattern>(" +", Pattern().append(space)));
+	patterns.insert(pair<string, Pattern>(" ", Pattern().append(space.set_max(1).set_min(1))));
 	patterns.insert(pair<string, Pattern>("int_array", Pattern().append(int_array)));
 	patterns.insert(pair<string, Pattern>("str_array", Pattern().append(str_array)));
 	patterns.insert(pair<string, Pattern>("[0-9]+[oOkKmMgG]", Pattern().append(body_size_limit)));
@@ -105,6 +117,9 @@ unordered_map<string, Pattern> get_patterns()
 	patterns.insert(pair<string, Pattern>(" *{", Pattern().append(context_opening)));
 	patterns.insert(pair<string, Pattern>(" *}", Pattern().append(context_closing)));
 	patterns.insert(pair<string, Pattern>("\\S", Pattern().append(not_white_space)));
+	patterns.insert(pair<string, Pattern>("\r\n", Pattern().append(Single("\r\n", 1, 1))));
+	patterns.insert(pair<string, Pattern>("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
+	patterns.insert(pair<string, Pattern>("[^\n\r\t\f\v]+", Pattern().append(Single("\n\r\t\f\v",MATCH_OUT, 1))));
 	
 	
 	

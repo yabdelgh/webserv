@@ -12,6 +12,7 @@ namespace rgx
         std::vector<AToken *> tokens;
         size_t idx;
         string content;
+        bool reached_end;
     public:
         Pattern();
         ~Pattern();
@@ -19,6 +20,7 @@ namespace rgx
         bool find(std::string const &str);
         bool find(std::string const &str, size_t &idx);
         bool match(std::string const &str);
+        bool is_reached_end() const;
         string const &get_content();
     };
 }

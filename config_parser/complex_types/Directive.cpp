@@ -34,7 +34,10 @@ bool Directive::parse(string &str, size_t &idx)
     for (size_t i = 0; i < parseables.size() ; i++)
     {
         if ((*this)[i].parse(str, idx) == false)
+        {
+            reached_end = (*this)[i].is_reached_end();
             return false;
+        }
     }
     return true;
 }
@@ -45,7 +48,10 @@ bool Directive::cont_parse(std::string &str, size_t &idx)
     for (; i < parseables.size() ; i++)
     {
         if ((*this)[i].parse(str, idx) == false)
+        {
+            reached_end = (*this)[i].is_reached_end();
             return false;
+        }
     }
     if (i == parseables.size())
         last_index = 0;

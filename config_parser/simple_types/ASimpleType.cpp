@@ -25,5 +25,6 @@ bool ASimpleType::parse(std::string &str, size_t &idx)
         std::cout << "find :|" << pattern.get_content() << "|" << std::endl;
         return true;
     }
+    reached_end = pattern.is_reached_end();
     return false;
 }

@@ -6,8 +6,8 @@
 
 class AParseable : public IParseable
 {
-private:
-    /* data */
+protected:
+    bool reached_end;
 public:
     AParseable(/* args */);
     virtual ~AParseable();
@@ -22,6 +22,7 @@ public:
     virtual IParseable &operator[](size_t idx);
     virtual bool cont_parse(std::string &str, size_t &idx);
     virtual size_t size() const;
+    bool is_reached_end() const;
 };
 
 #endif

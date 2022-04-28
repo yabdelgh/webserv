@@ -23,6 +23,7 @@ public:
     virtual IParseable *clone() const = 0;
     virtual bool parse(std::string &str, size_t &idx) = 0;
     virtual bool cont_parse(std::string &str, size_t &idx) = 0;
+    virtual bool is_reached_end() const = 0;
     virtual ~IParseable() {};
 };
 

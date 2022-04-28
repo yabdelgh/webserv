@@ -12,6 +12,7 @@ private:
     rgx::Pattern closing_ptrn;
     rgx::Pattern key_ptrn;
     rgx::Pattern ws_ptrn;
+    std::string last_key;
     std::unordered_map<std::string, IParseable*> parseables;
 
 public:
@@ -21,7 +22,8 @@ public:
     Context &operator=(Context const &other);
     Context &insert_parseables(std::string const &name, IParseable const& parseable);
     bool parse(std::string &str, size_t &idx);
-    // bool cont_parse(std::string &str, size_t &idx);
+    bool cont_parse(std::string &str, size_t &idx);
+    bool core_parse(std::string &str, size_t &idx);
     IParseable &operator[](std::string const &);
     IParseable *clone() const;
 };

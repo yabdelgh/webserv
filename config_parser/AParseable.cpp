@@ -53,3 +53,8 @@ bool AParseable::cont_parse(std::string &str, size_t &idx)
 {
     return parse(str, idx);
 }
+
+bool AParseable::is_reached_end() const 
+{
+    return reached_end;
+}

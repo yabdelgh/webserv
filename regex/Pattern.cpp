@@ -38,8 +38,13 @@ namespace rgx {
         for (size_t i = 0; i < tokens.size(); i++)
         {
             if (tokens[i]->find(str, idx, ss) == false)
+            {
+                reached_end = tokens[i]->is_reached_end();
                 return false;
+            }
         }
+        if (!tokens.empty())
+            reached_end = tokens[tokens.size() - 1]->is_reached_end();;
         content = ss.str();
         return true;
     }
@@ -52,6 +57,11 @@ namespace rgx {
                 return false;
         }
         return idx == str.size();
+    }
+
+    bool Pattern::is_reached_end() const
+    {
+        return reached_end;
     }
 
     string const &Pattern::get_content() {

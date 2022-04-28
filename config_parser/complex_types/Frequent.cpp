@@ -1,6 +1,5 @@
 #include "./Frequent.hpp"
 
-
 Frequent::Frequent(IParseable const &parseable):parseable(parseable.clone()) {}
 
 Frequent::Frequent(Frequent const &other):parseable(nullptr)
@@ -33,7 +32,8 @@ bool Frequent::parse(std::string &str, size_t &idx)
     IParseable *clone = parseable->clone();
     if (clone->parse(str, idx) == false)
     {
-        delete clone;    
+        reached_end = parseable->is_reached_end();
+        delete clone;  
         return false;
     }
     parseables.push_back(clone);

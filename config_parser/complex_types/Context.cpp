@@ -40,28 +40,56 @@ Context &Context::operator=(Context const &other)
 
 bool Context::parse(string &str, size_t &idx)
 {
-    unordered_map<string, IParseable *>::iterator it;
     if (opening_ptrn.find(str, idx))
+        return core_parse(str, idx);
+    return false;
+}
+
+bool Context::cont_parse(std::string &str, size_t &idx) 
+{
+    reached_end = false;
+    if (last_key != "")
     {
-        while (idx < str.size())
+        unordered_map<string, IParseable *>::iterator it = parseables.find(last_key);
+        if (it != parseables.end())
         {
-            ws_ptrn.find(str, idx); // skip white_space
-            key_ptrn.find(str, idx);
-            string key = trim(key_ptrn.get_content());
-            it = parseables.find(key);
-            if (it != parseables.end())
+            if (it->second->parse(str, idx) == false)
             {
-                if (it->second->parse(str, idx) == false)
-                    return false;
-            }
-            else if (closing_ptrn.match(key) == false)
+                reached_end = it->second->is_reached_end();
                 return false;
-            else
-                break;
+            }
         }
+        return core_parse(str, idx);
     }
-    else 
-        return false;
+    if (opening_ptrn.find(str, idx))
+        return core_parse(str, idx);
+    return false;
+}
+
+bool Context::core_parse(std::string &str, size_t &idx) 
+{
+    unordered_map<string, IParseable *>::iterator it;
+    string key;
+    while (idx < str.size())
+    {
+        ws_ptrn.find(str, idx); // skip white_space
+        key_ptrn.find(str, idx);
+        key = trim(key_ptrn.get_content());
+        it = parseables.find(key);
+        if (it != parseables.end())
+        {
+            if (it->second->parse(str, idx) == false)
+            {
+                last_key = key;
+                reached_end = it->second->is_reached_end();
+                return false;
+            }
+        }
+        else if (closing_ptrn.match(key) == false)
+            return false;
+        else
+            break;
+    }
     return true;
 }
 

@@ -16,7 +16,7 @@
 
 #include "defined_patterns.hpp"
 
-IParseable *get_server_config()
+IParseable *get_request_header()
 {
     unordered_map<string, Pattern> p;
 
@@ -25,25 +25,28 @@ IParseable *get_server_config()
     Directive value;
     value.push_parseable(String(p[": "]));
     value.push_parseable("value", String(p["[^\n\r\t\f\v]+"]));
+    value.push_parseable("value", String(p["\r\n"]));
 
     Directive connection;
     connection.push_parseable(String(p[": "]));
-    connection.push_parseable("value", Int(p["keep-alive|close"]));
+    connection.push_parseable("value", Int(p["connection"]));
+    connection.push_parseable("value", String(p["\r\n"]));
     
     Directive content_length;
     content_length.push_parseable(String(p[": "]));
     content_length.push_parseable("value", Int(p["number"]));
+    content_length.push_parseable("value", String(p["\r\n"]));
 
     Directive transfer_encoding;
     transfer_encoding.push_parseable(String(p[": "]));
-    transfer_encoding.push_parseable("value", Int(p["chunked|compress|deflate|gzip"]));
+    transfer_encoding.push_parseable("value", Int(p["transfer_encoding"]));
+    transfer_encoding.push_parseable("value", String(p["\r\n"]));
 
-    Context pair(Pattern(), Pattern(), p["[a-zA-Z](-[a-zA-Z])*"], p["\r\n"]);
+    Context pair(Pattern(), p["\r\n"], p["[a-zA-Z](-[a-zA-Z])*"], Pattern());
     pair.insert_parseables("", value);
     pair.insert_parseables("connection", connection);
     pair.insert_parseables("content-length", content_length);
     pair.insert_parseables("transfer-encoding", transfer_encoding);
-   
 
     Directive basic_info;
     basic_info.push_parseable(String(p["http_methods"]));
@@ -51,7 +54,7 @@ IParseable *get_server_config()
     basic_info.push_parseable(String(p["\\S"]));
     basic_info.push_parseable(String(p[" "]));
     basic_info.push_parseable(String(p["\\S"]));
-
+    basic_info.push_parseable(String(p["\r\n"]));
 
 
     Directive header;

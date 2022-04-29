@@ -15,6 +15,11 @@ struct CaseInsensitiveCom
 class Context: public AComplexType
 {
 
+enum {
+    BAD_KEY,
+    BAD_VALUE
+};
+
 private:
     rgx::Pattern opening_ptrn;
     rgx::Pattern closing_ptrn;
@@ -22,6 +27,7 @@ private:
     rgx::Pattern ws_ptrn;
     std::string last_key;
     std::map<std::string, IParseable*, CaseInsensitiveCom> parseables;
+    int parse_by_key(std::string &str, size_t &idx);
 
 public:
     Context(rgx::Pattern const &opening, rgx::Pattern const &closing, rgx::Pattern const &key);

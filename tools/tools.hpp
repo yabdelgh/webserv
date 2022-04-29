@@ -15,5 +15,6 @@ std::string trim(const std::string &s);
 std::string get_file_contents(std::string const& filename, std::string &);
 
 IParseable *get_server_config();
+IParseable *get_request_header();
 
 #endif

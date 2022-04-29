@@ -1,0 +1,22 @@
+GET /home.html HTTP/1.1
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: X-PINGOTHER
+Access-Control-Allow-Methods: PUT, DELETE, XMODIFY
+Access-Control-Allow-Origin: http://example.org
+Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+Access-Control-Max-Age: 2520
+Accept-Ranges: bytes
+Age: 12
+Allow: GET, HEAD, POST, OPTIONS
+Alternate-Protocol: 443:npn-spdy/2,443:npn-spdy/2
+Cache-Control: private, no-cache, must-revalidate
+Client-Date: Tue, 27 Jan 2009 18:17:30 GMT
+Client-Peer: 123.123.123.123:80
+Client-Response-Num: 1
+Connection: keep-alive
+Content-Disposition: attachment; filename=”example.exe”	 
+Content-Encoding: gzip
+Content-Language: en	 
+Content-Length: 1329	 
+Content-Location: /index.htm	 
+Transfer-Encoding: chunked

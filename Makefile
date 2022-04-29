@@ -1,4 +1,5 @@
 NAME = webserv
+TEST_NAME = test
 
 CXX = g++
 
@@ -36,18 +37,28 @@ SRC =	tools/trim.cpp\
 		config_parser/complex_types/Frequent.cpp\
 		config_parser/AParseable.cpp\
 		server_config.cpp\
-		server/server.cpp\
-		server/socket.cpp\
-		server/waiter.cpp
+		request_header.cpp
+
+SERVER_SRC = server/server.cpp\
+			 server/socket.cpp\
+			 server/waiter.cpp
+
+TEST_SRC = main.cpp			
 
 OBJ_DIR = objs/
 OBJS = $(addprefix $(OBJ_DIR),$(SRC:.cpp=.o))
+SERVER_OBJS = $(addprefix $(OBJ_DIR),$(SERVER_SRC:.cpp=.o))
+TEST_OBJS = $(addprefix $(OBJ_DIR),$(TEST_SRC:.cpp=.o))
 
 all : $(NAME)
 
-$(NAME): $(OBJS)
+all : $(TEST_NAME)
+
+$(NAME): $(OBJS) $(SERVER_OBJS)
 	$(CXX) $(CPPFLAGS) $(OBJS) -o $(NAME) 
 
+$(TEST_NAME): $(OBJS) $(TEST_OBJS)
+	$(CXX) $(CPPFLAGS) $(OBJS) $(TEST_OBJS) -o $(TEST_NAME)
 
 $(OBJ_DIR)%.o : %.cpp
 	mkdir -p $(dir $@)
@@ -58,7 +69,7 @@ clean :
 	/bin/rm -rf $(OBJ_DIR)
 
 fclean : clean
-	/bin/rm -rf $(NAME)
+	/bin/rm -rf $(NAME) $(TEST_NAME)
 
 re : fclean all
 

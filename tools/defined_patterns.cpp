@@ -98,6 +98,16 @@ unordered_map<string, Pattern> get_patterns()
 				   .append(Group().append(Single("-",1 ,1)))
 				   				  .append(alpha);
 
+	Or transfer_encoding;
+	transfer_encoding.append(Sequence("chunked", 1, 1))
+					 .append(Sequence("compress", 1, 1))
+					 .append(Sequence("deflate", 1, 1))
+					 .append(Sequence("gzip", 1, 1));
+	
+	Or connection;
+	connection.append(Sequence("close", 1, 1))
+					 .append(Sequence("keep-alive", 1, 1));
+
 	patterns.insert(pair<string, Pattern>("number", Pattern().append(number)));
 	patterns.insert(pair<string, Pattern>("not_spaces", Pattern().append(any)));
 	patterns.insert(pair<string, Pattern>("spaces", Pattern().append(space.set_min(-1))));
@@ -117,9 +127,11 @@ unordered_map<string, Pattern> get_patterns()
 	patterns.insert(pair<string, Pattern>(" *{", Pattern().append(context_opening)));
 	patterns.insert(pair<string, Pattern>(" *}", Pattern().append(context_closing)));
 	patterns.insert(pair<string, Pattern>("\\S", Pattern().append(not_white_space)));
-	patterns.insert(pair<string, Pattern>("\r\n", Pattern().append(Single("\r\n", 1, 1))));
+	patterns.insert(pair<string, Pattern>("\r\n", Pattern().append(Sequence("\r\n", 1, 1))));
 	patterns.insert(pair<string, Pattern>("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
 	patterns.insert(pair<string, Pattern>("[^\n\r\t\f\v]+", Pattern().append(Single("\n\r\t\f\v",MATCH_OUT, 1))));
+	patterns.insert(pair<string, Pattern>("transfer_encoding", Pattern().append(transfer_encoding)));
+	patterns.insert(pair<string, Pattern>("connection", Pattern().append(connection)));
 	
 	
 	

@@ -4,7 +4,7 @@ using namespace rgx;
 
 Directive::Directive():last_index(0) {}
 
-Directive::Directive(Directive const &other)
+Directive::Directive(Directive const &other):last_index(0)
 {
     *this = other;
 }

@@ -27,6 +27,7 @@ namespace rgx {
             if (seq.compare(0, str.size(), &str[tmp_idx], seq.size()) != 0)
                 break;
             ss << seq;
+            // std::cout << ss.str() << "|" << seq << std::endl;
             tmp_idx += seq.size();
         }
         reached_end = tmp_idx == str.size();

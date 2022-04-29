@@ -36,7 +36,8 @@ namespace rgx {
     bool Pattern::find(std::string const &str, size_t &idx) {
         stringstream ss;
         content = "";
-        for (size_t i = 0; i < tokens.size(); i++)
+        size_t i;
+        for (i = 0; i < tokens.size(); i++)
         {
             if (tokens[i]->find(str, idx, ss) == false)
             {
@@ -45,7 +46,7 @@ namespace rgx {
             }
         }
         if (!tokens.empty())
-            reached_end = tokens[tokens.size() - 1]->is_reached_end();;
+            reached_end = tokens[tokens.size() - 1]->is_reached_end();
         content = ss.str();
         return true;
     }

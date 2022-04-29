@@ -60,12 +60,12 @@ unordered_map<string, Pattern> get_patterns()
 	  .append(Between('0', '9', 1, 3))
 	  .append(Single(" "));
 
-	Or request_method(1);
+	Or request_method(1, 1);
 	request_method.append(Sequence("POST", 1, 1))
 				  .append(Sequence("GET", 1, 1))
 				  .append(Sequence("DELETE", 1, 1));
 
-	Group request_methods;
+	Group request_methods(1, 1);
 	request_methods.append(request_method)
 				   .append(Group().append(space)
 				 				  .append(request_method));

@@ -23,17 +23,19 @@ namespace rgx {
         tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
+            size_t local_idx = tmp_idx;
             stringstream tmp_ss;
             for (j = 0 ; j < tokens.size(); j++)
             {
-                if (tokens[j]->find(str, tmp_idx, tmp_ss) == false)
+                if (tokens[j]->find(str, local_idx, tmp_ss) == false)
                     break;
             }
             if (j != tokens.size())
                 break;
+            tmp_idx = local_idx;
             ss << tmp_ss.str();
         }
-        reached_end = tokens[j]->is_reached_end();
+        reached_end = tokens[j - (j == tokens.size())]->is_reached_end();
         if (is_matched(i) == false)
             return false;
         idx = tmp_idx;

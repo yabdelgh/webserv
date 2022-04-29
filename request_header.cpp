@@ -42,6 +42,9 @@ IParseable *get_request_header()
     transfer_encoding.push_parseable("value", Int(p["transfer_encoding"]));
     transfer_encoding.push_parseable("value", String(p["\r\n"]));
 
+
+    // Content-Type: text/html; charset=UTF-8
+
     Context pair(Pattern(), p["\r\n"], p["[a-zA-Z](-[a-zA-Z])*"], Pattern());
     pair.insert_parseables("", value);
     pair.insert_parseables("connection", connection);
@@ -49,9 +52,9 @@ IParseable *get_request_header()
     pair.insert_parseables("transfer-encoding", transfer_encoding);
 
     Directive basic_info;
-    basic_info.push_parseable(String(p["http_methods"]));
+    basic_info.push_parseable("method", String(p["http_methods"]));
     basic_info.push_parseable(String(p[" "]));
-    basic_info.push_parseable(String(p["\\S"]));
+    basic_info.push_parseable("uri",String(p["\\S"]));
     basic_info.push_parseable(String(p[" "]));
     basic_info.push_parseable(String(p["\\S"]));
     basic_info.push_parseable(String(p["\r\n"]));
@@ -59,7 +62,7 @@ IParseable *get_request_header()
 
     Directive header;
     header.push_parseable(basic_info);
-    header.push_parseable(pair);
+    // header.push_parseable(pair);
     
     return header.clone();
 }

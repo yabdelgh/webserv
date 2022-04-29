@@ -17,20 +17,22 @@ namespace rgx {
     Or::~Or() {}
 
     bool Or::find(string const &str, size_t &idx, stringstream &ss) {
-        size_t i, j;
+        size_t i, j, local_idx;
         tmp_idx = idx;
         for (i = 0; get_more(i) ; i++)
         {
             stringstream tmp_ss;
             for (j = 0 ; j < tokens.size(); j++)
             {
-                if (tokens[j]->find(str, tmp_idx, tmp_ss) == true)
+                local_idx = tmp_idx;
+                if (tokens[j]->find(str, local_idx, tmp_ss) == true)
                     break;
                 reached_end |= tokens[j]->is_reached_end();
             }
             if (j == tokens.size())
                 break;
-            ss << tmp_ss;
+            tmp_idx = local_idx;
+            ss << tmp_ss.str();
         }
         if (is_matched(i) == false)
             return false;

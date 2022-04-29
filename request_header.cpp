@@ -62,7 +62,7 @@ IParseable *get_request_header()
 
     Directive header;
     header.push_parseable(basic_info);
-    // header.push_parseable(pair);
+    header.push_parseable(pair);
     
     return header.clone();
 }

@@ -1,4 +1,4 @@
-NAME = webserv
+git restoreNAME = webserv
 TEST_NAME = test
 
 CXX = g++
@@ -55,7 +55,7 @@ all : $(NAME)
 all : $(TEST_NAME)
 
 $(NAME): $(OBJS) $(SERVER_OBJS)
-	$(CXX) $(CPPFLAGS) $(OBJS) -o $(NAME) 
+	$(CXX) $(CPPFLAGS) $(OBJS) $(SERVER_OBJS) -o $(NAME) 
 
 $(TEST_NAME): $(OBJS) $(TEST_OBJS)
 	$(CXX) $(CPPFLAGS) $(OBJS) $(TEST_OBJS) -o $(TEST_NAME)

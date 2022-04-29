@@ -47,7 +47,7 @@ unordered_map<string, Pattern> get_patterns()
 
 	Group body_size_limit;
 	body_size_limit.append(number)
-		  		   .append(body_size_units.set_max(1).set_min(1));
+		  		   .append(Or(body_size_units).set_max(1).set_min(1));
 	
 	Group ip;
 	ip.append(Single(" "))

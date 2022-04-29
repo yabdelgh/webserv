@@ -33,7 +33,6 @@ void waiter::accept()
 	sock csock;
 	char buff[1024];
 	int j = 0;
-
 	for (size_t i = 0; i < _pfd.size(); i++)
 	{
 		if (_sockets[i]._status == 1 && (_pfd[i].revents & POLLIN))
@@ -44,7 +43,7 @@ void waiter::accept()
 		}
 		else if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLIN))
 		{
-	//		std::cout << "read" << std::endl;
+			std::cout << "read" << std::endl;
 			j = read(_sockets[i]._id, buff, 1024);
 			write(1,buff,j);
 		}

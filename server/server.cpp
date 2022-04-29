@@ -22,6 +22,7 @@ int main(int ac, char **av)
 		{
 			waiter	serve;
 			for (int i = 0; i < conf["server"].size(); i++)
+			
 				serve.insert(sock(conf["server"][i]["listen"][0]["host"].get_string().c_str(),
 								 		conf["server"][i]["listen"][0]["port"].get_int(), 1), POLLIN);
 			while (1)

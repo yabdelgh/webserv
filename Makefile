@@ -1,4 +1,4 @@
-git restoreNAME = webserv
+NAME = webserv
 TEST_NAME = test
 
 CXX = g++

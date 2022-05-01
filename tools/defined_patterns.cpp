@@ -89,14 +89,14 @@ unordered_map<string, Pattern> get_patterns()
 		context_closing.append(Single(space).set_max(-1).set_min(-1))
 					   .append(Single("}", 1));
 	
-	Or alpha;
+	Or alpha(1);
 	alpha.append(Between('a', 'z', 1))
 		 .append(Between('A', 'Z', 1));
 	
-	Group http_header_key;
+	Group http_header_key(1, 1);
 	http_header_key.append(alpha)
-				   .append(Group().append(Single("-",1 ,1)))
-				   				  .append(alpha);
+				   .append(Group().append(Single("-",1 ,1))
+				   				  .append(alpha));
 
 	Or transfer_encoding;
 	transfer_encoding.append(Sequence("chunked", 1, 1))
@@ -108,30 +108,31 @@ unordered_map<string, Pattern> get_patterns()
 	connection.append(Sequence("close", 1, 1))
 					 .append(Sequence("keep-alive", 1, 1));
 
-	patterns.insert(pair<string, Pattern>("number", Pattern().append(number)));
-	patterns.insert(pair<string, Pattern>("not_spaces", Pattern().append(any)));
-	patterns.insert(pair<string, Pattern>("spaces", Pattern().append(space.set_min(-1))));
-	patterns.insert(pair<string, Pattern>("white_spaces", Pattern().append(white_space)));
-	patterns.insert(pair<string, Pattern>("colon", Pattern().append(colon)));
-	patterns.insert(pair<string, Pattern>(": ", Pattern().append(Sequence(": ", 1, 1))));
-	patterns.insert(pair<string, Pattern>(" +", Pattern().append(space)));
-	patterns.insert(pair<string, Pattern>(" ", Pattern().append(space.set_max(1).set_min(1))));
-	patterns.insert(pair<string, Pattern>("int_array", Pattern().append(int_array)));
-	patterns.insert(pair<string, Pattern>("str_array", Pattern().append(str_array)));
-	patterns.insert(pair<string, Pattern>("[0-9]+[oOkKmMgG]", Pattern().append(body_size_limit)));
-	patterns.insert(pair<string, Pattern>("units", Pattern().append(body_size_units)));
-	patterns.insert(pair<string, Pattern>("off|on", Pattern().append(on_off)));
-	patterns.insert(pair<string, Pattern>("http_methods", Pattern().append(request_methods)));
-	patterns.insert(pair<string, Pattern>("ip", Pattern().append(ip)));
-	patterns.insert(pair<string, Pattern>("key", Pattern().append(key)));
-	patterns.insert(pair<string, Pattern>(" *{", Pattern().append(context_opening)));
-	patterns.insert(pair<string, Pattern>(" *}", Pattern().append(context_closing)));
-	patterns.insert(pair<string, Pattern>("\\S", Pattern().append(not_white_space)));
-	patterns.insert(pair<string, Pattern>("\r\n", Pattern().append(Sequence("\r\n", 1, 1))));
-	patterns.insert(pair<string, Pattern>("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
-	patterns.insert(pair<string, Pattern>("[^\n\r\t\f\v]+", Pattern().append(Single("\n\r\t\f\v",MATCH_OUT, 1))));
-	patterns.insert(pair<string, Pattern>("transfer_encoding", Pattern().append(transfer_encoding)));
-	patterns.insert(pair<string, Pattern>("connection", Pattern().append(connection)));
+	patterns.insert(make_pair("number", Pattern().append(number)));
+	patterns.insert(make_pair("not_spaces", Pattern().append(any)));
+	patterns.insert(make_pair("spaces", Pattern().append(space.set_min(-1))));
+	patterns.insert(make_pair("white_spaces", Pattern().append(white_space)));
+	patterns.insert(make_pair("colon", Pattern().append(colon)));
+	patterns.insert(make_pair(": ", Pattern().append(Sequence(": ", 1, 1))));
+	patterns.insert(make_pair(" +", Pattern().append(space)));
+	patterns.insert(make_pair(" ", Pattern().append(space.set_max(1).set_min(1))));
+	patterns.insert(make_pair("int_array", Pattern().append(int_array)));
+	patterns.insert(make_pair("str_array", Pattern().append(str_array)));
+	patterns.insert(make_pair("[0-9]+[oOkKmMgG]", Pattern().append(body_size_limit)));
+	patterns.insert(make_pair("units", Pattern().append(body_size_units)));
+	patterns.insert(make_pair("off|on", Pattern().append(on_off)));
+	patterns.insert(make_pair("http_methods", Pattern().append(request_methods)));
+	patterns.insert(make_pair("http_method", Pattern().append(request_method)));
+	patterns.insert(make_pair("ip", Pattern().append(ip)));
+	patterns.insert(make_pair("key", Pattern().append(key)));
+	patterns.insert(make_pair(" *{", Pattern().append(context_opening)));
+	patterns.insert(make_pair(" *}", Pattern().append(context_closing)));
+	patterns.insert(make_pair("\\S", Pattern().append(not_white_space)));
+	patterns.insert(make_pair("\r\n", Pattern().append(Sequence("\n", 1, 1)))); // todo: replace \n with \r\n
+	patterns.insert(make_pair("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
+	patterns.insert(make_pair("[^\n\r\f\v]+", Pattern().append(Single("\n\r\f\v",MATCH_OUT, 1))));
+	patterns.insert(make_pair("transfer_encoding", Pattern().append(transfer_encoding)));
+	patterns.insert(make_pair("connection", Pattern().append(connection)));
 	
 	
 	

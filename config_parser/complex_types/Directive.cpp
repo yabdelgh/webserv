@@ -47,7 +47,7 @@ bool Directive::cont_parse(std::string &str, size_t &idx)
     size_t i = last_index;
     for (; i < parseables.size() ; i++)
     {
-        if ((*this)[i].parse(str, idx) == false)
+        if ((*this)[i].cont_parse(str, idx) == false)
         {
             reached_end = (*this)[i].is_reached_end();
             return false;

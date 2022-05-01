@@ -17,6 +17,7 @@ Connection: keep-alive
 Content-Disposition: attachment; filename=”example.exe”	 
 Content-Encoding: gzip
 Content-Language: en	 
-Content-Length: 1329	 
+Content-Length: 1329
 Content-Location: /index.htm	 
 Transfer-Encoding: chunked
+

@@ -3,7 +3,8 @@
 
 #include "tools.hpp"
 #include "IParseable.hpp"
-
+#include "response.hpp"
+#include <list>
 
 enum RequestStatus{
     REQUEST_READY,
@@ -21,6 +22,10 @@ private:
     RequestStatus status;
     std::string content;
     size_t content_size;
+    std::list<response> responses;
+
+private:
+    void generate_response();
 
 public:
     request(/* args */);
@@ -31,6 +36,7 @@ public:
     std::string &get_remainder();
     void parse_header();
     void parse_body();
+    std::list<response> pop_responses();
 };
 
 #endif

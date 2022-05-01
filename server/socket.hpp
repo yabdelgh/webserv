@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <cstdio>
 #include <arpa/inet.h>
+#include "./request.hpp"
 
 class sock // AF_INET AND SOCK_STREAM
 {
@@ -20,6 +21,7 @@ class sock // AF_INET AND SOCK_STREAM
 	bool				_status;	// 1 listener 0 connexion
 	unsigned int		_size;		// address size
 	struct	sockaddr_in	_sin;
+	request             _request;
 
 	public:
 	sock& operator=(const sock &copy);

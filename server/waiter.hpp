@@ -19,6 +19,7 @@ class waiter
 	public:
 	std::vector<sock> _sockets;
 	std::vector<struct pollfd> _pfd;
+	std::vector<sock> _sockets;
 
 	public:
 	waiter& operator=(const waiter &copy);

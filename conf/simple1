@@ -3,7 +3,7 @@ server {
 
 	
 	autoindex off
-	listen 192.168.2.100:8000
+	listen 127.0.0.1:8000
 
 	root test_us/root
 	server_name weebserv

@@ -45,6 +45,18 @@ void waiter::accept()
 		{
 			std::cout << "read" << std::endl;
 			j = read(_sockets[i]._id, buff, 1024);
+			std::cout << "readed" << std::endl;
+			_sockets[i]._request.append_data(buff);
+			std::cout << "appended" << std::endl;
+			std::list<response> resps = _sockets[i]._request.pop_responses();
+			std::cout << "got response" << std::endl;
+			std::list<response>::iterator it = resps.begin();
+			for (; it != resps.end() ; it++)
+			{
+				size_t len = it->read(buff, 5666);
+				write(_sockets[i]._id, buff, len);
+			}
+			
 			write(1,buff,j);
 		}
 	}

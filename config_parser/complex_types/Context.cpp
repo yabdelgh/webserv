@@ -1,6 +1,7 @@
 #include "./Context.hpp"
 #include "tools.hpp"
 #include "tokens/Single.hpp"
+#include <strings.h>
 
 using namespace rgx;
 

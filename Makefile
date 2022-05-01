@@ -39,9 +39,11 @@ SRC =	tools/trim.cpp\
 		server_config.cpp\
 		request_header.cpp
 
-SERVER_SRC = server/server.cpp\
-			 server/socket.cpp\
-			 server/waiter.cpp
+SERVER_SRC =	server/socket.cpp\
+				server/request.cpp\
+				server/waiter.cpp\
+				server/response.cpp\
+				server/server.cpp
 
 TEST_SRC = main.cpp			
 

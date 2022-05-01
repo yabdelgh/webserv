@@ -1,5 +1,6 @@
 #include "./request.hpp"
 #include "tools.hpp"
+#include <iostream>
 
 
 request:: request(/* args */)
@@ -53,11 +54,15 @@ void request::parse_body()
 
 void request::append_data(char const * data)
 {
+	std::cout << "appending" << std::endl;
     content += data;
     do
     {
+		std::cout << "generate_response" << std::endl;
         generate_response();
+		std::cout << "parse_header" << std::endl;
         parse_header();
+		std::cout << "parse_body" << std::endl;
         parse_body();
     }while (status == REQUEST_READY);
     // content = &content[idx];

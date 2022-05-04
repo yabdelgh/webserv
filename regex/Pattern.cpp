@@ -27,6 +27,15 @@ namespace rgx {
         return *this;
     }
 
+    Pattern &Pattern::append(Pattern const &pattern)
+    {
+        for (size_t i = 0; i < pattern.tokens.size(); i++)
+        {
+            tokens.push_back(pattern.tokens[i]->clone());
+        }
+        return *this;
+    }
+
     bool Pattern::find(std::string const &str) {
         stringstream ss;
         idx = 0;
@@ -35,11 +44,13 @@ namespace rgx {
 
     bool Pattern::find(std::string const &str, size_t &idx) {
         stringstream ss;
-        content = "";
         size_t i;
+
+        content = "";
+        this->idx = idx;
         for (i = 0; i < tokens.size(); i++)
         {
-            if (tokens[i]->find(str, idx, ss) == false)
+            if (tokens[i]->find(str, this->idx, ss) == false)
             {
                 reached_end = tokens[i]->is_reached_end();
                 return false;
@@ -47,6 +58,7 @@ namespace rgx {
         }
         if (!tokens.empty())
             reached_end = tokens[tokens.size() - 1]->is_reached_end();
+        idx = this->idx;
         content = ss.str();
         return true;
     }

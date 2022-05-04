@@ -50,6 +50,7 @@ bool Directive::cont_parse(std::string &str, size_t &idx)
         if ((*this)[i].cont_parse(str, idx) == false)
         {
             reached_end = (*this)[i].is_reached_end();
+            last_index = i;
             return false;
         }
     }

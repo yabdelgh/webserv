@@ -24,18 +24,18 @@ IParseable *get_request_header()
 
     Directive value;
     value.push_parseable(String(p[": "]));
-    value.push_parseable("value", String(p["[^\n\r\f\v]+"]));
-    value.push_parseable(String(p["\r\n"]));
+    value.push_parseable("value", String(p["[^\n\r\f\v]+"].append(p["\r\n"])));
+    // value.push_parseable(String(p["\r\n"]));
 
     Directive connection;
     connection.push_parseable(String(p[": "]));
-    connection.push_parseable("value", String(p["connection"]));
-    connection.push_parseable(String(p["\r\n"]));
+    connection.push_parseable("value", String(p["connection"].append(p["\r\n"])));
+    // connection.push_parseable(String(p["\r\n"]));
     
     Directive content_length;
     content_length.push_parseable(String(p[": "]));
-    content_length.push_parseable("value", Int(p["number"]));
-    content_length.push_parseable(String(p["\r\n"]));
+    content_length.push_parseable("value", Int(p["number"].append(p["\r\n"])));
+    // content_length.push_parseable(String(p["\r\n"]));
 
     Directive transfer_encoding;
     transfer_encoding.push_parseable(String(p[": "]));
@@ -54,10 +54,10 @@ IParseable *get_request_header()
     Directive basic_info;
     basic_info.push_parseable("method", String(p["http_method"]));
     basic_info.push_parseable(String(p[" "]));
-    basic_info.push_parseable("uri",String(p["\\S"]));
-    basic_info.push_parseable(String(p[" "]));
-    basic_info.push_parseable(String(p["\\S"]));
-    basic_info.push_parseable(String(p["\r\n"]));
+    basic_info.push_parseable("uri",String(Pattern(p["\\S"]).append(p[" "])));
+    // basic_info.push_parseable(String(p[" "]));
+    basic_info.push_parseable(String(Pattern(p["\\S"]).append(p["\r\n"])));
+    // basic_info.push_parseable(String(p["\r\n"]));
 
 
     Directive header;

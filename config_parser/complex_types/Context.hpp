@@ -20,11 +20,18 @@ enum {
     BAD_VALUE
 };
 
+enum PauseState{
+    OPENING,
+    PAIRS_PARSE,
+    ENDING,
+};
+
 private:
     rgx::Pattern opening_ptrn;
     rgx::Pattern closing_ptrn;
     rgx::Pattern key_ptrn;
     rgx::Pattern ws_ptrn;
+    PauseState pause_state;
     std::string last_key;
     std::map<std::string, IParseable*, CaseInsensitiveCom> parseables;
     int parse_by_key(std::string &str, size_t &idx);

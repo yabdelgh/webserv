@@ -44,10 +44,9 @@ void waiter::accept()
 		else if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLIN))
 		{
 			std::cout << "read" << std::endl;
-			j = read(_sockets[i]._id, buff, 1024);
-			std::cout << "readed" << std::endl;
+			j = read(_sockets[i]._id, buff, 10);
+			buff[j] = '\0';
 			_sockets[i]._request.append_data(buff);
-			std::cout << "appended" << std::endl;
 			std::list<response> resps = _sockets[i]._request.pop_responses();
 			std::cout << "got response" << std::endl;
 			std::list<response>::iterator it = resps.begin();

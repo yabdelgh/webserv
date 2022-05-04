@@ -98,7 +98,7 @@ unordered_map<string, Pattern> get_patterns()
 				   .append(Group().append(Single("-",1 ,1))
 				   				  .append(alpha));
 
-	Or transfer_encoding;
+	Or transfer_encoding(1, 1);
 	transfer_encoding.append(Sequence("chunked", 1, 1))
 					 .append(Sequence("compress", 1, 1))
 					 .append(Sequence("deflate", 1, 1))
@@ -128,7 +128,7 @@ unordered_map<string, Pattern> get_patterns()
 	patterns.insert(make_pair(" *{", Pattern().append(context_opening)));
 	patterns.insert(make_pair(" *}", Pattern().append(context_closing)));
 	patterns.insert(make_pair("\\S", Pattern().append(not_white_space)));
-	patterns.insert(make_pair("\r\n", Pattern().append(Sequence("\n", 1, 1)))); // todo: replace \n with \r\n
+	patterns.insert(make_pair("\r\n", Pattern().append(Sequence("\r\n", 1, 1)))); // todo: replace \n with \r\n
 	patterns.insert(make_pair("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
 	patterns.insert(make_pair("[^\n\r\f\v]+", Pattern().append(Single("\n\r\f\v",MATCH_OUT, 1))));
 	patterns.insert(make_pair("transfer_encoding", Pattern().append(transfer_encoding)));

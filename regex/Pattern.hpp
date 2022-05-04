@@ -17,6 +17,7 @@ namespace rgx
         Pattern();
         ~Pattern();
         Pattern &append(AToken const &pattern);
+        Pattern &append(Pattern const &pattern);
         bool find(std::string const &str);
         bool find(std::string const &str, size_t &idx);
         bool match(std::string const &str);

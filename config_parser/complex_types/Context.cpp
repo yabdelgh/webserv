@@ -8,11 +8,17 @@ using namespace rgx;
 Context::Context(Pattern const &opening, Pattern const &closing, Pattern const &key):
             opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key)
 {
+    reached_end = false;
+    pause_state = OPENING;
     ws_ptrn = Pattern().append(Single(WHITESPACE));
 }
 
 Context::Context(Pattern const &opening, Pattern const &closing, Pattern const &key, Pattern const &ws_ptrn):
-            opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key), ws_ptrn(ws_ptrn) {}
+            opening_ptrn(opening),closing_ptrn(closing),key_ptrn(key), ws_ptrn(ws_ptrn)
+{
+    reached_end = false;
+    pause_state = OPENING;
+}
 
 Context::Context(Context const &other) 
 {
@@ -45,118 +51,87 @@ Context &Context::operator=(Context const &other)
 bool Context::parse(string &str, size_t &idx)
 {
     if (opening_ptrn.find(str, idx))
-        return core_parse(str, idx);
+        if (parse_by_key(str, idx) == BAD_KEY)
+            return closing_ptrn.find(str, idx);
     return false;
 }
 
 bool Context::cont_parse(std::string &str, size_t &idx) 
 {
-    reached_end = false;
-    int key_parse_result;
-    if (last_key != "")
-    {
-        map<string, IParseable *>::iterator it = parseables.find(last_key);
-        if (it != parseables.end())
-        {
-            if (it->second->parse(str, idx) == false)
-            {
-                reached_end = it->second->is_reached_end();
-                return false;
-            }
-        }
-        else if(parseables.find("") != parseables.end())
-        {
-            IParseable *clone = parseables[""]->clone();
-            if (clone->parse(str, idx) == false)
-            {   
-                delete clone;
-                reached_end = clone->is_reached_end();
-                return false;
-            }
-            parseables.insert(std::pair<string, IParseable*>(last_key, clone));
-        }
-        key_parse_result = parse_by_key(str, idx);
-    }
-    if (opening_ptrn.find(str, idx))
-        key_parse_result = parse_by_key(str, idx);
-    if (key_parse_result == BAD_KEY)
-        return closing_ptrn.find(str, idx);
-    return false;
-}
+   
+    bool matched;
 
-bool Context::core_parse(std::string &str, size_t &idx) 
-{
-    map<string, IParseable *>::iterator it;
-    string key;
-    while (idx < str.size())
+    if (reached_end == false)
+        pause_state = OPENING;
+    switch (pause_state)
     {
-        ws_ptrn.find(str, idx); // skip white_space
-        if (key_ptrn.find(str, idx))
-        {
-            key = trim(key_ptrn.get_content());
-            it = parseables.find(key);
-            if (it != parseables.end())
-            {
-                if (it->second->parse(str, idx) == false)
-                {
-                    last_key = key;
-                    reached_end = it->second->is_reached_end();
-                    return false;
-                }
-            }
-            else if(parseables.find("") != parseables.end())
-            {
-                IParseable *clone = parseables[""]->clone();
-                if (clone->parse(str, idx) == false)
-                {   
-                    delete clone;
-                    last_key = key;
-                    reached_end = clone->is_reached_end();
-                    return false;
-                }
-                parseables.insert(std::pair<string, IParseable*>(key, clone));
-            }
-            else if (closing_ptrn.match(key) == false)
-                return false;
-            else
-                break;
-        }
+    case OPENING:
+        matched = opening_ptrn.find(str, idx);
+        reached_end = opening_ptrn.is_reached_end();
+        if (!matched)
+            break;
+        pause_state = PAIRS_PARSE;
+
+    case PAIRS_PARSE:
+        if (parse_by_key(str, idx) == BAD_VALUE)
+            break;
+        pause_state = ENDING;
+
+    case ENDING:
+        matched = closing_ptrn.find(str, idx);
+        reached_end = closing_ptrn.is_reached_end();
+        if (!matched)
+            break;
+        pause_state = OPENING;
+        return true;
     }
-    return true;
+    return false;
 }
 
 int Context::parse_by_key(std::string &str, size_t &idx) 
 {
     map<string, IParseable *>::iterator it;
+    map<string, IParseable *>::iterator end;
     string key;
+    if (last_key != "")
+    {
+        key = last_key;
+        // goto parsing;
+    }
     while (idx < str.size())
     {
         ws_ptrn.find(str, idx); // skip white_space
         if (key_ptrn.find(str, idx))
         {
             key = trim(key_ptrn.get_content());
-            it = parseables.find(key);
-            if (it != parseables.end())
+            // parsing:
+            end = parseables.end();
+            if ((it = parseables.find(key)) != end || (it = parseables.find("")) != end)
             {
-                if (it->second->parse(str, idx) == false)
+                if (it->first == "")
                 {
-                    last_key = key;
+                    parseables[key] = it->second->clone();
+                    it = parseables.find(key);
+                }
+                if (it->second->cont_parse(str, idx) == false)
+                {
                     reached_end = it->second->is_reached_end();
-                    return BAD_VALUE;
-                }
-            }
-            else if(parseables.find("") != parseables.end())
-            {
-                IParseable *clone = parseables[""]->clone();
-                if (clone->parse(str, idx) == false)
-                {   
-                    delete clone;
                     last_key = key;
-                    reached_end = clone->is_reached_end();
                     return BAD_VALUE;
                 }
-                parseables.insert(std::pair<string, IParseable*>(key, clone));
             }
+            // else if(parseables.find("") != parseables.end())
+            // {
+            //     IParseable *clone = parseables[""]->clone();
+            //     if (clone->cont_parse(str, idx) == false)
+            //     {   
+            //         reached_end = clone->is_reached_end();
+            //         delete clone;
+            //         last_key = key;
+            //         return BAD_VALUE;
+            //     }
+            //     parseables.insert(std::pair<string, IParseable*>(key, clone));
+            // }
             else
             {
                 idx -= key_ptrn.get_content().size();

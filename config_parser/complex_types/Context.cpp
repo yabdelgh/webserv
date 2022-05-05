@@ -50,9 +50,36 @@ Context &Context::operator=(Context const &other)
 
 bool Context::parse(string &str, size_t &idx)
 {
+    map<string, IParseable *>::iterator it;
+    map<string, IParseable *>::iterator end;
+    string key;
+
     if (opening_ptrn.find(str, idx))
-        if (parse_by_key(str, idx) == BAD_KEY)
-            return closing_ptrn.find(str, idx);
+    {
+        while (idx < str.size())
+        {
+            ws_ptrn.find(str, idx); // skip white_space
+            if (key_ptrn.find(str, idx))
+            {
+                key = trim(key_ptrn.get_content());
+                end = parseables.end();
+                if ((it = parseables.find(key)) != end || (it = parseables.find("")) != end)
+                {
+                    if (it->first == "")
+                    {
+                        parseables[key] = it->second->clone();
+                        it = parseables.find(key);
+                    }
+                    if (it->second->cont_parse(str, idx) == false)
+                        return false;
+                    continue;
+                }
+            }
+            idx -= key_ptrn.get_content().size();
+            break;
+        }
+        return closing_ptrn.find(str, idx);
+    }
     return false;
 }
 
@@ -73,6 +100,11 @@ bool Context::cont_parse(std::string &str, size_t &idx)
         pause_state = PAIRS_PARSE;
 
     case PAIRS_PARSE:
+        int parse_stat;
+        do
+        {
+            parse_stat = parse_one(str, idx);
+        }while(parse_stat == GOOD_VALUE);
         if (parse_by_key(str, idx) == BAD_VALUE)
             break;
         pause_state = ENDING;
@@ -104,7 +136,6 @@ int Context::parse_by_key(std::string &str, size_t &idx)
         if (key_ptrn.find(str, idx))
         {
             key = trim(key_ptrn.get_content());
-            // parsing:
             end = parseables.end();
             if ((it = parseables.find(key)) != end || (it = parseables.find("")) != end)
             {
@@ -119,28 +150,44 @@ int Context::parse_by_key(std::string &str, size_t &idx)
                     last_key = key;
                     return BAD_VALUE;
                 }
+                continue;
             }
-            // else if(parseables.find("") != parseables.end())
-            // {
-            //     IParseable *clone = parseables[""]->clone();
-            //     if (clone->cont_parse(str, idx) == false)
-            //     {   
-            //         reached_end = clone->is_reached_end();
-            //         delete clone;
-            //         last_key = key;
-            //         return BAD_VALUE;
-            //     }
-            //     parseables.insert(std::pair<string, IParseable*>(key, clone));
-            // }
-            else
-            {
-                idx -= key_ptrn.get_content().size();
-                break;
-            }
+            idx -= key_ptrn.get_content().size();
+            break;
         }
         else
             break;
     }
+    return BAD_KEY;
+}
+
+int Context::parse_one(std::string &str, size_t &idx)
+{
+    map<string, IParseable *>::iterator it;
+    map<string, IParseable *>::iterator end;
+    string key;
+    
+    if (key_ptrn.find(str, idx))
+    {
+        key = trim(key_ptrn.get_content());
+        end = parseables.end();
+        if ((it = parseables.find(key)) != end || (it = parseables.find("")) != end)
+        {
+            if (it->first == "")
+            {
+                parseables[key] = it->second->clone();
+                it = parseables.find(key);
+            }
+            if (it->second->cont_parse(str, idx) == false)
+            {
+                reached_end = it->second->is_reached_end();
+                last_key = key;
+                return BAD_VALUE;
+            }
+            return GOOD_VALUE;
+        }
+    }
+    idx -= key_ptrn.get_content().size();
     return BAD_KEY;
 }
 

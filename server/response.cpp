@@ -2,69 +2,54 @@
 #include "./request.hpp"
 #include <sstream>
 
-response::response(IParseable &header, IParseable &body, int status):pos(0)
+response::response() {}
+response::response(IParseable &header, IParseable &body, bool bad_req) : pos(0)
 {
-    status = 0;
+    check_errors(header, body, bad_req);
 }
 
 response::~response() {}
 
 size_t response::read(char *buff, size_t size)
 {
-    std::stringstream ss;
+    size_t ret = body.read(buff, size).gcount();
+    return ret;
+}
 
-    if (status == BAD_REQUEST)
-    {
-        if (pos == 0)
-        {
-            pos = 0;
-            ss << "HTTP/1.1 200 OK\r\n";
-            ss << "Content-Length: 235\r\n";   
-            ss << "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-            ss << "<!DOCTYPE html><html><head><title>Bye-bye baby bye-bye</title>";
-            ss << "<style>body { background-color: #111 }";
-            ss << "h1 { font-size:4cm; text-align: center; color: black;";
-            ss << " text-shadow: 0 0 2mm red}</style></head>";
-            ss << "<body><h1>Bad, Request!</h1></body></html>";
-            strcpy(buff, ss.str().data());
-            return ss.str().size();
-        }
-        else 
-        {
-            ss << "<style>body { background-color: #111 }";
-            ss << "h1 { font-size:4cm; text-align: center; color: black;";
-            ss << " text-shadow: 0 0 2mm red}</style></head>";
-            ss << "<body><h1>Bad, Request!</h1></body></html>";
-            strcpy(buff, ss.str().data());
-            return ss.str().size();
-        }
-    }
+void response::check_errors(IParseable &header, IParseable &body, bool bad_req)
+{
+    if (bad_req)
+        generate_response_error(400, "Bad Request");
+    else if (header[0]["uri"].get_string().size() >= 2048)
+        generate_response_error(414, "Request URI too long");
+    else if (header[0]["version"].get_string() != "HTTP/1.1")
+        generate_response_error(505, "HTTP version not supported");
     else
-    {
-        if (pos == 0)
-        {
-            pos = 0;
-            std::stringstream ss;
-            ss << "HTTP/1.1 200 OK\r\n";
-            ss << "Content-Length: 235\r\n";
-            ss << "Content-Type: text/html; charset=UTF-8\r\n\r\n";         
-            ss << "<!DOCTYPE html><html><head><title>Bye-bye baby bye-bye</title>";
-            ss << "<style>body { background-color: #111 }";
-            ss << "h1 { font-size:4cm; text-align: center; color: black;";
-            ss << " text-shadow: 0 0 2mm red}</style></head>";
-            ss << "<body><h1>hello, world!</h1></body></html>";
-            strcpy(buff, ss.str().data());
-            return ss.str().size();
-        }
-        else 
-        {
-            ss << "<style>body { background-color: #111 }";
-            ss << "h1 { font-size:4cm; text-align: center; color: black;";
-            ss << " text-shadow: 0 0 2mm red}</style></head>";
-            ss << "<body><h1>hello, world!</h1></body></html>";
-            strcpy(buff, ss.str().data());
-            return ss.str().size();
-        }
-    }
-    return 0;
+        generate_response_error(404, "OK");
+}
+
+void response::generate_response_error(short error, std::string const &message)
+{
+    std::string body = "<div class='main-error-page'>";
+    body += "<center>";
+    body += "<h1 class='error-title'>";
+    body += std::to_string(error) + "  " + message;
+    body += " </h1>";
+    body += "<h2 class='error-subtitle'>";
+    body += "sir lah yn... sir fhalk";
+    body += "</h2>";
+    body += " </center>";
+    body += "</div>";
+
+    header = "HTTP/1.1 " + std::to_string(error) + " OK" + "\n\r";
+    header += "content-length: " + std::to_string(body.size()) + "\r\n" + "\r\n";
+
+    this->body.clear();
+    this->body << header;
+    this->body << body;
+}
+
+std::string const &response::get_header()
+{
+    return header;
 }

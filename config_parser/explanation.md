@@ -6,7 +6,7 @@
 - Setup default error pages.
 - Limit client body size.
 - Setup routes with one or multiple of the following rules/configuration (no regexp):
-    + Define a list of accepted HTTP methods for the route.
+    ..
     + Define a HTTP redirection.
     + Define a directory or a file from where the file should be searched
         * example: if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto is /tmp/www/pouic/toto).
@@ -62,3 +62,6 @@
     ∗ Your program should call the CGI with the file requested as first argument.
     ∗ The CGI should be run in the correct directory for relative path file access.
     ∗ Your server should work with one CGI (php-CGI, Python, and so forth).
+
+route root 
+idex

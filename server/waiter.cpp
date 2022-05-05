@@ -1,5 +1,5 @@
 #include "waiter.hpp"
-
+#include <algorithm>
 waiter::waiter() : _sockets(), _pfd() {}
 
 waiter::waiter(const waiter & copy) : _sockets(copy._sockets), _pfd(copy._pfd) {}
@@ -20,6 +20,16 @@ void waiter::insert(const sock &s, short events)
 	_pfd.push_back(tmp);
 	_sockets.push_back(s);
 }
+
+/*template <class T>
+void waiter::insert(T it, T ite)
+{
+	while (it != ite)
+	{
+		insert(sock(it->first.first.c_str(), it->first.second, 1), it->second);
+		it++;
+	}
+}*/
 
 void waiter::poll()
 {

@@ -3,7 +3,14 @@ server {
 
 	
 	autoindex off
-	listen 10.12.2.15:8000
+	listen 10.12.9.7:9000
+	listen 127.0.0.1:8000
+	listen 10.12.9.7:8000
+	listen 10.12.9.7:7000
+	listen 10.12.9.7:6000
+	listen 127.0.0.1:6000
+	listen 127.0.0.1:7000
+	listen 127.0.0.1:8000
 
 	root test_us/root
 	server_name weebserv
@@ -36,7 +43,12 @@ server {
 
 	
 	autoindex off
-	listen 127.0.0.1:9000
+	listen 10.12.9.7:8000
+	listen 10.12.9.7:7000
+	listen 10.12.9.7:6000
+	listen 127.0.0.1:6000
+	listen 127.0.0.1:7000
+	listen 127.0.0.1:8000
 
 	root test_us/root
 	server_name weebserv

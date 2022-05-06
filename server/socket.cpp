@@ -1,14 +1,16 @@
 #include "socket.hpp"
 #include <iostream>
+#include <unistd.h>
 
 sock::sock(const char *addr, short port, bool status)
 {
+	std::cout << "------------------------------------------" << std::endl;
 	if (addr != nullptr)
 	std::cout << "addr: " << addr << std::endl;
 	std::cout << "port: " << port << std::endl;
 	_id = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (_id == -1)
-		throw std::runtime_error("error: socket()");
+		throw std::runtime_error("error: socketttttt()");
 	if (addr != nullptr)
 		_sin.sin_addr.s_addr = inet_addr(addr);
 	if (_sin.sin_addr.s_addr == static_cast<in_addr_t>(-1))
@@ -76,4 +78,6 @@ void sock::default_config()
 	listen();
 }
 
-sock::~sock() {}
+sock::~sock()
+{
+}

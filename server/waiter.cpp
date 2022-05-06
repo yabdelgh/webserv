@@ -1,5 +1,6 @@
 #include "waiter.hpp"
 #include <algorithm>
+#include <fcntl.h>
 waiter::waiter() : _sockets(), _pfd() {}
 
 waiter::waiter(const waiter & copy) : _sockets(copy._sockets), _pfd(copy._pfd) {}
@@ -21,35 +22,29 @@ void waiter::insert(const sock &s, short events)
 	_sockets.push_back(s);
 }
 
-/*template <class T>
-void waiter::insert(T it, T ite)
-{
-	while (it != ite)
-	{
-		insert(sock(it->first.first.c_str(), it->first.second, 1), it->second);
-		it++;
-	}
-}*/
-
 void waiter::poll()
 {
 	std::cout << std::endl << "waiting on poll()" << std::endl;
 	if (::poll(&_pfd[0], _pfd.size(), -1) == -1)
 		throw std::runtime_error("erro: poll()");
+	std::cout << std::endl << "take the hand()" << std::endl;
+	
 }
 
 void waiter::accept()
 {
-	sock csock;
+	signal(SIGPIPE, SIG_IGN); // tmp
 	char buff[1025];
 	int j = 0;
 	for (size_t i = 0; i < _pfd.size(); i++)
 	{
 		if (_sockets[i]._status == 1 && (_pfd[i].revents & POLLIN))
 		{
+			sock csock;
 			std::cout << "accept" << std::endl;
 			_sockets[i].accept(csock);
-			insert(csock, POLLIN);
+			insert(csock, POLLIN/* | POLLOUT*/);
+			fcntl(csock._id, F_SETFL, O_NONBLOCK);
 		}
 		else if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLIN))
 		{
@@ -88,6 +83,18 @@ void waiter::accept()
 			// }
 			// write(1,buff,j);
 		}
+	/*	if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLOUT))
+		{
+			int ret = 7;
+			while (ret == 7)
+			{
+				ret = write(_sockets[i]._id, "yassine", 7);
+				std::cout << "ret:    " << ret << std::endl;
+			}
+			perror("error");
+			std::cout << "ret:    " << ret << std::endl;
+		}*/
+		
 	}
 }
 

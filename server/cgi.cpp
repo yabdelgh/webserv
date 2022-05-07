@@ -48,23 +48,31 @@ void get_response(int *pfd, bool post)
 	close(pfd[0]);
 }
 
-void set_environnement()
+void set_environnement(IParseable &header)
 {
 	setenv("SERVER_SOFTWARE", "Webserv", 1);
 	setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
 	setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
-	setenv("REQUEST_METHOD", req.get_method(), 1);
-	setenv("HTTP_USER_AGENT",req.get("User-Agent"))
-
-
+	setenv("REQUEST_METHOD", header[0]["methode"].str(), 1);
+	if (header[1].contains("User-Agent"))
+		setenv("HTTP_USER_AGENT",header[1]["User-Agent"].str(),1);
+	if (header[0]["query_string"])
+		setenv("QUERY_STRING",header[1]["query_string"].str(),1);
+	if (header[1].contains("content_type"))
+		setenv("CONTENT_TYPE",header[1]["content_type"].str(),1);
+	if (header[1].contains("content_length"))
+		setenv("CONTENT_LENGTH",header[1]["content_length"].str(),1);
+	if (header[1].contains("script_name"))
+		setenv("SCRIPT_NAME",header[1]["content_length"].str(),1);
 }
 
-void launch_cgi()
+void launch_cgi(IParseable &header, FILE *body)
 {
 	extern char		**environ;
 	int 			pfd[4];
 	pid_t			pid;
 
+	set_environnement();
 	pid = create_child(pfd, false);
 	exec_cgi();
 	get_response();

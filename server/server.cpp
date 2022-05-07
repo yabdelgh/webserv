@@ -10,14 +10,14 @@
 #include <utility>
 
 
-std::map<std::pair<std::string, short>, short > matsemihach(IParseable &conf)
+std::map<std::pair<std::string, short>, short > get_listeners(IParseable &conf)
 {
 	std::map<std::pair<std::string, short> , short> mm;
 	for (int i = 0; i < conf["server"].size(); i++)
 		for(int j = 0; j < conf["server"][i]["listen"].size(); j++)
-			mm.insert(std::make_pair(
-						std::make_pair(conf["server"][i]["listen"][j]["host"].get_string(),conf["server"][i]["listen"][j]["port"].get_int()), POLLIN));
-	return mm;
+			mm.insert(std::make_pair( std::make_pair(conf["server"][i]["listen"][j]["host"].get_string()
+					,conf["server"][i]["listen"][j]["port"].get_int()), POLLIN));
+	return (mm);
 }
 
 int main(int ac, char **av)
@@ -35,7 +35,7 @@ int main(int ac, char **av)
 		{
 
 			waiter	serve;
-			serve.insert(matsemihach(conf));
+			serve.insert(get_listeners(conf));
 
 			while (1)
 			{
@@ -47,6 +47,7 @@ int main(int ac, char **av)
 		catch (std::exception &e)
 		{
 			std::cout << "error: " << e.what() << std::endl;
+			perror("tata");
 		}
 	}
 	return (0);

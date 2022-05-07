@@ -29,7 +29,6 @@ class waiter
 	template <class CONTAINER>
 	void insert(CONTAINER c)
 	{
-
 		typename CONTAINER::iterator it = c.begin();
 		typename CONTAINER::iterator ite = c.end();
     	while (it != ite)

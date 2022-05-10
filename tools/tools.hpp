@@ -4,6 +4,7 @@
 #include <string>
 #include "IParseable.hpp"
 
+
 # define WHITESPACE " \n\r\t\f\v"
 
 // trims
@@ -16,5 +17,11 @@ std::string get_file_contents(std::string const& filename, std::string &);
 
 IParseable *get_server_config();
 IParseable *get_request_header();
+
+std::string extension(std::string const &file_name);
+std::string joinpath(std::string const &path1 , std::string const &path2);
+std::string cleanpath(std::string const &path);
+
+std::vector<std::string> split(std::string const & str, std::string const &delm);
 
 #endif

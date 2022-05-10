@@ -16,9 +16,10 @@ private:
     std::string content;
     size_t content_size;
     std::list<response> responses;
-    response *resp;
+    // response *response;
 
 public:
+    response *resp;
     request(/* args */);
     ~ request();
 
@@ -29,7 +30,7 @@ public:
     void parse_header();
     void parse_header(std::string const &data);
     void parse_body();
-    response &get_response();
+    response &gen_response();
     void set_status(RequestStatus status); // temporary
     void reset();
 };

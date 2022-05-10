@@ -44,21 +44,22 @@ IParseable *get_server_config()
     
     Directive root;
     root.push_parseable(String(p["spaces"]))
-         .push_parseable(String(p["\\S"]));
+         .push_parseable("value",String(p["\\S"]));
 
     Directive index;
     index.push_parseable(String(p["spaces"]))
-         .push_parseable(String(p["str_array"]));
+         .push_parseable("value", StringArray(p["str_array"]));
 
     Directive allowed_methods;
     allowed_methods.push_parseable(String(p["spaces"]));
-    allowed_methods.push_parseable(StringArray(p["http_methods"]));
+    allowed_methods.push_parseable("value",
+     StringArray(p["http_methods"], (std::string[]){"GET", "POST", "DELETE"}, 3));
 
     Directive redirect;
     redirect.push_parseable(String(p["spaces"]));
-    redirect.push_parseable(String(p["number"]));
+    redirect.push_parseable("status", Int(p["number"]));
     redirect.push_parseable(String(p["spaces"]));
-    redirect.push_parseable(String(p["\\S"]));
+    redirect.push_parseable("uri", String(p["\\S"]));
 
     Directive autoindex;
     autoindex.push_parseable(String(p["spaces"]));
@@ -85,8 +86,9 @@ IParseable *get_server_config()
     server_context.insert_parseables("index", index);
     server_context.insert_parseables("root", root);
     server_context.insert_parseables("return", redirect);
-    server_context.insert_parseables("location", location);
+    server_context.insert_parseables("location", Frequent(location));
     server_context.insert_parseables("autoindex", autoindex);
+    server_context.insert_parseables("allow_methods", allowed_methods);
 
 
     Context server_config(Pattern(), Pattern(), p["key"]);

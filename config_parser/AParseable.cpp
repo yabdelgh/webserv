@@ -58,3 +58,37 @@ bool AParseable::is_reached_end() const
 {
     return reached_end;
 }
+
+bool AParseable::contains(std::string const &name)
+{
+    try {
+        (*this)[name];
+        return true;
+    }catch (const std::exception)
+    {
+        return false;
+    }
+}
+
+std::string & AParseable::str() { return this->get_string(); }
+std::vector<std::string> & AParseable::str_arr() { return get_str_array(); }
+std::vector<int> & AParseable::int_arr() { return get_int_array(); }
+std::vector<double> & AParseable::dbl_arr() { return get_double_array(); }
+int AParseable::num() { return get_int(); }
+double AParseable::dbl() { return get_double(); }
+
+std::set<int> &AParseable::int_set()
+{
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+
+std::set<std::string> &AParseable::str_set()
+{
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+
+std::set<double> &AParseable::dbl_set()
+{
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+

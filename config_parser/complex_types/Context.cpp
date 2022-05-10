@@ -48,7 +48,7 @@ Context &Context::operator=(Context const &other)
     return *this;
 }
 
-bool Context::parse(string &str, size_t &idx)
+bool Context::parse(string const &str, size_t &idx)
 {
     map<string, IParseable *>::iterator it;
     map<string, IParseable *>::iterator end;
@@ -70,7 +70,7 @@ bool Context::parse(string &str, size_t &idx)
                         parseables[key] = it->second->clone();
                         it = parseables.find(key);
                     }
-                    if (it->second->cont_parse(str, idx) == false)
+                    if (it->second->parse(str, idx) == false)
                         return false;
                     continue;
                 }

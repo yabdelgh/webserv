@@ -1,16 +1,14 @@
 
    
 server {
-	listen 0.0.0.0:8000
+	listen 0.0.0.0:8001
 
-	root test_us/root
+	root /Users/aait-ihi/Desktop/webserv/public/www/
 	server_name weebserv
 
 	index index.html
 
 	client_body_buffer_size 10
-
-	location *.test {
-		
-	}
+	
+	
 }

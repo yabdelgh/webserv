@@ -18,11 +18,24 @@ public:
     virtual std::vector<std::string> &get_str_array();
     virtual std::vector<int> &get_int_array();
     virtual std::vector<double> &get_double_array();
+
+    virtual std::string &str();
+    virtual std::vector<std::string> &str_arr();
+    virtual std::vector<int> &int_arr();
+    virtual std::vector<double> &dbl_arr();
+    virtual int num();
+    virtual double dbl();
+
+    virtual std::set<int> &int_set();
+    virtual std::set<std::string> &str_set();
+    virtual std::set<double> &dbl_set();
+
     virtual IParseable &operator[](std::string const &);
     virtual IParseable &operator[](size_t idx);
     virtual bool cont_parse(std::string &str, size_t &idx);
     virtual size_t size() const;
     bool is_reached_end() const;
+    virtual bool contains(std::string const &name);
 };
 
 #endif

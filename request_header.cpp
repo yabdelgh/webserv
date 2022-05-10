@@ -56,7 +56,7 @@ IParseable *get_request_header()
     basic_info.push_parseable(String(p[" "]));
     basic_info.push_parseable("uri",String(Pattern(p["\\S"])));
     basic_info.push_parseable(String(p[" "]));
-    basic_info.push_parseable("version", String(Pattern(p["\\S"])));
+    basic_info.push_parseable("ver", String(Pattern(p["\\S"])));
     basic_info.push_parseable(String(p["\r\n"]));
 
 

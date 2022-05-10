@@ -13,6 +13,7 @@ protected:
 
 public:
     String(rgx::Pattern const &pattern);
+    String(rgx::Pattern const &pattern, std::string const &default_val);
     String(String const &other);
     ~String();
     String &operator=(String const &other);

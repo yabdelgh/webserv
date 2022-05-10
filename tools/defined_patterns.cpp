@@ -30,7 +30,7 @@ unordered_map<string, Pattern> get_patterns()
 			 .append(Group().append(Single(space).set_min(-1))
 				 			.append(number));
 
-	Group str_array;
+	Group str_array(1, 1);
 	str_array.append(not_white_space)
 			 .append(Group().append(space)
 				 			.append(not_white_space));

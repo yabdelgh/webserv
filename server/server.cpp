@@ -6,6 +6,7 @@
 #include "socket.hpp"
 #include "waiter.hpp"
 #include "tools.hpp"
+#include "GlobalStorage.hpp"
 #include <map>
 #include <utility>
 
@@ -30,10 +31,9 @@ int main(int ac, char **av)
 		IParseable &conf = *get_server_config();
 		size_t idx = 0;
 		std::cout << (conf.parse(content, idx) ? "good" : "bad") << std::endl;
-
 		try
 		{
-
+			GS.server_conf = &conf["server"];
 			waiter	serve;
 			serve.insert(get_listeners(conf));
 

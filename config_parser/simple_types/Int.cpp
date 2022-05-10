@@ -3,6 +3,11 @@
 
 Int::Int(rgx::Pattern const &pattern):ASimpleType(pattern) {}
 
+Int::Int(rgx::Pattern const &pattern, int default_val):ASimpleType(pattern)
+{
+    value = default_val;
+}
+
 Int::~Int() {}
 
 Int::Int(Int const &other)

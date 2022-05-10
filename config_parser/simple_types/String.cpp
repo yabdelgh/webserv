@@ -3,6 +3,11 @@
 
 String::String(rgx::Pattern const &pattern):ASimpleType(pattern) {}
 
+String::String(rgx::Pattern const &pattern, std::string const &default_val):ASimpleType(pattern)
+{
+    value = default_val;
+}
+
 String::String(String const &other) {
     *this = other;
 }

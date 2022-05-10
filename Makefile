@@ -17,6 +17,10 @@ CPPINCLUDE =	-I ./regex\
 SRC =	tools/trim.cpp\
 		tools/defined_patterns.cpp\
 		tools/get_file_content.cpp\
+		tools/GlobalStorage.cpp\
+		tools/path.cpp\
+		tools/split.cpp\
+		tools/server_config_helper.cpp\
 		regex/Pattern.cpp\
 		regex/tokens/OutSequence.cpp\
 		regex/tokens/Or.cpp\
@@ -73,6 +77,7 @@ clean :
 fclean : clean
 	/bin/rm -rf $(NAME) $(TEST_NAME)
 
-re : fclean all
+re : fclean 
+	make -j 40
 
 .PHONY: all clean fclean re

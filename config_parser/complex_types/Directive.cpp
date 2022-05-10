@@ -29,7 +29,7 @@ Directive &Directive::operator=(Directive const &other)
 
 Directive::~Directive() {}
 
-bool Directive::parse(string &str, size_t &idx)
+bool Directive::parse(string const &str, size_t &idx)
 {
     for (size_t i = 0; i < parseables.size() ; i++)
     {
@@ -93,4 +93,24 @@ size_t Directive::size() {
 IParseable *Directive::clone() const
 {
     return new Directive(*this);
+}
+
+std::string &Directive::get_string()
+{
+    for (size_t i = 0; i < parseables.size();i++) 
+    {
+        if (parseables[i].first != "")
+            return parseables[i].second->str();
+    }
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+
+std::set<std::string> &Directive::str_set()
+{
+    for (size_t i = 0; i < parseables.size();i++) 
+    {
+        if (parseables[i].first != "")
+            return parseables[i].second->str_set();
+    }
+    throw std::runtime_error(INVALID_TYPE_ERROR);
 }

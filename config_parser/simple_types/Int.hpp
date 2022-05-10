@@ -13,6 +13,7 @@ protected:
 
 public:
     Int(rgx::Pattern const &pattern);
+    Int(rgx::Pattern const &pattern, int default_val);
     Int(Int const &other);
     ~Int();
     Int & operator=(Int const &other);

@@ -2,6 +2,11 @@
 
 IntArray::IntArray(rgx::Pattern const &pattern):ASimpleType(pattern) {}
 
+IntArray::IntArray(rgx::Pattern const &pattern, std::vector<int> const& default_val)
+{
+    value = default_val;
+}
+
 IntArray::IntArray(IntArray const &other)
 {
     *this = other;
@@ -42,3 +47,9 @@ IParseable *IntArray::clone() const
     return new IntArray(*this);
 }
 
+std::set<int> &IntArray::int_set()
+{
+    if (set.size() != value.size())
+        set.insert(value.begin(), value.end());
+    return set;
+}

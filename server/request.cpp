@@ -98,7 +98,7 @@ void request::handle()
     parse_body();
 }
 
-response &request::get_response()
+response &request::gen_response()
 {
     delete resp;
     resp = new response(header, body, status == BAD_REQUEST);

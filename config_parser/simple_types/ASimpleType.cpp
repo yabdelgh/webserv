@@ -17,12 +17,12 @@ ASimpleType &ASimpleType::operator=(ASimpleType const &other)
     return *this;
 }
 
-bool ASimpleType::parse(std::string &str, size_t &idx)
+bool ASimpleType::parse(std::string const &str, size_t &idx)
 {
     if (pattern.find(str, idx))
     {
-        set_value(pattern.get_content());
         std::cout << "find :|" << pattern.get_content() << "|" << std::endl;
+        set_value(pattern.get_content());
         return true;
     }
     reached_end = pattern.is_reached_end();

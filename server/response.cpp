@@ -60,7 +60,7 @@ size_t response::read(char *buff, size_t size)
         if (input_type == STREAM)
         {
             ret = body.read(buff, size).gcount();
-            if (body.tellg() == 0)
+            if (body.eof())
                 finished = true;
         }
         else if (bodyfile->is_open())
@@ -117,6 +117,7 @@ void response::generate_redirect(int status, std::string const& location)
 {
     set_header("", "HTTP/1.1 " + std::to_string(status) + " Moved Permanently");
     set_header("Location", location);
+    set_header("Content-Length", "0");
     body.clear();
 }
 
@@ -134,7 +135,7 @@ void response::generate_autoindex(std::string const&path)
 	body << "<html> <head><title>Index of /</title></head>\n";
     body << "<body>\n <hr>\n <pre>\n";
     while ((dp = readdir (dir)) != NULL)
-	{   sprintf(buff, "<a href= '%s' > %s </a>\n", joinpath(path, dp->d_name).c_str(), dp->d_name);
+	{   sprintf(buff, "<a href= '%s' > %s </a>\n",  dp->d_name, dp->d_name);
 		body << buff;
 	}
 	body << "</pre>\n <hr>\n </body>\n </html>\n";
@@ -155,8 +156,7 @@ void response::prepare_body(std::string const&path)
     {
         set_header("", "HTTP/1.1 200 OK");
         set_header("Content-Length", std::to_string(std::ifstream(path, std::ios::ate).tellg()));
-        if (GS.content_types.find(extension(path)) != GS.content_types.end())
-            set_header("Content-Type", GS.content_types[extension(path)]);
+        set_header("Content-Type",  contentType(path));
         input_type = INFILE;
     }
     else 
@@ -193,7 +193,7 @@ void response::handle_get_req(IParseable &header, IParseable &body)
         if (s.st_mode & S_IFDIR)
         {
             if (path.back() != '/')
-                generate_redirect(300, path + "/"); // directory
+                generate_redirect(301, header[0]["uri"].str() + "/"); // directory
             else if (join_index(path))
                 prepare_body(path);
             else 

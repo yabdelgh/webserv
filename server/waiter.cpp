@@ -52,6 +52,7 @@ void waiter::accept()
 			response *resp = req.resp;
 			if (resp && !resp->is_finished()) // checking for old uncompleted response
 			{
+				std::cout << "FFF" << std::endl;
 				size_t len = resp->read(buff, 1024);
 				write(_sockets[i]._id, buff, len);
 			}
@@ -74,6 +75,7 @@ void waiter::accept()
 				len = req.resp->read(buff, 1024000);
 				write(_sockets[i]._id, buff, len);
 				write(1, buff, len);
+				std::cout << "JJJ" << std::endl;
 			}
 			// std::cout << "read" << std::endl;
 			// j = read(_sockets[i]._id, buff, 1024);

@@ -1,10 +1,14 @@
 #include "./StringArray.hpp"
 #include "tools.hpp"
 
-StringArray::StringArray(rgx::Pattern const &pattern):ASimpleType(pattern) {}
-
-StringArray::StringArray(rgx::Pattern const &pattern, std::string *default_val,size_t size)
+StringArray::StringArray(rgx::Pattern const &pattern, std::string delimiter):ASimpleType(pattern)
 {
+    this->delimiter = delimiter;
+}
+
+StringArray::StringArray(rgx::Pattern const &pattern, std::string *default_val,size_t size, std::string delimiter)
+{
+    this->delimiter = delimiter;
     value.assign(default_val, default_val + size);
 }
 

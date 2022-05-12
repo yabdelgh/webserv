@@ -3,12 +3,14 @@
 server {
 	listen 0.0.0.0:8001
 
-	root /Users/aait-ihi/Desktop/webserv/public/www/
+	root /Users/aait-ihi/Desktop/webserv/public/www
 	server_name weebserv
 
-	index index.html
+	index hello.html index.html
 
+	autoindex off
 	client_body_buffer_size 10
 	
+	error_page 404 403 error.html
 	
 }

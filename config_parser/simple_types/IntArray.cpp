@@ -27,13 +27,14 @@ IntArray &IntArray::operator=(IntArray const &other)
 
 void    IntArray::set_value(std::string const &raw) 
 {
-    // you may need to save the raw just in case you need the remainder.
-    size_t pos = raw.find_first_of("0123456789", pos);
-    while (pos != -1)
+    size_t pos = 0;
+    const char  * tmp = raw.c_str();
+    do
     {
-        value.push_back(std::stoi(raw.substr(pos), &pos));
-        pos = raw.find_first_of("0123456789", pos);
-    }
+        tmp += strcspn(tmp, "-0123456789");
+        value.push_back(std::stoi(tmp, &pos));
+        tmp += pos;
+    }while (*tmp);
 }
 
 

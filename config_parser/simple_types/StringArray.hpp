@@ -2,6 +2,7 @@
 #define STRING_ARRAY_HPP
 
 #include "./ASimpleType.hpp"
+#include "tools.hpp"
 #include <set>
 
 class StringArray: public ASimpleType
@@ -15,8 +16,8 @@ protected:
     void set_value(std::string const &raw);
 
 public:
-    StringArray(rgx::Pattern const &pattern);
-    StringArray(rgx::Pattern const &pattern, std::string default_val[], size_t size);
+    StringArray(rgx::Pattern const &pattern, std::string delimiter = WHITESPACE);
+    StringArray(rgx::Pattern const &pattern, std::string default_val[], size_t size, std::string delimiter = WHITESPACE);
     StringArray(StringArray const &other);
     ~StringArray();
     

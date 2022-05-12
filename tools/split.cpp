@@ -16,6 +16,8 @@ std::vector<std::string> split(std::string const & str, std::string const &delm)
         }
         arr.push_back(str.substr(start, end - start));
             start = std::min(str.size(), str.find_first_not_of(delm, end));
+        if (arr.back().empty())
+            arr.pop_back();
     }
     return arr;
 }

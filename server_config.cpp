@@ -63,7 +63,7 @@ IParseable *get_server_config()
 
     Directive autoindex;
     autoindex.push_parseable(String(p["spaces"]));
-    autoindex.push_parseable(String(p["off|on"]));
+    autoindex.push_parseable("value",String(p["off|on"]));
     
     Context location_context(p[" *{"],p[" *}"],p["key"]);
     location_context.insert_parseables("root", root);
@@ -81,11 +81,10 @@ IParseable *get_server_config()
     Context server_context(p[" *{"],p[" *}"],p["key"]);
     server_context.insert_parseables("listen", Frequent(listen));
     server_context.insert_parseables("server_name", server_name);
-    server_context.insert_parseables("error_page", error_page);
+    server_context.insert_parseables("error_page", Frequent(error_page));
     server_context.insert_parseables("client_body_buffer_size", body_size_limit);
     server_context.insert_parseables("index", index);
     server_context.insert_parseables("root", root);
-    server_context.insert_parseables("return", redirect);
     server_context.insert_parseables("location", Frequent(location));
     server_context.insert_parseables("autoindex", autoindex);
     server_context.insert_parseables("allow_methods", allowed_methods);

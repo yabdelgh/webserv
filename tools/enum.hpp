@@ -12,7 +12,8 @@ enum RequestStatus{
 enum OutPutType
 {
     STREAM,
-    INFILE
+    INFILE,
+    INPIPE
 };
 
 

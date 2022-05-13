@@ -11,6 +11,8 @@ private:
     size_t pos;
     short status;
     bool finished;
+    bool content_len;
+    int fd;
     OutPutType input_type;
     char header_buff[4000];
     std::stringstream header;

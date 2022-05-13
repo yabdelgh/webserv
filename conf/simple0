@@ -3,7 +3,7 @@
 server {
 	listen 0.0.0.0:8001
 
-	root /Users/aait-ihi/Desktop/webserv/public/www
+	root /Users/Guest/Desktop/webserv/public/www
 	server_name weebserv
 
 	index hello.html index.html

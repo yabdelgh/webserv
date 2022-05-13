@@ -35,7 +35,7 @@ int main(int ac, char **av)
 		{
 			GS.server_conf = &conf["server"];
 			waiter	serve;
-			serve.insert(get_listeners(conf));
+			serve.insert(get_listeners(conf), conf);
 
 			while (1)
 			{

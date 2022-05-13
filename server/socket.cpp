@@ -30,6 +30,9 @@ sock::sock(const sock &copy)
 	_status = copy._status;
 	_size = copy._size;
 	_sin = copy._sin;
+	_conf = copy._conf;
+	_request = copy._request;
+	std::cout << _id << " socket copy constructor called" << std::endl;
 }
 
 sock& sock::operator=(const sock &copy)
@@ -38,7 +41,10 @@ sock& sock::operator=(const sock &copy)
 	_status = copy._status;
 	_size = copy._size;
 	_sin = copy._sin;
-	return (*this);	
+	_conf = copy._conf;
+	_request = copy._request;
+	std::cout << _id << " socket assi constructor called"<< std::endl;
+		return (*this);	
 }
 
 void sock::bind()
@@ -80,4 +86,5 @@ void sock::default_config()
 
 sock::~sock()
 {
+		std::cout << "socket destructor called" << std::endl;
 }

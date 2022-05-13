@@ -24,16 +24,20 @@ private:
     RequestStatus status;
     http::HttpStatusCode resp_status;
     std::string content;
-    std::list<response> responses;
-    Pattern lenght_pattern;
+    rgx::Pattern lenght_pattern;
     char body_filename[30];
-    // response *response;
+    std::vector<IParseable *> *confs;
+    IParseable *req_conf;
+    IParseable *loc_conf;
 
 private:
     void write_body();
+
 public:
     response *resp;
     request(/* args */);
+    request(request const& other);
+    request &operator=(request const& other);
     ~ request();
 
     RequestStatus get_status() const;
@@ -46,6 +50,7 @@ public:
     response &gen_response();
     void set_status(RequestStatus status); // temporary
     void reset();
+    void set_conf(std::vector<IParseable *> &confs);
 };
 
 #endif

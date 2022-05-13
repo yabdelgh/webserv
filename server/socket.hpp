@@ -22,7 +22,7 @@ class sock // AF_INET AND SOCK_STREAM
 	unsigned int		_size;		// address size
 	struct	sockaddr_in	_sin;
 	request             _request;
-	std::vector<IParseable *>  conf;
+	std::vector<IParseable *>  _conf;
 
 	public:
 	sock& operator=(const sock &copy);

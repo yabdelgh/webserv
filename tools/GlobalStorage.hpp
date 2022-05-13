@@ -41,7 +41,7 @@ public:
     IParseable *server_conf;
     std::map<std::string, std::string> content_types;
     std::map<short, std::string> http_errors;
-    Pattern patterns;
+    std::map<std::string, rgx::Pattern> patterns;
 
 public:
     ~GlobalStorage();

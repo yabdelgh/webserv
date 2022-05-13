@@ -56,7 +56,7 @@ size_t response::read_header(char *buff, size_t size)
     {
         if (0)
         {
-	/*	size_t pos;
+		/*size_t pos;
          	ret = read(fd, buff, size); // non-blocking read
 		if (ret == 0)
 			error_header(); // eof + header not finished
@@ -243,6 +243,11 @@ char *response::get_header()
     header.read(header_buff, header.tellg());
     strcat(&header_buff[header.tellg()], "\r\n");
     return header_buff;
+}
+
+short response::get_status()
+{
+    return status;
 }
 
 bool response::is_finished()

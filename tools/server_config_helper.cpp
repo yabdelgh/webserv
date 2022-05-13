@@ -21,35 +21,29 @@ bool compare_ip(std::string const &ip1, std::string const &ip2)
     }
 }
 
+IParseable *find_server_conf(std::vector<IParseable *> &confs, std::string const &host)
+{
+    size_t i;
+
+    std::cout << "confs size " << confs.size() << std::endl;
+    for (i = confs.size() - 1; i > 0; i--)
+    {
+        if ((*confs[i])["server_name"].str() == host)
+            break;
+    }
+    
+    return confs[i];
+}
+
 
 IParseable *find_server_conf(IParseable &conf, std::string const &host)
 {
-    std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
-    std::map<std::string, rgx::Pattern> p = get_patterns();
-    Directive listen;
-    listen.push_parseable(String(p["spaces"]));
-    listen.push_parseable("host",String(p["ip"]));
-    listen.push_parseable(String(p["colon"]));
-    listen.push_parseable("port", Int(p["number"]));
+
     size_t idx = 0;
-    size_t i;
-    std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
-    if (listen.parse(host, idx) && idx == host.size()) // TODO should accept const string
-    {
-        for (i = conf.size() - 1; i > 0; i--)
-        {
-            std::string const &ip1 = conf[i]["listen"]["host"].get_string();
-            std::string const &ip2 = listen["host"].get_string();
-            int port1 = listen["port"].get_int();
-            int port2 = conf[i]["listen"]["port"].get_int();
-            if (compare_ip(ip1, ip2) && port1 == port2)
-                break;
-        }
-    }
-    else 
-        for (i = conf.size() - 1; i > 0; i--)
-            if (conf[i]["server_name"].get_string() == host)
-                break;
+    size_t i; 
+    for (i = conf.size() - 1; i > 0; i--)
+        if (conf[i]["server_name"].get_string() == host)
+            break;
     return &conf[i];
 }
 
@@ -66,4 +60,27 @@ IParseable *find_location(IParseable &locations, std::string const &path)
     }
     std::cout << "-------------------------------------" << std::endl;
     return nullptr;
+}
+
+size_t get_client_body_limit(IParseable &conf, IParseable *location)
+{
+    size_t client_body_limit;
+    char unit;
+    client_body_limit = conf["client_body_buffer_size"]["limit"].num();
+    unit = conf["client_body_buffer_size"]["unit"].str()[1];
+    if (location)
+    {
+        client_body_limit = (*location)["client_body_buffer_size"]["limit"].num();
+        unit = (*location)["client_body_buffer_size"]["unit"].str()[1];
+    }
+    switch (tolower(unit))
+    {
+        case 'g':
+            client_body_limit *= 1024;
+        case 'm':
+            client_body_limit *= 1024;
+        case 'k':
+            client_body_limit *= 1024;
+    }
+    return client_body_limit;
 }

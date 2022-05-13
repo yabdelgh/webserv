@@ -67,8 +67,6 @@ void GlobalStorage::set_http_errors()
 
 void GlobalStorage::set_patterns()
 {
-    map<string, Pattern> patterns;
-
 	Between number('0', '9', 1);
 	Single any(" ", MATCH_OUT, 1);
 	Single colon(":", 1, 1);

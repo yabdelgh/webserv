@@ -18,7 +18,7 @@
 
 IParseable *get_server_config()
 {
-    unordered_map<string, Pattern> p;
+    map<string, Pattern> p;
 
      p = get_patterns();
     Directive listen;
@@ -67,12 +67,12 @@ IParseable *get_server_config()
     
     Context location_context(p[" *{"],p[" *}"],p["key"]);
     location_context.insert_parseables("root", root);
-    location_context.insert_parseables("allow_methods", allowed_methods);
+    location_context.insert_parseables("allow_methods", allowed_methods, true);
     location_context.insert_parseables("return", redirect);
     location_context.insert_parseables("index", index);
     location_context.insert_parseables("client_body_buffer_size", body_size_limit);
     location_context.insert_parseables("error_page", Frequent(error_page));
-    location_context.insert_parseables("autoindex", autoindex);
+    location_context.insert_parseables("autoindex", autoindex, true);
 
     Directive location;
     location.push_parseable("uri", root);
@@ -85,9 +85,9 @@ IParseable *get_server_config()
     server_context.insert_parseables("client_body_buffer_size", body_size_limit);
     server_context.insert_parseables("index", index);
     server_context.insert_parseables("root", root);
-    server_context.insert_parseables("location", Frequent(location));
-    server_context.insert_parseables("autoindex", autoindex);
-    server_context.insert_parseables("allow_methods", allowed_methods);
+    server_context.insert_parseables("location", Frequent(location), true);
+    server_context.insert_parseables("autoindex", autoindex, true);
+    server_context.insert_parseables("allow_methods", allowed_methods, true);
 
 
     Context server_config(Pattern(), Pattern(), p["key"]);

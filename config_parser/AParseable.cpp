@@ -59,6 +59,11 @@ bool AParseable::is_reached_end() const
     return reached_end;
 }
 
+bool AParseable::is_parsed() const
+{
+    return parsed;
+}
+
 bool AParseable::contains(std::string const &name)
 {
     try {
@@ -92,3 +97,8 @@ std::set<double> &AParseable::dbl_set()
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }
 
+bool AParseable::parse(std::string const &str, size_t &idx)
+{
+    parsed = parseme(str, idx);
+    return parsed;
+}

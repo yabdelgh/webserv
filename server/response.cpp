@@ -12,7 +12,7 @@
 #include <set>
 
 response::response() {}
-response::response(IParseable &header, IParseable &body, bool bad_req) : pos(0)
+response::response(IParseable &header, IParseable &body, short status) : pos(0)
 {
     input_type = STREAM;
     sconf = nullptr;
@@ -23,12 +23,13 @@ response::response(IParseable &header, IParseable &body, bool bad_req) : pos(0)
     autoindex = false;
     redire = false;
     finished = false;
+    this->status = status;
 
     std::cout << "start response" << std::endl;
-    if (!bad_req)
-        bad_req = extract_config(header);
+    if (extract_config(header))
+        this->status = (status == http::OK ? http::BAD_REQUEST : status);
     std::cout << "config extraction done" << std::endl;
-    if (!request_valide(header, body, bad_req))
+    if (!request_valide(header, body))
         return;
     std::cout << "method: " << header[0]["method"].str() << std::endl;
     if (redire)
@@ -79,11 +80,11 @@ size_t response::read(char *buff, size_t size)
     return ret;
 }
 
-bool response::request_valide(IParseable &header, IParseable &body, bool bad_req)
+bool response::request_valide(IParseable &header, IParseable &body)
 {
     std::cout << "request_valide" << std::endl;
-    if (bad_req)
-        return generate_response_error(http::BAD_REQUEST), false;
+    if (status != http::OK)
+        return generate_response_error(status), false;
     else if (header[0]["uri"].str().size() >= 2048)
         return generate_response_error(http::REQUEST_URI_TOO_LONG), false;
     else if (header[0]["ver"].str() != "HTTP/1.1")

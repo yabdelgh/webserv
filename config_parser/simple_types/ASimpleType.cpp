@@ -17,7 +17,7 @@ ASimpleType &ASimpleType::operator=(ASimpleType const &other)
     return *this;
 }
 
-bool ASimpleType::parse(std::string const &str, size_t &idx)
+bool ASimpleType::parseme(std::string const &str, size_t &idx)
 {
     if (pattern.find(str, idx))
     {

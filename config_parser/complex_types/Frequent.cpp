@@ -27,7 +27,7 @@ Frequent &Frequent::operator=(Frequent const &other) {
 
 Frequent::~Frequent() {}
 
-bool Frequent::parse(std::string const &str, size_t &idx)
+bool Frequent::parseme(std::string const &str, size_t &idx)
 {
     IParseable *clone = parseable->clone();
     if (clone->parse(str, idx) == false)

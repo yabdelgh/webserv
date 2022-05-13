@@ -16,7 +16,7 @@ private:
     std::stringstream header;
     std::stringstream body;
     std::ifstream *bodyfile;
-    
+
     IParseable *sconf;
     IParseable *loc;
     IParseable *error_pages;
@@ -28,10 +28,10 @@ private:
 
 public:
     response();
-    response(IParseable &header, IParseable &body, bool bad_req);
+    response(IParseable &header, IParseable &body, short status);
     ~response();
     // handle_get();
-    bool request_valide(IParseable &header, IParseable &body, bool bad_req);
+    bool request_valide(IParseable &header, IParseable &body);
     size_t read(char *buff, size_t size);
     size_t read_header(char *buff, size_t size);
     char *get_header();

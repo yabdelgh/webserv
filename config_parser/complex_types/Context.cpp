@@ -44,11 +44,12 @@ Context &Context::operator=(Context const &other)
         it = other.parseables.begin();
         for ( ; it != other.parseables.end(); it++)
             insert_parseables(it->first, *it->second);
+        dflt_parseables = other.dflt_parseables;
     }
     return *this;
 }
 
-bool Context::parse(string const &str, size_t &idx)
+bool Context::parseme(string const &str, size_t &idx)
 {
     map<string, IParseable *>::iterator it;
     map<string, IParseable *>::iterator end;
@@ -194,15 +195,22 @@ int Context::parse_one(std::string &str, size_t &idx)
 IParseable &Context::operator[](string const & key) {
     map<string, IParseable *>::iterator it;
     it = parseables.find(key);
-    if (it != parseables.end())
+    if (it != parseables.end() && (it->second->is_parsed() ||
+                            dflt_parseables.find(key) != dflt_parseables.end()))
+    {
         return *it->second;
+    }
     throw runtime_error("IParseable key not " + key + " found");
 }
 
 
-Context &Context::insert_parseables(string const &key, IParseable const& parseable)
+Context &Context::insert_parseables(string const &key,
+                                    IParseable const& parseable,
+                                    bool dflt)
 {
     parseables.insert(pair<string, IParseable *>(key, parseable.clone()));
+    if (dflt)
+        dflt_parseables.insert(key);
     return *this;
 }
 

@@ -18,7 +18,7 @@
 
 IParseable *get_request_header()
 {
-    unordered_map<string, Pattern> p;
+    map<string, Pattern> p;
 
     p = get_patterns();
 

@@ -4,11 +4,12 @@
 #include "IParseable.hpp"
 #include <map>
 #include <string>
+#include "Pattern.hpp"
 #define GS GlobalStorage::get()
 
 namespace http
 {
-    enum
+    enum HttpStatusCode
     {
         OK = 200,
         BAD_REQUEST = 400,
@@ -18,6 +19,7 @@ namespace http
         REQUEST_TIMEOUT = 408,
         GONE = 410,
         LENGTH_REQUIRED = 411,
+        PAYLOAD_TOO_LARGE = 413,
         REQUEST_URI_TOO_LONG = 414,
         UNAVAILABLE = 451,
         INTERNAL_SERVER_ERROR = 500,
@@ -33,11 +35,13 @@ private:
     static GlobalStorage *instance;
     void set_content_types();
     void set_http_errors();
+    void set_patterns();
 
 public:
     IParseable *server_conf;
     std::map<std::string, std::string> content_types;
     std::map<short, std::string> http_errors;
+    Pattern patterns;
 
 public:
     ~GlobalStorage();

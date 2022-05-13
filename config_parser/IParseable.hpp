@@ -35,6 +35,7 @@ public:
     virtual bool parse(std::string const &str, size_t &idx) = 0;
     virtual bool cont_parse(std::string &str, size_t &idx) = 0;
     virtual bool is_reached_end() const = 0;
+    virtual bool is_parsed() const = 0; 
     virtual bool contains(std::string const &name) = 0;
     virtual ~IParseable() {};
 };

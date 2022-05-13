@@ -29,7 +29,7 @@ Directive &Directive::operator=(Directive const &other)
 
 Directive::~Directive() {}
 
-bool Directive::parse(string const &str, size_t &idx)
+bool Directive::parseme(string const &str, size_t &idx)
 {
     for (size_t i = 0; i < parseables.size() ; i++)
     {

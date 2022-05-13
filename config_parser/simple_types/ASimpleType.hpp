@@ -21,7 +21,7 @@ public:
     virtual ~ASimpleType();
 
     ASimpleType &operator=(ASimpleType const &other);
-    virtual bool parse(std::string const &str, size_t &idx);
+    virtual bool parseme(std::string const &str, size_t &idx);
 };
 
 #endif

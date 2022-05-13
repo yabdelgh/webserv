@@ -10,9 +10,9 @@
 
 using namespace rgx;
 
-unordered_map<string, Pattern> get_patterns()
+map<string, Pattern> get_patterns()
 {
-	unordered_map<string, Pattern> patterns;
+	map<string, Pattern> patterns;
 
 	Between number('0', '9', 1);
 	Single any(" ", MATCH_OUT, 1);
@@ -134,8 +134,5 @@ unordered_map<string, Pattern> get_patterns()
 	patterns.insert(make_pair("transfer_encoding", Pattern().append(transfer_encoding)));
 	patterns.insert(make_pair("connection", Pattern().append(connection)));
 	
-	
-	
 	return patterns;
-
 }

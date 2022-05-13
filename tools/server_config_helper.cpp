@@ -25,7 +25,7 @@ bool compare_ip(std::string const &ip1, std::string const &ip2)
 IParseable *find_server_conf(IParseable &conf, std::string const &host)
 {
     std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
-    std::unordered_map<std::string, rgx::Pattern> p = get_patterns();
+    std::map<std::string, rgx::Pattern> p = get_patterns();
     Directive listen;
     listen.push_parseable(String(p["spaces"]));
     listen.push_parseable("host",String(p["ip"]));
@@ -55,6 +55,7 @@ IParseable *find_server_conf(IParseable &conf, std::string const &host)
 
 IParseable *find_location(IParseable &locations, std::string const &path)
 {
+    std::cout << "-------------------------------------" << std::endl;
     for (size_t i = 0; i < locations.size(); i++)
     {
         std::string const &uri = locations[i]["uri"].str();

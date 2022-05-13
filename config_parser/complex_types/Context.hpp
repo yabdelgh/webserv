@@ -35,6 +35,7 @@ private:
     PauseState pause_state;
     std::string last_key;
     std::map<std::string, IParseable*, CaseInsensitiveCom> parseables;
+    std::set<std::string, CaseInsensitiveCom> dflt_parseables;
     int parse_by_key(std::string &str, size_t &idx);
     inline int parse_one(std::string &str, size_t &idx);
 
@@ -44,8 +45,8 @@ public:
     Context(Context const &other);
     ~Context();
     Context &operator=(Context const &other);
-    Context &insert_parseables(std::string const &name, IParseable const& parseable);
-    bool parse(std::string const &str, size_t &idx);
+    Context &insert_parseables(std::string const &name, IParseable const& parseable, bool dflt = false);
+    bool parseme(std::string const &str, size_t &idx);
     bool cont_parse(std::string &str, size_t &idx);
     bool core_parse(std::string &str, size_t &idx);
     IParseable &operator[](std::string const &);

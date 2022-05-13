@@ -28,13 +28,13 @@ void waiter::poll()
 	if (::poll(&_pfd[0], _pfd.size(), -1) == -1)
 		throw std::runtime_error("erro: poll()");
 	// std::cout << std::endl << "take the hand()" << std::endl;
-	
+
 }
 
 void waiter::accept()
 {
 	signal(SIGPIPE, SIG_IGN); // tmp
-	char buff[1024000];
+	char buff[1024];
 	int j = 0;
 	for (size_t i = 0; i < _pfd.size(); i++)
 	{
@@ -42,41 +42,62 @@ void waiter::accept()
 		{
 			sock csock;
 			std::cout << "accept" << std::endl;
+			csock.conf = _sockets[i].conf;
 			_sockets[i].accept(csock);
-			insert(csock, POLLIN/* | POLLOUT*/);
+			insert(csock, POLLIN | POLLOUT);
 			fcntl(csock._id, F_SETFL, O_NONBLOCK);
 		}
-		else if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLIN))
+		else if (_sockets[i]._status == 0)
 		{
 			request &req = _sockets[i]._request;
 			response *resp = req.resp;
-			if (resp && !resp->is_finished()) // checking for old uncompleted response
-			{
-				std::cout << "FFF" << std::endl;
-				size_t len = resp->read(buff, 1024);
-				write(_sockets[i]._id, buff, len);
-			}
-			if (resp == nullptr || resp->is_finished()) // read and handle new request
+			
+			if ((_pfd[i].revents & POLLIN) && (resp == nullptr || resp->is_finished())) // read and handle new request
 			{
 				j = read(_sockets[i]._id, buff, 1024);
 				buff[j] = '\0';
 				req.append_data(buff);
 				req.handle();
 			}
-			if (req.get_status() == REQUEST_READY || req.get_status() == BAD_REQUEST) // generate new response and write header 
-			{
+			if (req.get_status() == REQUEST_READY || req.get_status() == BAD_REQUEST)
 				req.gen_response();
-				size_t len = req.resp->read_header(buff, 102400); // may need to read all
-				write(_sockets[i]._id, buff, len);
-				write(_sockets[i]._id, "\r\n", 2); // header body splitter
-				write(1, buff, len);
-				write(1, "\r\n", 2);
-				// while testing read body here
-				len = req.resp->read(buff, 1024000);
-				write(_sockets[i]._id, buff, len);
-				write(1, buff, len);
-				std::cout << "JJJ" << std::endl;
+			if (resp && !resp->is_finished() && (_pfd[i].revents & POLLOUT) )
+			{
+				int len = 0;
+				if ((len = req.resp->read_header(buff, 1024)))
+				{
+					write(_sockets[i]._id, buff, len);
+					if (len < 1024)
+						write(_sockets[i]._id, "\r\n", 2); // header body splitter
+				}
+				else
+				{
+					len = req.resp->read(buff, 1024);
+					write(_sockets[i]._id, buff, len);
+					std::cout << resp->status << std::endl;
+					if ( resp->is_finished() && resp->status > 399 && resp->status < 500)
+					{
+						std::cout << "close" << std::endl;
+						close(_sockets[i]._id);
+						_sockets[i]._id = -1;
+					}
+				}
 			}
+			/*			if ((_pfd[i].revents & POLLOUT) && (req.get_status() == REQUEST_READY || req.get_status() == BAD_REQUEST))
+			// generate new response and write header 
+			{
+			req.gen_response();
+			size_t len = req.resp->read_header(buff, 1024);
+			// may need to read all
+			write(_sockets[i]._id, buff, len);
+			//	write(_sockets[i]._id, "\r\n", 2); // header body splitter
+			//	write(1, buff, len);
+			//	write(1, "\r\n", 2);
+			// while testing read body here
+			//	len = req.resp->read(buff, 1024);
+			//	write(_sockets[i]._id, buff, len);
+			//	write(1, buff, len);
+			}*/
 			// std::cout << "read" << std::endl;
 			// j = read(_sockets[i]._id, buff, 1024);
 			// buff[j] = '\0';
@@ -112,18 +133,18 @@ void waiter::accept()
 			// }
 			// write(1,buff,j);
 		}
-	/*	if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLOUT))
-		{
+		/*	if (_sockets[i]._status == 0 && (_pfd[i].revents & POLLOUT))
+			{
 			int ret = 7;
 			while (ret == 7)
 			{
-				ret = write(_sockets[i]._id, "yassine", 7);
-				std::cout << "ret:    " << ret << std::endl;
+			ret = write(_sockets[i]._id, "yassine", 7);
+			std::cout << "ret:    " << ret << std::endl;
 			}
 			perror("error");
 			std::cout << "ret:    " << ret << std::endl;
-		}*/
-		
+			}*/
+
 	}
 }
 
@@ -134,10 +155,15 @@ void waiter::remove()
 
 	while (it != _sockets.end())
 	{
-	//	if (!(lit->revents & POLLIN) && (lit->revents & POLLHUP))
-		if (lit->revents & POLLHUP)
+		//	if (!(lit->revents & POLLIN) && (lit->revents & POLLHUP))
+		if (it->_id == -1)
 		{
-			
+			_sockets.erase(it);
+			_pfd.erase(lit);
+		}
+		else if (lit->revents & POLLHUP)
+		{
+
 			std::cout << "close" << std::endl;
 			close(it->_id);
 			_sockets.erase(it);

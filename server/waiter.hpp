@@ -27,13 +27,23 @@ class waiter
 	waiter& operator=(const waiter &copy);
 	
 	template <class CONTAINER>
-	void insert(CONTAINER c)
+	void insert(CONTAINER c, IParseable &conf)
 	{
 		typename CONTAINER::iterator it = c.begin();
 		typename CONTAINER::iterator ite = c.end();
     	while (it != ite)
     	{
-       	 insert(sock(it->first.first.c_str(), it->first.second, 1), it->second);
+		sock tmp(it->first.first.c_str(), it->first.second, 1);
+	for (int i = 0; i < conf["server"].size(); i++)
+	{
+		for (int j = 0; j < conf["server"][i]["listen"].size(); j++)
+		{
+			if (it->first.first == conf["server"][i]["listen"][j]["host"].get_string()
+			&& it->first.second == conf["server"][i]["listen"][j]["port"].get_int())
+				tmp.conf.push_back(&conf);
+		}
+	}
+       	 insert(tmp, it->second);
        	 it++;
     	}
 	}

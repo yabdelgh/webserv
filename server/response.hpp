@@ -11,6 +11,8 @@ private:
     size_t pos;
     short status;
     bool finished;
+    bool content_len;
+    int fd;
     OutPutType input_type;
     char header_buff[4000];
     std::stringstream header;
@@ -35,6 +37,7 @@ public:
     size_t read(char *buff, size_t size);
     size_t read_header(char *buff, size_t size);
     char *get_header();
+    short get_status();
     bool is_finished();
 
     void generate_response_error(short error, std::string const &message = "");

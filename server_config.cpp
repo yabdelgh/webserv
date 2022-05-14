@@ -39,8 +39,8 @@ IParseable *get_server_config()
 
     Directive body_size_limit;
     body_size_limit.push_parseable(String(p["spaces"]))
-                   .push_parseable("limit",Int(p["number"]))
-                   .push_parseable("unit",String(p["units"]));
+                   .push_parseable("limit",Int(p["number"], 1))
+                   .push_parseable("unit",String(p["units"], "k"));
     
     Directive root;
     root.push_parseable(String(p["spaces"]))
@@ -82,7 +82,7 @@ IParseable *get_server_config()
     server_context.insert_parseables("listen", Frequent(listen));
     server_context.insert_parseables("server_name", server_name);
     server_context.insert_parseables("error_page", Frequent(error_page));
-    server_context.insert_parseables("client_body_buffer_size", body_size_limit);
+    server_context.insert_parseables("client_body_buffer_size", body_size_limit, true);
     server_context.insert_parseables("index", index);
     server_context.insert_parseables("root", root);
     server_context.insert_parseables("location", Frequent(location), true);

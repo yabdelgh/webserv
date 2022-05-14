@@ -1,6 +1,7 @@
 #include "./request.hpp"
 #include "tools.hpp"
 #include <iostream>
+#include "server_config_helper.hpp"
 
 
 request:: request(/* args */):header(*get_request_header()),body(*get_request_header())
@@ -11,11 +12,44 @@ request:: request(/* args */):header(*get_request_header()),body(*get_request_he
     lenght_pattern = GS.patterns["[a-fA-F0-9]+\r\n"];
     body_size = 0;
     remainder_body_size = 0;
+    confs = nullptr;
     strcpy(body_filename, "/tmp/webserv_XXXXXXXXXXXXXXX");
+}
+
+request::request(request const& other):header(*get_request_header()),body(*get_request_header())
+{
+    *this = other;
 }
 
 request::~ request()
 {
+}
+
+request &request::operator=(request const& other)
+{
+    if (this != &other)
+    {
+        this->chunked = other.chunked;
+        this->body_size = other.body_size;
+        this->remainder_body_size = other.remainder_body_size;
+        this->body_size_limit = other.body_size_limit;
+        this->body_stream = other.body_stream;
+        // this->header = other.header; reference
+        // this->body = other.body; reference
+        this->status = other.status;
+        this->resp_status = other.resp_status;
+        this->content = other.content;
+        this->lenght_pattern = other.lenght_pattern;
+        strcpy(this->body_filename, other.body_filename);
+        if (other.confs)
+            std::cout << "copy confs " << other.confs << "  " << other.confs->size() << std::endl;
+        this->confs = other.confs;
+        if (other.confs)
+            std::cout << "copy confs this " << this->confs << "  " << this->confs->size() << std::endl;
+        this->req_conf = other.req_conf;
+        this->loc_conf = other.loc_conf;
+    }
+    return *this;
 }
 
 void request::parse_header()
@@ -49,13 +83,18 @@ void request::parse_header(std::string const &data)
     {
         if (content.find("\r\n\r\n") != -1)
         {
-            if (header.parse(content, idx) == false)
+            if (!header.parse(content, idx) || !header[1].contains("host"))
             {
                 std::cout << "bad header" << std::endl;
                 status = REQUEST_READY;
                 resp_status = http::BAD_REQUEST;
                 return;
             }
+            std::cout << "confs :" << confs << std::endl;
+            req_conf = find_server_conf(*confs, header[1]["host"].str());
+            std::cout << "got server conf" << std::endl;
+            loc_conf = find_location((*req_conf)["location"], header[0]["uri"].str());
+            std::cout << "got location conf" << std::endl;
             content = &content[idx];
             std::cout << "remainder |" << content << "|" << std::endl;
             status = INCOMPLETE_BODY;
@@ -78,7 +117,7 @@ void request::parse_body()
                 write_body();
             else if (header[1].contains("Content-Length"))
             {
-                // get the exact config for this request after parsing the header
+                body_size_limit = get_client_body_limit(*req_conf, loc_conf);
                 chunked = false;
                 body_size  = remainder_body_size = header[1]["Content-Length"].num();
                 if (body_size > body_size_limit)
@@ -152,13 +191,20 @@ void request::set_status(RequestStatus status)
     this->status = status;
 }
 
+void request::set_conf(std::vector<IParseable *> &confs)
+{
+    std::cout << "set confs" << &confs << " size:" << confs.size() << std::endl;
+    this->confs = &confs;
+}
+
+
 void request::write_body()
 {
     if (chunked)
     {
         if (lenght_pattern.find(content))
         {
-            std::string const & str_size = lenght_pattern().get_content();
+            std::string const & str_size = lenght_pattern.get_content();
             size_t size = std::stol(str_size, nullptr, 16);
             if (size + str_size.size() >= content.size())
             {
@@ -180,8 +226,8 @@ void request::write_body()
         size_t size = std::min(remainder_body_size, content.size());
         body_stream->write(content.c_str(), size);
         remainder_body_size -= size;
-        content  = &content[size];
-        if (remainder_body_size = 0)
+        content = &content[size];
+        if (remainder_body_size == 0)
             status = REQUEST_READY;
     }
 }

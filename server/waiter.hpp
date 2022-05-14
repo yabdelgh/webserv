@@ -40,7 +40,7 @@ class waiter
 		{
 			if (it->first.first == conf["server"][i]["listen"][j]["host"].get_string()
 			&& it->first.second == conf["server"][i]["listen"][j]["port"].get_int())
-				tmp.conf.push_back(&conf);
+				tmp._conf.push_back(&conf["server"][i]);
 		}
 	}
        	 insert(tmp, it->second);

@@ -24,6 +24,8 @@ response::response(IParseable &header, IParseable &body, short status) : pos(0)
     redire = false;
     finished = false;
     this->status = status;
+    content_len = true;
+    fd = -1;
 
     std::cout << "start response" << std::endl;
     if (extract_config(header))
@@ -52,7 +54,30 @@ size_t response::read_header(char *buff, size_t size)
     size_t ret = 0;
     if (!finished)
     {
-        ret = header.read(buff, size).gcount();
+        if (0)
+        {
+		/*size_t pos;
+         	ret = read(fd, buff, size); // non-blocking read
+		if (ret == 0)
+			error_header(); // eof + header not finished
+		else if (ret == -1)
+			return (0) // no data + fd writer still exist
+		else
+		{
+			std::string str(buff, ret);
+			if (str.find("CONTENT_LENGHT") != std::string::npos)
+				content_len = true;
+			pos = str.find("\r\n\r\n");
+			if (pos != std::string::npos && pos + 4 != str.size)
+			{
+				stream << str.substr(pos + 4);
+				// header finished
+				return (pos + 4);
+			}
+		}*/
+        }
+        else
+            ret = header.read(buff, size).gcount();
         // if (body.tellg() == 0)
         //     finished = true;
     }
@@ -70,6 +95,33 @@ size_t response::read(char *buff, size_t size)
             if (body.eof())
                 finished = true;
         }
+	else if (0)
+	{
+	/*	if (content_lenght == false)
+		{
+			std::stringstream sstream;
+			sstream << std::hex << size;
+			std::string result = sstream.str();
+			ret = ::read(fd, buff, size - 6(\r\n * 3)  - result.size());
+			if (ret == 0)
+				//end_body() +  return val;
+			else if (ret == -1)
+				return (0) // no data + fd writer still exist
+			// non-blocking read and size must be greater than 22
+			sstream << std::hex << ret;
+			result	 = sstream.str() + "\r\n";
+			result.append(buff, ret);
+			resutl	+= "\r\n\r\n";
+			return (result.copy(buff, result.size()));
+		}
+		ret = ::read(fd, buff, size);
+		if (ret == 0)
+			//end_body() +  return val;
+		else if (ret == -1)
+			return (0) // no data + fd writer still exist
+		return (ret); */
+		
+	}
         else if (bodyfile->is_open())
         {
             ret = bodyfile->read(buff, size).gcount();
@@ -191,6 +243,11 @@ char *response::get_header()
     header.read(header_buff, header.tellg());
     strcat(&header_buff[header.tellg()], "\r\n");
     return header_buff;
+}
+
+short response::get_status()
+{
+    return status;
 }
 
 bool response::is_finished()

@@ -65,7 +65,8 @@ IParseable &Directive::operator[](string const &name) {
         if (parseables[i].first == name)
             return *parseables[i].second;
     }
-    throw runtime_error("IParseable key not " + name + " found");
+    // throw runtime_error("IParseable key not " + name + " found");
+    throw runtime_error("IParseable key:" + name + " not found.");
 }
 
 IParseable &Directive::operator[](size_t idx) {
@@ -111,6 +112,25 @@ std::set<std::string> &Directive::str_set()
     {
         if (parseables[i].first != "")
             return parseables[i].second->str_set();
+    }
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+
+std::vector<std::string> &Directive::str_arr()
+{
+    for (size_t i = 0; i < parseables.size();i++) 
+    {
+        if (parseables[i].first != "")
+            return parseables[i].second->str_arr();
+    }
+    throw std::runtime_error(INVALID_TYPE_ERROR);
+}
+
+int Directive::get_int() {
+    for (size_t i = 0; i < parseables.size();i++) 
+    {
+        if (parseables[i].first != "")
+            return parseables[i].second->get_int();
     }
     throw std::runtime_error(INVALID_TYPE_ERROR);
 }

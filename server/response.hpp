@@ -11,8 +11,9 @@ private:
     size_t pos;
     short status;
     bool finished;
-    bool content_len;
-    int fd;
+    bool header_finished;
+    bool content_len; // flag for know when content-length is present in the response
+    int fd; // fd to read the request from cgi
     OutPutType input_type;
     char header_buff[4000];
     std::stringstream header;
@@ -30,15 +31,16 @@ private:
 
 public:
     response();
-    response(IParseable &header, IParseable &body, short status);
+    response(IParseable &rheader, std::stringstream &rbody, IParseable *sconf, short status);
     ~response();
     // handle_get();
-    bool request_valide(IParseable &header, IParseable &body);
-    size_t read(char *buff, size_t size);
+    bool request_valide(IParseable &header);
+    size_t read_body(char *buff, size_t size);
     size_t read_header(char *buff, size_t size);
     char *get_header();
     short get_status();
     bool is_finished();
+    bool is_header_finished();
 
     void generate_response_error(short error, std::string const &message = "");
     void generate_redirect(int status, std::string const& location);
@@ -48,9 +50,9 @@ public:
     std::string contentType(std::string path);
     void set_header(std::string const& name, std::string const& value);
 
-    void handle_get_req(IParseable &header, IParseable &body);
-    void handle_post_req(IParseable &header, IParseable &body);
-    void handle_get_delete(IParseable &header, IParseable &body);
+    void handle_cgi_req(IParseable &rheader, std::stringstream &rbody);
+    void handle_get_req(IParseable &rheader, std::stringstream &rbody);
+    void handle_get_delete(IParseable &rheader, std::stringstream &rbody);
     bool extract_config(IParseable &req_header);
     bool join_index(std::string &path);
 };

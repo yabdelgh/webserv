@@ -53,7 +53,7 @@ IParseable *get_server_config()
     Directive allowed_methods;
     allowed_methods.push_parseable(String(p["spaces"]));
     allowed_methods.push_parseable("value",
-     StringArray(p["http_methods"], (std::string[]){"GET", "POST", "DELETE"}, 3));
+    StringArray(p["http_methods"], (std::string[]){"GET", "POST", "DELETE"}, 3));
 
     Directive redirect;
     redirect.push_parseable(String(p["spaces"]));

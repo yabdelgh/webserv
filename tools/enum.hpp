@@ -6,6 +6,7 @@ enum RequestStatus{
     HEADER_READY,
     INCOMPLETE_HEADER,
     INCOMPLETE_BODY,
+    SAVING_BODY,
     BAD_REQUEST
 };
 

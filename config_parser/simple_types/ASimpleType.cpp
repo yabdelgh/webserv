@@ -22,7 +22,8 @@ bool ASimpleType::parseme(std::string const &str, size_t &idx)
     if (pattern.find(str, idx))
     {
         std::cout << "find :|" << pattern.get_content() << "|" << std::endl;
-        set_value(pattern.get_content());
+        if (pattern.get_content().size() > 0)
+            set_value(pattern.get_content());
         return true;
     }
     reached_end = pattern.is_reached_end();

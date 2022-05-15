@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include "request.hpp"
 #include <map>
+#include "GlobalStorage.hpp"
 
 class waiter
 {
@@ -33,18 +34,20 @@ class waiter
 		typename CONTAINER::iterator ite = c.end();
     	while (it != ite)
     	{
-		sock tmp(it->first.first.c_str(), it->first.second, 1);
-	for (int i = 0; i < conf["server"].size(); i++)
-	{
-		for (int j = 0; j < conf["server"][i]["listen"].size(); j++)
-		{
-			if (it->first.first == conf["server"][i]["listen"][j]["host"].get_string()
-			&& it->first.second == conf["server"][i]["listen"][j]["port"].get_int())
-				tmp._conf.push_back(&conf["server"][i]);
-		}
-	}
-       	 insert(tmp, it->second);
-       	 it++;
+			sock tmp(it->first.first.c_str(), it->first.second, 1);
+			std::vector<IParseable *> socket_conf;
+			for (int i = 0; i < conf["server"].size(); i++)
+			{
+				for (int j = 0; j < conf["server"][i]["listen"].size(); j++)
+				{
+					if (it->first.first == conf["server"][i]["listen"][j]["host"].get_string()
+					&& it->first.second == conf["server"][i]["listen"][j]["port"].get_int())
+						socket_conf.push_back(&conf["server"][i]);
+				}
+			}
+			insert(tmp, it->second);
+			GS.socket_confs[tmp._id] = socket_conf;
+			it++;
     	}
 	}
 

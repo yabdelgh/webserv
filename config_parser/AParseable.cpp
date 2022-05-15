@@ -1,6 +1,10 @@
 #include "./AParseable.hpp"
 
-AParseable::AParseable(/* args */) {}
+AParseable::AParseable(/* args */)
+{
+    parsed = false;
+    reached_end = false;
+}
 
 AParseable::~AParseable() {}
 
@@ -101,4 +105,10 @@ bool AParseable::parse(std::string const &str, size_t &idx)
 {
     parsed = parseme(str, idx);
     return parsed;
+}
+
+bool AParseable::parse(std::vector<char> str, size_t &idx)
+{
+    std::string s(str.data(), str.size());
+    return parse(s, idx);
 }

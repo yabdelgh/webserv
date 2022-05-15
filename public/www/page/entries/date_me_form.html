@@ -76,7 +76,7 @@
     </style>
 </head>
 <body class="main-bg">
-    <form  class="content">
+    <form  class="content" method="post">
         <h2 class="title">Application for permission to date me</h2>
         <p class="note">
             <b>Note : </b>
@@ -87,44 +87,45 @@
                 <h2 class="title">Personal Details</h2>
             </legend>
             <label>Name : </label>
-                <input type="text" placeholder="Enter your name here"> <br> <br>
+                <input type="text" name="name" placeholder="Enter your name here"> <br> <br>
             <label>Email : </label>
-                <input type="text" placeholder="Enter your email here"> <br> <br>
+                <input type="text" name="email" placeholder="Enter your email here"> <br> <br>
             <label>Address : </label>
-                <input type="text" placeholder="Enter your address here"> <br> <br>
+                <input type="text" name="addr" placeholder="Enter your address here"> <br> <br>
             <label>Phone Number : </label>
-                <input type="text" placeholder="Enter your phone number here">  <br> <br>
+                <input type="text" name="phone" placeholder="Enter your phone number here">  <br> <br>
             <label>IQ : </label>
-                <input type="text" placeholder="Enter your IQ here">  <br> <br>      
+                <input type="text" name="IQ" placeholder="Enter your IQ here">  <br> <br>      
             <label>Gender: </label> <br><br>
                 <input type="radio" name="gender">Male 
                 <input type="radio" name="gender">Female <br><br>
             <label>Date of Proposed Outing : </label>
-                <input type="date">       
+                <input type="date" name="date">       
         </fieldset>
         <fieldset class="bord">
             <h2 class="title">Check all that apply</h2>
             <table class="check">
                 <tr class="check-1">
-                    <td><input type="checkbox"> <label>I love pets</label></td>
-                    <td><input type="checkbox"> <label>I work Full-time</label></td>
+                    <td><input type="checkbox" name="pets"> <label>I love pets</label></td>
+                    <td><input type="checkbox" name="work"> <label>I work Full-time</label></td>
                 </tr>
                 <tr class="check-2">
-                    <td><input type="checkbox"> <label>I have children</label></td>
-                    <td><input type="checkbox"> <label>My parents are rich</label></td>
+                    <td><input type="checkbox" name="children"> <label>I have children</label></td>
+                    <td><input type="checkbox" name="rich"> <label>My parents are rich</label></td>
                 </tr>
                 <tr class="check-3">
-                    <td><input type="checkbox"> <label>Date at public location</label></td>
-                    <td><input type="checkbox"> <label>Have fun without judging</label></td>
+                    <td><input type="checkbox" name="location"> <label>Date at public location</label></td>
+                    <td><input type="checkbox" name="fun"> <label>Have fun without judging</label></td>
                 </tr>
             </table>
         </fieldset>
         <fieldset class="bord">
             <legend>Essay</legend>
             <p>In 50 words or more, explain why you want to date me</p>
-            <textarea placeholder="Enter your reasons why..."></textarea>
+            <textarea placeholder="Enter your reasons why..." name="reason"></textarea>
         </fieldset>
-        <a href="#" class="btn">Send Your Application</a>
+        <!-- <a href="#" >Send Your Application</a> -->
+        <button class="btn" type="submit">Send Your Application</button>
     </form>    
 </body>
 </html>

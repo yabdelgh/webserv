@@ -24,7 +24,8 @@ std::string get_file_contents(std::string const& filename, std::string &buffer)
          * Then read the whole file into the buffer.
          */
         
-        std::vector<char> tmp_buffer(length);
+        std::vector<char> tmp_buffer(size_t(length) + 1);
+        tmp_buffer[length] = 0;
         file.read(tmp_buffer.data(),length);
         buffer = tmp_buffer.data();
         return buffer;

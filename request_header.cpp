@@ -54,7 +54,8 @@ IParseable *get_request_header()
     Directive basic_info;
     basic_info.push_parseable("method", String(p["http_method"]));
     basic_info.push_parseable(String(p[" "]));
-    basic_info.push_parseable("uri",String(Pattern(p["\\S"])));
+    basic_info.push_parseable("uri",String(Pattern(p["not_uri_char"])));
+    basic_info.push_parseable("query", String(Pattern(p["\\S?"])));
     basic_info.push_parseable(String(p[" "]));
     basic_info.push_parseable("ver", String(Pattern(p["\\S"])));
     basic_info.push_parseable(String(p["\r\n"]));

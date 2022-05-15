@@ -25,6 +25,8 @@ public:
     IParseable *clone() const;
     std::string &get_string();
     std::set<std::string> &str_set();
+    std::vector<std::string> &str_arr();
+    virtual int get_int();
 
 };
 

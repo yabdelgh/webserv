@@ -4,6 +4,8 @@
 #include "IParseable.hpp"
 #include <map>
 #include <string>
+#include <vector>
+#include "IParseable.hpp"
 #include "Pattern.hpp"
 #define GS GlobalStorage::get()
 
@@ -42,6 +44,7 @@ public:
     std::map<std::string, std::string> content_types;
     std::map<short, std::string> http_errors;
     std::map<std::string, rgx::Pattern> patterns;
+    std::map<int , std::vector<IParseable *> > socket_confs;
 
 public:
     ~GlobalStorage();

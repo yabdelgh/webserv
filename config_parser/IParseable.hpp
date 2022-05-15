@@ -33,6 +33,7 @@ public:
     virtual size_t size() const = 0;
     virtual IParseable *clone() const = 0;
     virtual bool parse(std::string const &str, size_t &idx) = 0;
+    virtual bool parse(std::vector<char> str, size_t &idx) = 0;
     virtual bool cont_parse(std::string &str, size_t &idx) = 0;
     virtual bool is_reached_end() const = 0;
     virtual bool is_parsed() const = 0; 

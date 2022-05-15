@@ -40,6 +40,7 @@ public:
     bool is_reached_end() const;
     bool is_parsed() const;
     bool parse(std::string const &str, size_t &idx);
+    bool parse(std::vector<char> str, size_t &idx);
 };
 
 #endif

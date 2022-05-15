@@ -19,10 +19,7 @@ void waiter::insert(const sock &s, short events)
 	tmp.fd = s._id;
 	tmp.events = events;
 	_pfd.push_back(tmp);
-	std::cout << "00000000000000000000" << std::endl;
-	std::cout << s._id << std::endl;
 	_sockets.push_back(s);
-	std::cout << "000000000000000000000" << std::endl;
 }
 
 void waiter::poll()
@@ -37,37 +34,35 @@ void waiter::poll()
 void waiter::accept()
 {
 	signal(SIGPIPE, SIG_IGN); // tmp
-	char buff[1024];
+	char buff[1025];
 	int j = 0;
 	for (size_t i = 0; i < _pfd.size(); i++)
 	{
 		if (_sockets[i]._status == 1 && (_pfd[i].revents & POLLIN))
 		{
-			sock csock;
+			sock csock(_sockets[i]._id);
 			std::cout << "accept" << std::endl;
-			// csock._conf = _sockets[i]._conf;
-			csock._request.set_conf(_sockets[i]._conf);
 			_sockets[i].accept(csock);
-			std::cout <<"|||||||||||||||||" <<_sockets[i]._conf.size() << std::endl;
 			insert(csock, POLLIN | POLLOUT);
-			std::cout <<"|=|=|=|=|=|=|=|=|" <<_sockets[1]._conf.size() << std::endl;
 			fcntl(csock._id, F_SETFL, O_NONBLOCK);
 		}
 		else if (_sockets[i]._status == 0)
 		{
 			request &req = _sockets[i]._request;
-			std::cout <<"++++++++++++++++++++++++++++++++" <<_sockets[i]._conf.size() << std::endl;
 			response *resp = req.resp;
 			
 			if ((_pfd[i].revents & POLLIN) && (resp == nullptr || resp->is_finished())) // read and handle new request
 			{
 				j = read(_sockets[i]._id, buff, 1024);
 				buff[j] = '\0';
-				req.append_data(buff);
+				req.append_data(buff, j);
 				req.handle();
 			}
 			if (req.get_status() == REQUEST_READY || req.get_status() == BAD_REQUEST)
+			{
 				req.gen_response();
+				resp = req.resp;
+			}
 			if (resp && !resp->is_finished() && (_pfd[i].revents & POLLOUT) )
 			{
 				int len = 0;
@@ -79,7 +74,7 @@ void waiter::accept()
 				}
 				else
 				{
-					len = req.resp->read(buff, 1024);
+					len = req.resp->read_body(buff, 1024);
 					write(_sockets[i]._id, buff, len);
 					std::cout << resp->get_status() << std::endl;
 					if ( resp->is_finished() && resp->get_status() > 399 && resp->get_status() < 500)

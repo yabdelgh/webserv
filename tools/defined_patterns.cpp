@@ -20,6 +20,7 @@ map<string, Pattern> get_patterns()
 	Single space(" ", 1);
 	Single white_space(" \n\r\t\f\v");
 	Single not_white_space(" \n\r\t\f\v", MATCH_OUT, 1);
+	Single not_uri_char("? \n\r\t\f\v", MATCH_OUT, 1);
 
 	Group spaced_number;
 	spaced_number.append(space)
@@ -45,9 +46,9 @@ map<string, Pattern> get_patterns()
 				   .append(Sequence("g", 1, 1))
 				   .append(Sequence("G", 1, 1));
 
-	Group body_size_limit;
+	Group body_size_limit(1, 1);
 	body_size_limit.append(number)
-		  		   .append(Or(body_size_units).set_max(1).set_min(1));
+		  		   .append(Or(body_size_units).set_max(1));
 	
 	Group ip;
 	ip.append(Single(" "))
@@ -128,11 +129,13 @@ map<string, Pattern> get_patterns()
 	patterns.insert(make_pair(" *{", Pattern().append(context_opening)));
 	patterns.insert(make_pair(" *}", Pattern().append(context_closing)));
 	patterns.insert(make_pair("\\S", Pattern().append(not_white_space)));
+	patterns.insert(make_pair("\\S?", Pattern().append(not_white_space.set_min(-1))));
 	patterns.insert(make_pair("\r\n", Pattern().append(Sequence("\r\n", 1, 1)))); // todo: replace \n with \r\n
 	patterns.insert(make_pair("[a-zA-Z](-[a-zA-Z])*", Pattern().append(http_header_key)));
 	patterns.insert(make_pair("[^\n\r\f\v]+", Pattern().append(Single("\n\r\f\v",MATCH_OUT, 1))));
 	patterns.insert(make_pair("transfer_encoding", Pattern().append(transfer_encoding)));
 	patterns.insert(make_pair("connection", Pattern().append(connection)));
+	patterns.insert(make_pair("not_uri_char", Pattern().append(not_uri_char)));
 	
 	return patterns;
 }

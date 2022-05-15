@@ -5,7 +5,7 @@ CXX = g++
 
 #CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 #CPPFLAGS =  -fsanitize=address -g -O3 -std=c++11
-CPPFLAGS =  -g -O3 -std=c++98
+CPPFLAGS =  -g -O3  -fsanitize=address -std=c++98
 
 CPPINCLUDE =	-I ./regex\
 		     	-I ./config_parser\

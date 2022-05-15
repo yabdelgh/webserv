@@ -24,13 +24,31 @@ sock::sock(const char *addr, short port, bool status)
 		this->default_config();
 }
 
+sock::sock(int parent_id):_request(parent_id)
+{
+	std::cout << "------------------------------------------" << std::endl;
+	this->_parent_id = parent_id;
+	_id = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (_id == -1)
+		throw std::runtime_error("error: socketttttt()");
+	if (_sin.sin_addr.s_addr == static_cast<in_addr_t>(-1))
+		throw std::runtime_error("error: inet_addr()"); 
+	// inet_addr is problematic because -1 is a valid address (255.255.255.255)
+	_sin.sin_family = AF_INET;
+	_sin.sin_port = htons(0);
+	_size = sizeof(_sin);
+	_status = 0;
+	if (_status)
+		this->default_config();
+}
+
 sock::sock(const sock &copy)
 {
 	_id = copy._id;
 	_status = copy._status;
 	_size = copy._size;
 	_sin = copy._sin;
-	_conf = copy._conf;
+	_parent_id = copy._parent_id;
 	_request = copy._request;
 	std::cout << _id << " socket copy constructor called" << std::endl;
 }
@@ -41,7 +59,7 @@ sock& sock::operator=(const sock &copy)
 	_status = copy._status;
 	_size = copy._size;
 	_sin = copy._sin;
-	_conf = copy._conf;
+	_parent_id = copy._parent_id;
 	_request = copy._request;
 	std::cout << _id << " socket assi constructor called"<< std::endl;
 		return (*this);	

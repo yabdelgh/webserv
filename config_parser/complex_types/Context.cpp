@@ -200,7 +200,7 @@ IParseable &Context::operator[](string const & key) {
     {
         return *it->second;
     }
-    throw runtime_error("IParseable key not " + key + " found");
+    throw runtime_error("IParseable key:" + key + " not found.");
 }
 
 

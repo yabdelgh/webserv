@@ -14,6 +14,7 @@ class sock // AF_INET AND SOCK_STREAM
 	
 	public:
 	sock(const char *addr = nullptr, const short port = 0, const bool status = 0);
+	sock(int parent_id);
 	sock(const sock &copy);
 	
 	public:
@@ -22,7 +23,7 @@ class sock // AF_INET AND SOCK_STREAM
 	unsigned int		_size;		// address size
 	struct	sockaddr_in	_sin;
 	request             _request;
-	std::vector<IParseable *>  _conf;
+	int					_parent_id;
 
 	public:
 	sock& operator=(const sock &copy);

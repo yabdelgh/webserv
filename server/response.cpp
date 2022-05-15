@@ -12,39 +12,44 @@
 #include <set>
 
 response::response() {}
-response::response(IParseable &header, IParseable &body, short status) : pos(0)
+response::response(IParseable &rheader, std::stringstream &rbody, IParseable *sconf, short status)
 {
-    input_type = STREAM;
-    sconf = nullptr;
-    loc = nullptr;
-    error_pages = nullptr;
-    allow_method = nullptr;
-    indexs = nullptr;
-    autoindex = false;
-    redire = false;
-    finished = false;
+    this->pos = 0;
+    this->input_type = STREAM;
+    this->sconf = sconf;
+    this->loc = nullptr;
+    this->error_pages = nullptr;
+    this->allow_method = nullptr;
+    this->indexs = nullptr;
+    this->autoindex = false;
+    this->redire = false;
+    this->finished = false;
+    this->header_finished = false;
     this->status = status;
-    content_len = true;
-    fd = -1;
+    this->content_len = true;
+    this->fd = -1;
 
     std::cout << "start response" << std::endl;
-    if (extract_config(header))
+    if (extract_config(rheader))
         this->status = (status == http::OK ? http::BAD_REQUEST : status);
     std::cout << "config extraction done" << std::endl;
-    if (!request_valide(header, body))
+    if (!request_valide(rheader))
         return;
-    std::cout << "method: " << header[0]["method"].str() << std::endl;
+    std::cout << "method: " << rheader[0]["method"].str() << std::endl;
     if (redire)
     {
-        IParseable &redire = (*loc)["return"];
-        generate_redirect(redire["status"].num(), redire["uri"].str());
+        IParseable &redire_inf = (*loc)[1]["return"];
+        std::cout << "is redire " << redire_inf["status"].num() << "  |" <<redire_inf["uri"].str() << "|"<< std::endl;
+        generate_redirect(redire_inf["status"].num(), redire_inf["uri"].str());
+        return;
     }
-    else if (header[0]["method"].str() == "GET")
-        handle_get_req(header, body);
-    else if (header[0]["method"].str() == "POST")
-        handle_post_req(header, body);
-    else if (header[0]["method"].str() == "DELETE")
-        handle_get_delete(header, body);
+    std::string ext = extension(rheader[0]["uri"].str());
+    if ((ext == "php" || ext == "py") && loc && loc[1].contains("cgi_pass"))
+        handle_cgi_req(rheader, rbody);
+    else if (rheader[0]["method"].str() == "GET")
+        handle_get_req(rheader, rbody);
+    else if (rheader[0]["method"].str() == "DELETE")
+        handle_get_delete(rheader, rbody);
 }
 
 response::~response() {}
@@ -52,39 +57,45 @@ response::~response() {}
 size_t response::read_header(char *buff, size_t size)
 {
     size_t ret = 0;
-    if (!finished)
+    if (!header_finished)
     {
         if (0)
         {
-		/*size_t pos;
-         	ret = read(fd, buff, size); // non-blocking read
-		if (ret == 0)
-			error_header(); // eof + header not finished
-		else if (ret == -1)
-			return (0) // no data + fd writer still exist
-		else
-		{
-			std::string str(buff, ret);
-			if (str.find("CONTENT_LENGHT") != std::string::npos)
-				content_len = true;
-			pos = str.find("\r\n\r\n");
-			if (pos != std::string::npos && pos + 4 != str.size)
-			{
-				stream << str.substr(pos + 4);
-				// header finished
-				return (pos + 4);
-			}
-		}*/
+            size_t pos;
+                ret = read(fd, buff, size); // non-blocking read
+            if (ret == 0)
+            {  // eof + header not finished
+                header_finished = true;
+                finished = true;
+                status = http::UNAVAILABLE;
+            } 
+            else if (ret == -1)
+                ret = 0; // no data + fd writer still exist
+            else
+            {
+                std::string str(buff, ret);
+                if (str.find("CONTENT_LENGHT") != std::string::npos)
+                    content_len = true;
+                pos = str.find("\r\n\r\n");
+                if (pos != std::string::npos && pos + 4 != str.size())
+                {
+                    ret = pos + 4;
+                    body << str.substr(ret);
+                    header_finished = true;
+                }
+            }
         }
         else
+        {
             ret = header.read(buff, size).gcount();
-        // if (body.tellg() == 0)
-        //     finished = true;
+            if (header.bad() || header.eof())
+                header_finished = true;
+        }
     }
     return ret;
 }
 
-size_t response::read(char *buff, size_t size)
+size_t response::read_body(char *buff, size_t size)
 {
     size_t ret = 0;
     if (!finished)
@@ -132,7 +143,7 @@ size_t response::read(char *buff, size_t size)
     return ret;
 }
 
-bool response::request_valide(IParseable &header, IParseable &body)
+bool response::request_valide(IParseable &header)
 {
     std::cout << "request_valide" << std::endl;
     if (status != http::OK)
@@ -255,17 +266,69 @@ bool response::is_finished()
     return finished;
 }
 
-void response::handle_get_req(IParseable &header, IParseable &body)
+bool response::is_header_finished()
+{
+    return header_finished;
+}
+
+void response::handle_cgi_req(IParseable &rheader, std::stringstream &rbody)
 {
     struct stat s;
-    std::string path = joinpath(root, cleanpath(header[0]["uri"].str()));
+    std::string path = joinpath(root, cleanpath(rheader[0]["uri"].str()));
 
+    std::cout << "requested filepath: " << path << std::endl;
     if (stat(path.c_str(), &s) == 0)
     {
         if (s.st_mode & S_IFDIR) // Is Directory
         {
             if (path.back() != '/')
-                generate_redirect(301, header[0]["uri"].str() + "/"); // directory
+                generate_redirect(301, rheader[0]["uri"].str() + "/"); // directory
+            else if (join_index(path))
+            {
+                // fd = call_cgi(rheader, rbody, sconf, loc, path);
+                if (fd > 0)
+                {
+                    content_len = false;
+                    input_type = INPIPE;
+                }
+                else
+                    generate_response_error(http::INTERNAL_SERVER_ERROR);
+            }
+            else if (autoindex)
+                generate_autoindex(path);
+            else
+                generate_response_error(http::FORBIDDEN);
+        }
+        else if (s.st_mode & S_IFREG) // Is File
+        {
+            // fd = call_cgi(rheader, rbody, sconf, loc, path);
+            if (fd > 0)
+            {
+                content_len = false;
+                input_type = INPIPE;
+            }
+            else
+                generate_response_error(http::INTERNAL_SERVER_ERROR);
+        }
+        else // something else
+            generate_response_error(http::UNAVAILABLE);
+    }
+    else
+        generate_response_error(http::NOT_FOUND); // something else
+}
+
+void response::handle_get_req(IParseable &rheader, std::stringstream &rbody)
+{
+    struct stat s;
+    std::string path = joinpath(root, cleanpath(rheader[0]["uri"].str()));
+
+    std::cout << "requested filepath: " << path << std::endl;
+    if (stat(path.c_str(), &s) == 0)
+    {
+        if (s.st_mode & S_IFDIR) // Is Directory
+        {
+            if (path.back() != '/')
+                generate_redirect(301, rheader[0]["uri"].str() + "/"); // directory
             else if (join_index(path))
             {
                 set_header("", "HTTP/1.1 200 OK");
@@ -288,11 +351,7 @@ void response::handle_get_req(IParseable &header, IParseable &body)
         generate_response_error(http::NOT_FOUND); // something else
 }
 
-void response::handle_post_req(IParseable &header, IParseable &body)
-{
-}
-
-void response::handle_get_delete(IParseable &header, IParseable &body)
+void response::handle_get_delete(IParseable &rheader, std::stringstream &rbody)
 {
 }
 
@@ -310,12 +369,7 @@ std::string response::contentType(std::string path)
 
 bool response::extract_config(IParseable &header)
 {
-    if (!header[1].contains("host"))
-        return true;
     std::string &host = header[1]["host"]["value"].str();
-    sconf = find_server_conf(*GS.server_conf, host);
-    if (sconf == nullptr)
-        return true;
     loc = find_location((*sconf)["location"], header[0]["uri"].str());
     root = (*sconf)["root"].str();
     if (sconf->contains("error_page"))
@@ -328,14 +382,14 @@ bool response::extract_config(IParseable &header)
     {
         if ((*loc)[1].contains("root"))
             root = (*loc)[1]["root"].str();
-        loc = &loc[1];
-        allow_method = &(*loc)["allow_methods"].str_set();
-        autoindex = (*loc)["autoindex"].str() == "on";
-        redire = (*loc).contains("return");
+        IParseable &context = (*loc)[1];
+        allow_method = &context["allow_methods"].str_set();
+        autoindex = context["autoindex"].str() == "on";
+        redire = context.contains("return");
         if (loc->contains("error_page"))
-            error_pages = &(*loc)["error_page"];
+            error_pages = &context["error_page"];
         if (loc->contains("index"))
-            indexs = &(*loc)["index"].str_set();
+            indexs = &context["index"].str_set();
     }
     return false;
 }

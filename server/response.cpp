@@ -12,7 +12,7 @@
 #include <set>
 
 response::response() {}
-response::response(IParseable &rheader, std::stringstream &rbody, IParseable *sconf, short status)
+response::response(IParseable &rheader, std::string rbody, IParseable *sconf, short status)
 {
     this->pos = 0;
     this->input_type = STREAM;
@@ -44,12 +44,14 @@ response::response(IParseable &rheader, std::stringstream &rbody, IParseable *sc
         return;
     }
     std::string ext = extension(rheader[0]["uri"].str());
-    if ((ext == "php" || ext == "py") && loc && loc[1].contains("cgi_pass"))
+    if (ext != "" && loc && (*loc)[1].contains("cgi_pass"))
         handle_cgi_req(rheader, rbody);
     else if (rheader[0]["method"].str() == "GET")
         handle_get_req(rheader, rbody);
     else if (rheader[0]["method"].str() == "DELETE")
         handle_get_delete(rheader, rbody);
+    else
+        generate_response_error(http::INTERNAL_SERVER_ERROR);
 }
 
 response::~response() {}
@@ -59,34 +61,36 @@ size_t response::read_header(char *buff, size_t size)
     size_t ret = 0;
     if (!header_finished)
     {
-        if (0)
+        if (input_type == INPIPE)
         {
-            size_t pos;
-                ret = read(fd, buff, size); // non-blocking read
-            if (ret == 0)
-            {  // eof + header not finished
-                header_finished = true;
-                finished = true;
-                status = http::UNAVAILABLE;
-            } 
-            else if (ret == -1)
-                ret = 0; // no data + fd writer still exist
-            else
-            {
-                std::string str(buff, ret);
-                if (str.find("CONTENT_LENGHT") != std::string::npos)
-                    content_len = true;
-                pos = str.find("\r\n\r\n");
-                if (pos != std::string::npos && pos + 4 != str.size())
-                {
-                    ret = pos + 4;
-                    body << str.substr(ret);
-                    header_finished = true;
-                }
-            }
+            // size_t pos;
+            //     ret = read(fd, buff, size); // non-blocking read
+            // if (ret == 0)
+            // {  // eof + header not finished
+            //     header_finished = true;
+            //     finished = true;
+            //     status = http::UNAVAILABLE;
+            // } 
+            // else if (ret == -1)
+            //     ret = 0; // no data + fd writer still exist
+            // else
+            // {
+            //     std::string str(buff, ret);
+            //     pos = str.find("\r\n\r\n");
+            //     if (pos != std::string::npos && pos + 4 != str.size())
+            //     {
+            //         ret = pos + 4;
+            //         body << &str[ret];
+            //         header_finished = true;
+            //     }
+            //     content_len = str.find("Content-Length", 0, ret) != std::string::npos;
+            // }
+            header_finished = true;
         }
         else
         {
+            if (header.tellg() == 0)
+                header << "\r\n";
             ret = header.read(buff, size).gcount();
             if (header.bad() || header.eof())
                 header_finished = true;
@@ -106,33 +110,29 @@ size_t response::read_body(char *buff, size_t size)
             if (body.eof())
                 finished = true;
         }
-	else if (0)
-	{
-	/*	if (content_lenght == false)
-		{
-			std::stringstream sstream;
-			sstream << std::hex << size;
-			std::string result = sstream.str();
-			ret = ::read(fd, buff, size - 6(\r\n * 3)  - result.size());
-			if (ret == 0)
-				//end_body() +  return val;
-			else if (ret == -1)
-				return (0) // no data + fd writer still exist
-			// non-blocking read and size must be greater than 22
-			sstream << std::hex << ret;
-			result	 = sstream.str() + "\r\n";
-			result.append(buff, ret);
-			resutl	+= "\r\n\r\n";
-			return (result.copy(buff, result.size()));
-		}
-		ret = ::read(fd, buff, size);
-		if (ret == 0)
-			//end_body() +  return val;
-		else if (ret == -1)
-			return (0) // no data + fd writer still exist
-		return (ret); */
-		
-	}
+        else if (input_type == INPIPE)
+        {
+        	// if (content_len == false)
+            // {
+                // std::stringstream sstream;
+                // sstream << std::hex << size;
+                // std::string result = sstream.str();
+                // ret = ::read(fd, buff, size - 6(\r\n * 3) - result.size());
+                // if (ret == 0)
+                //     //end_body() +  return val;
+                // else if (ret == -1)
+                //     return (0) // no data + fd writer still exist
+                // // non-blocking read and size must be greater than 22
+                // sstream << std::hex << ret;
+                // result	 = sstream.str() + "\r\n";
+                // result.append(buff, ret);
+                // resutl	+= "\r\n\r\n";
+                // return (result.copy(buff, result.size()));
+            // }
+            ret = read(fd, buff, size);
+            if (ret == 0)
+                finished = true;            
+        }
         else if (bodyfile->is_open())
         {
             ret = bodyfile->read(buff, size).gcount();
@@ -271,7 +271,7 @@ bool response::is_header_finished()
     return header_finished;
 }
 
-void response::handle_cgi_req(IParseable &rheader, std::stringstream &rbody)
+void response::handle_cgi_req(IParseable &rheader, std::string &rbody)
 {
     struct stat s;
     std::string path = joinpath(root, cleanpath(rheader[0]["uri"].str()));
@@ -286,6 +286,7 @@ void response::handle_cgi_req(IParseable &rheader, std::stringstream &rbody)
             else if (join_index(path))
             {
                 // fd = call_cgi(rheader, rbody, sconf, loc, path);
+                fd = launch_cgi(rheader, *sconf, rbody, path.c_str());
                 if (fd > 0)
                 {
                     content_len = false;
@@ -301,7 +302,7 @@ void response::handle_cgi_req(IParseable &rheader, std::stringstream &rbody)
         }
         else if (s.st_mode & S_IFREG) // Is File
         {
-            // fd = call_cgi(rheader, rbody, sconf, loc, path);
+            fd = launch_cgi(rheader, *sconf, rbody, path.c_str());
             if (fd > 0)
             {
                 content_len = false;
@@ -317,7 +318,7 @@ void response::handle_cgi_req(IParseable &rheader, std::stringstream &rbody)
         generate_response_error(http::NOT_FOUND); // something else
 }
 
-void response::handle_get_req(IParseable &rheader, std::stringstream &rbody)
+void response::handle_get_req(IParseable &rheader, std::string &rbody)
 {
     struct stat s;
     std::string path = joinpath(root, cleanpath(rheader[0]["uri"].str()));
@@ -351,7 +352,7 @@ void response::handle_get_req(IParseable &rheader, std::stringstream &rbody)
         generate_response_error(http::NOT_FOUND); // something else
 }
 
-void response::handle_get_delete(IParseable &rheader, std::stringstream &rbody)
+void response::handle_get_delete(IParseable &rheader, std::string &rbody)
 {
 }
 
@@ -369,7 +370,6 @@ std::string response::contentType(std::string path)
 
 bool response::extract_config(IParseable &header)
 {
-    std::string &host = header[1]["host"]["value"].str();
     loc = find_location((*sconf)["location"], header[0]["uri"].str());
     root = (*sconf)["root"].str();
     if (sconf->contains("error_page"))

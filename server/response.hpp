@@ -5,6 +5,8 @@
 #include <sstream>
 #include "enum.hpp"
 
+int launch_cgi(IParseable &header, IParseable &loc, std::string &filename, const char *path);
+
 class response
 {
 private:
@@ -31,7 +33,7 @@ private:
 
 public:
     response();
-    response(IParseable &rheader, std::stringstream &rbody, IParseable *sconf, short status);
+    response(IParseable &rheader, std::string rbody, IParseable *sconf, short status);
     ~response();
     // handle_get();
     bool request_valide(IParseable &header);
@@ -50,9 +52,9 @@ public:
     std::string contentType(std::string path);
     void set_header(std::string const& name, std::string const& value);
 
-    void handle_cgi_req(IParseable &rheader, std::stringstream &rbody);
-    void handle_get_req(IParseable &rheader, std::stringstream &rbody);
-    void handle_get_delete(IParseable &rheader, std::stringstream &rbody);
+    void handle_cgi_req(IParseable &rheader, std::string &rbody);
+    void handle_get_req(IParseable &rheader, std::string &rbody);
+    void handle_get_delete(IParseable &rheader, std::string &rbody);
     bool extract_config(IParseable &req_header);
     bool join_index(std::string &path);
 };

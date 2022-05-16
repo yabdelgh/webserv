@@ -47,7 +47,8 @@ SERVER_SRC =	server/socket.cpp\
 				server/request.cpp\
 				server/waiter.cpp\
 				server/response.cpp\
-				server/server.cpp
+				server/server.cpp\
+				server/cgi.cpp
 
 TEST_SRC = main.cpp			
 
@@ -57,8 +58,6 @@ SERVER_OBJS = $(addprefix $(OBJ_DIR),$(SERVER_SRC:.cpp=.o))
 TEST_OBJS = $(addprefix $(OBJ_DIR),$(TEST_SRC:.cpp=.o))
 
 all : $(NAME)
-
-all : $(TEST_NAME)
 
 $(NAME): $(OBJS) $(SERVER_OBJS)
 	$(CXX) $(CPPFLAGS) $(OBJS) $(SERVER_OBJS) -o $(NAME) 

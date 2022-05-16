@@ -54,3 +54,8 @@ IParseable *Frequent::clone() const
 {
     return new Frequent(*this);
 }
+
+std::vector<IParseable*> &Frequent::get_parseables()
+{
+    return parseables;
+}

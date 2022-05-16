@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include<set>
+#include<cstring>
 
 #define INVALID_TYPE_ERROR "INVALID TYPE"
 

@@ -58,7 +58,7 @@ void waiter::accept()
 				req.append_data(buff, j);
 				req.handle();
 			}
-			if (req.get_status() == REQUEST_READY || req.get_status() == BAD_REQUEST)
+			if (req.get_status() == REQUEST_READY)
 			{
 				req.gen_response();
 				resp = req.resp;
@@ -69,8 +69,6 @@ void waiter::accept()
 				if ((len = req.resp->read_header(buff, 1024)))
 				{
 					write(_sockets[i]._id, buff, len);
-					if (len < 1024)
-						write(_sockets[i]._id, "\r\n", 2); // header body splitter
 				}
 				else
 				{

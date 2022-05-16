@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include <list>
+#include <fstream>
 #include <sstream>
 #include "tools.hpp"
 #include "IParseable.hpp"

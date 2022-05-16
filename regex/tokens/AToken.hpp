@@ -4,6 +4,7 @@
 # include <string>
 # include <sstream>
 # include <iostream>
+# include <cstring>
 
 #define between(x, min, max) (x >= min && x <= max)
 

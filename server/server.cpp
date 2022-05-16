@@ -9,6 +9,7 @@
 #include "GlobalStorage.hpp"
 #include <map>
 #include <utility>
+#include "server_config_helper.hpp"
 
 
 std::map<std::pair<std::string, short>, short > get_listeners(IParseable &conf)
@@ -33,6 +34,7 @@ int main(int ac, char **av)
 		std::cout << (conf.parse(content, idx) ? "good" : "bad") << std::endl;
 		try
 		{
+			sort_locations(conf["server"]);
 			GS.server_conf = &conf["server"];
 			waiter	serve;
 			serve.insert(get_listeners(conf), conf);

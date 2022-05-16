@@ -5,6 +5,7 @@
 #include "simple_types/Int.hpp"
 #include "defined_patterns.hpp"
 #include "tools.hpp"
+#include "complex_types/Frequent.hpp"
 
 bool compare_ip(std::string const &ip1, std::string const &ip2)
 {
@@ -47,13 +48,18 @@ IParseable *find_server_conf(IParseable &conf, std::string const &host)
     return &conf[i];
 }
 
-IParseable *find_location(IParseable &locations, std::string const &path)
+IParseable *find_location(IParseable &locations, std::string const &path, int depth)
 {
     std::string ext = "*." + extension(path);
-    IParseable * location = find_location(locations, ext);
-
-    if (location)
-        return location;
+    if (depth == 0 && ext != "*.")
+    {
+        IParseable *location = find_location(locations, ext, 1);
+        if (location)
+        {
+            std::cout << "goast location: " << std::endl;
+            return location;
+        }
+    }
     for (size_t i = 0; i < locations.size(); i++)
     {
         std::string const &uri = locations[i]["uri"].str();
@@ -61,6 +67,7 @@ IParseable *find_location(IParseable &locations, std::string const &path)
         {
             if (::strncasecmp(uri.c_str(), path.c_str(), uri.size()) == 0)
             {
+                std::cout << "location: " << i << std::endl;
                 return &locations[i];
             }
         }
@@ -76,11 +83,10 @@ size_t get_client_body_limit(IParseable &conf, IParseable *location)
     unit = conf["client_body_buffer_size"]["unit"].str()[0];
     if (location)
     {
-        client_body_limit = (*location)["client_body_buffer_size"]["limit"].num();
-        unit = (*location)["client_body_buffer_size"]["unit"].str()[1];
+        client_body_limit = (*location)[1]["client_body_buffer_size"]["limit"].num();
+        unit = (*location)[1]["client_body_buffer_size"]["unit"].str()[0];
 
     }
-    std:cout << "client_body_limit: " << client_body_limit << "  unit: " << unit << std::endl;
     switch (tolower(unit))
     {
         case 'g':
@@ -92,3 +98,22 @@ size_t get_client_body_limit(IParseable &conf, IParseable *location)
     }
     return client_body_limit;
 }
+
+bool compareLocations(IParseable *l1, IParseable *l2)
+{
+    return ((*l1)["uri"].str().size() > (*l2)["uri"].str().size());
+}
+
+void sort_locations(IParseable &serv_conf)
+{
+    for (size_t i = 0; i < serv_conf.size(); i++)
+    {
+        if (serv_conf[i].contains("location"))
+        {
+            std::vector<IParseable *> &locations = static_cast<Frequent &>(serv_conf[i]["location"]).get_parseables();
+            if (locations.size() > 0)
+                sort(locations.begin() ,locations.end() ,compareLocations);
+        }
+    }
+}
+

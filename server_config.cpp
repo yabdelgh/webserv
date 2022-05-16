@@ -64,15 +64,20 @@ IParseable *get_server_config()
     Directive autoindex;
     autoindex.push_parseable(String(p["spaces"]));
     autoindex.push_parseable("value",String(p["off|on"]));
+
+    Directive cgi_pass;
+    cgi_pass.push_parseable(String(p["spaces"]));
+    cgi_pass.push_parseable("value",String(p["\\S"]));
     
     Context location_context(p[" *{"],p[" *}"],p["key"]);
     location_context.insert_parseables("root", root);
     location_context.insert_parseables("allow_methods", allowed_methods, true);
     location_context.insert_parseables("return", redirect);
     location_context.insert_parseables("index", index);
-    location_context.insert_parseables("client_body_buffer_size", body_size_limit);
+    location_context.insert_parseables("client_body_buffer_size", body_size_limit, true);
     location_context.insert_parseables("error_page", Frequent(error_page));
     location_context.insert_parseables("autoindex", autoindex, true);
+    location_context.insert_parseables("cgi_pass", cgi_pass);
 
     Directive location;
     location.push_parseable("uri", root);

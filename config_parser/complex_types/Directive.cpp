@@ -62,11 +62,11 @@ bool Directive::cont_parse(std::string &str, size_t &idx)
 IParseable &Directive::operator[](string const &name) {
     for (size_t i = 0; i < parseables.size() ; i++)
     {
-        if (parseables[i].first == name)
+        if (strcasecmp(parseables[i].first.c_str(), name.c_str()) == 0)
             return *parseables[i].second;
     }
     // throw runtime_error("IParseable key not " + name + " found");
-    throw runtime_error("IParseable key:" + name + " not found.");
+    throw runtime_error("Directive: IParseable key:" + name + " not found.");
 }
 
 IParseable &Directive::operator[](size_t idx) {

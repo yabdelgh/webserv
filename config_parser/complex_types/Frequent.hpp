@@ -19,6 +19,7 @@ public:
     IParseable &operator[](size_t idx);
     size_t size() const;
     IParseable *clone() const;
+    std::vector<IParseable*> &get_parseables();
 };
 
 

@@ -102,12 +102,12 @@ void request::parse_header()
             std::cout << "bad header" << std::endl;
             status = REQUEST_READY;
             resp_status = http::BAD_REQUEST;
+            req_conf = find_server_conf(GS.socket_confs[socket_id], "");
             return;
         }
         req_conf = find_server_conf(GS.socket_confs[socket_id], header[1]["host"].str());
         loc_conf = find_location((*req_conf)["location"], header[0]["uri"].str());
         content = std::vector<char>(&content[idx], &content[content.size()]);
-        // std::cout << "remainder |" << std::string(content.data(), content.size()) << "|" << std::endl;
         status = INCOMPLETE_BODY;
     }
 }
@@ -118,41 +118,32 @@ void request::parse_body()
     if (status == INCOMPLETE_BODY)
     {  
         if (header[0]["method"].get_string() == "GET")
-        {
-            std::cout << "get method no body" << std::endl;
             status = REQUEST_READY;
-        }
         else if (header[0]["method"].get_string() == "DELETE")
-        {
-            std::cout << "delete method no body" << std::endl;
             status = REQUEST_READY;
-        }
         else if (header[0]["method"].get_string() == "POST")
         {
-            std::cout << "parsing post body" << std::endl;
             if (header[1].contains("Content-Length"))
             {
                 header[1]["Content-Length"].num();
-                std::cout << "body with length" << std::endl;
                 body_size_limit = get_client_body_limit(*req_conf, loc_conf);
-                std::cout << "body limit is " << body_size_limit << std::endl;
                 chunked = false;
                 body_size  = remainder_body_size = header[1]["Content-Length"].num();
-                std::cout << "content length " << body_size << std::endl;
+                std::cout << "content_length: " << body_size << "limit: " << body_size_limit << std::endl;
                 if (body_size > body_size_limit)
                 {
                     status = REQUEST_READY;
                     resp_status = http::PAYLOAD_TOO_LARGE;
                 }
                 status = SAVING_BODY;
-                // body_stream = new std::ofstream(mktemp(body_filename), std::ios::trunc);
+                body_stream = new std::ofstream(mktemp(body_filename), std::ios::trunc);
             }
             else if (header[1].contains("Transfer-Encoding") && header[1]["Transfer-Encoding"].str() == "chunked")
             {
                 std::cout << "body chunked" << std::endl;
                 chunked = true;
                 status = SAVING_BODY;
-                // body_stream = new std::ofstream(mktemp(body_filename), std::ios::trunc);
+                body_stream = new std::ofstream(mktemp(body_filename), std::ios::trunc);
             }
             else 
             {
@@ -181,9 +172,10 @@ void request::parse_body()
 void request::append_data(char const * data, size_t size)
 {
 	std::cout << "appending" << std::endl;
-    if (status == INCOMPLETE_HEADER && std::string(data).find("\r\n\r\n") != std::string::npos)
+    size_t n = content.size() - std::min(size_t(3), content.size());
+    content.insert(content.end(), data, data + size);
+    if (status == INCOMPLETE_HEADER && strnstr(content.data() + n, "\r\n\r\n", size + n))
         status = HEADER_READY;
-    content.assign(data, data + size);
 }
 
 void request::handle()
@@ -197,7 +189,7 @@ void request::handle()
 response &request::gen_response()
 {
     delete resp;
-    resp = new response(header, body, req_conf, resp_status);
+    resp = new response(header, body_filename, req_conf, resp_status);
     status = INCOMPLETE_HEADER;
     return *resp;
 }
@@ -231,7 +223,8 @@ void request::write_body()
             size_t size = std::stol(str_size, nullptr, 16);
             if (size + str_size.size() >= content.size())
             {
-                body.write(content.data() + str_size.size(), size);
+                // body.write(content.data() + str_size.size(), size);
+                body_stream->write(content.data() + str_size.size(), size);
                 // content = &content[size + str_size.size()];
                 content = std::vector<char>(&content[size + str_size.size()], &content[content.size()]);
                 body_size += size;
@@ -248,11 +241,17 @@ void request::write_body()
     else
     {
         size_t size = std::min(remainder_body_size, content.size());
-        body.write(content.data(), size);
+        // body.write(content.data(), size);
+        body_stream->write(content.data(), size);
         remainder_body_size -= size;
         content = std::vector<char>(&content[size], &content[content.size()]);
         if (remainder_body_size == 0)
             status = REQUEST_READY;
     }
-    std::cout << "body: |" << body.str() << "|" << std::endl; 
+    if (!body_stream->is_open() || body_stream->bad())
+    {
+        resp_status = http::INSUFFICIENT_STORAGE;
+        status = REQUEST_READY;
+    }
+    // std::cout << "body: |" << body.str() << "|" << std::endl; 
 }

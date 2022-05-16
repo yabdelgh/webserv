@@ -13,10 +13,16 @@ server {
 	
 	error_page 404 403 error.html
 
-	location / {
+	location *.php {
+		cgi_pass /Users/aait-ihi/.brew/opt/php@7.4/bin/php-cgi
 		client_body_buffer_size 20k
 		index index.html
-		root test_us/root
+		autoindex on
+	}
+	location / {
+		
+		client_body_buffer_size 20k
+		index index.html
 		autoindex on
 	}
 }

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "IParseable.hpp"
+#include <cstring>
 
 
 # define WHITESPACE " \n\r\t\f\v"

@@ -1,6 +1,7 @@
+#include <iostream>
+#include <string.h>
 #include "./request.hpp"
 #include "tools.hpp"
-#include <iostream>
 #include "server_config_helper.hpp"
 #include "GlobalStorage.hpp"
 

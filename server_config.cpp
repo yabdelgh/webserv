@@ -50,10 +50,12 @@ IParseable *get_server_config()
     index.push_parseable(String(p["spaces"]))
          .push_parseable("value", StringArray(p["str_array"]));
 
+    std::vector<std::string> methods;
+    methods.push_back("GET"), methods.push_back("POST"), methods.push_back("DELETE");
     Directive allowed_methods;
     allowed_methods.push_parseable(String(p["spaces"]));
     allowed_methods.push_parseable("value",
-    StringArray(p["http_methods"], (std::string[]){"GET", "POST", "DELETE"}, 3));
+    StringArray(p["http_methods"], methods.data(), 3));
 
     Directive redirect;
     redirect.push_parseable(String(p["spaces"]));

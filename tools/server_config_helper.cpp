@@ -6,6 +6,7 @@
 #include "defined_patterns.hpp"
 #include "tools.hpp"
 #include "complex_types/Frequent.hpp"
+#include <algorithm>
 
 bool compare_ip(std::string const &ip1, std::string const &ip2)
 {

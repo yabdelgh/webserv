@@ -122,7 +122,7 @@ size_t response::read_header(char *buff, size_t size)
         }
         else
         {
-            std::cerr << "reading simple header" << std::endl;
+            std::cout << "header |" << header.str() << "|" << std::endl;
             if (header.tellg() == 0)
                 header << "\r\n";
             ret = header.read(buff, size).gcount();
@@ -139,10 +139,8 @@ size_t response::read_body(char *buff, size_t size)
     size_t ret = 0;
     if (!finished)
     {
-        std::cout << "body is finished ? " << finished << std::endl;
         if (input_type == STREAM)
         {
-            std::cout << "body stream" << std::endl;
             ret = body.read(buff, size).gcount();
             if (body.eof())
                 finished = true;
@@ -473,15 +471,18 @@ void response::set_header(std::string const &name, std::string const &value)
 
 bool response::join_index(std::string &path)
 {
-    std::set<std::string>::iterator it = indexs->begin();
-    for (; it != indexs->end(); it++)
+    if (indexs)
     {
-        std::string tmp = joinpath(path, *it);
-        std::cout << path << "   " << *it << std::endl;
-        if (access(tmp.c_str(), F_OK | R_OK) == 0)
+        std::set<std::string>::iterator it = indexs->begin();
+        for (; it != indexs->end(); it++)
         {
-            path = tmp;
-            return true;
+            std::string tmp = joinpath(path, *it);
+            std::cout << path << "   " << *it << std::endl;
+            if (access(tmp.c_str(), F_OK | R_OK) == 0)
+            {
+                path = tmp;
+                return true;
+            }
         }
     }
     return false;

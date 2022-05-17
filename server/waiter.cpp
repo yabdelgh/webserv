@@ -68,8 +68,8 @@ void waiter::connections_handler()
 			}
 			if (ret > 0)
 			{
-				buff[j] = '\0';
-				req.append_data(buff, j);
+				buff[ret] = '\0';
+				req.append_data(buff, ret);
 				req.handle();
 			}
 		}

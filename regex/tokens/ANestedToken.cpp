@@ -12,7 +12,6 @@ namespace rgx
     ANestedToken::~ANestedToken()
     {
         clear();
-        std::cout << "ANestedToken destructor" << std::endl;
     }
 
     void ANestedToken::clear()

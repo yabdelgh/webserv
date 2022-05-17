@@ -15,7 +15,6 @@ Frequent::~Frequent()
     }
     parseables.clear();
     delete this->parseable;
-    std::cout << "Frequent destructor called" << std::endl;
 }
 
 Frequent &Frequent::operator=(Frequent const &other) {

@@ -82,13 +82,13 @@ map<string, Pattern> get_patterns()
 	Group key;
 		key.append(not_white_space);
 
-	Group context_opening;
+	Group context_opening(1, 1);
 		context_opening.append(Single(space).set_max(-1).set_min(-1))
-					   .append(Single("{", 1));
+					   .append(Single("{", 1, 1));
 	
-	Group context_closing;
+	Group context_closing(1, 1);
 		context_closing.append(Single(space).set_max(-1).set_min(-1))
-					   .append(Single("}", 1));
+					   .append(Single("}", 1, 1));
 	
 	Or alpha(1);
 	alpha.append(Between('a', 'z', 1))

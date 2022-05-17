@@ -31,7 +31,6 @@ Context::~Context()
     for ( ; it != parseables.end(); it++)
         delete it->second;
     parseables.clear();
-    std::cout << "Context destructor called" << std::endl;
 }
 
 Context &Context::operator=(Context const &other) 

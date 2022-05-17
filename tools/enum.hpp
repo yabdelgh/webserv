@@ -14,7 +14,8 @@ enum OutPutType
 {
     STREAM,
     INFILE,
-    INPIPE
+    INPIPE,
+    INBODYPIPE
 };
 
 

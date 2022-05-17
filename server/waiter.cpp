@@ -54,9 +54,19 @@ void waiter::accept()
 			if ((_pfd[i].revents & POLLIN) && (resp == nullptr || resp->is_finished())) // read and handle new request
 			{
 				j = read(_sockets[i]._id, buff, 1024);
-				buff[j] = '\0';
-				req.append_data(buff, j);
-				req.handle();
+				if (j == 0)
+				{
+					std::cout << "close" << std::endl;
+					close(_sockets[i]._id);
+					_sockets[i]._id = -1;
+					continue;
+				}
+				if (j > 0)
+				{
+					buff[j] = '\0';
+					req.append_data(buff, j);
+					req.handle();
+				}
 			}
 			if (req.get_status() == REQUEST_READY)
 			{
@@ -66,15 +76,21 @@ void waiter::accept()
 			if (resp && !resp->is_finished() && (_pfd[i].revents & POLLOUT) )
 			{
 				int len = 0;
-				if ((len = req.resp->read_header(buff, 1024)))
+				std::cout << "POLLOUT" << std::endl;
+				if (!req.resp->is_header_finished())
 				{
+					len = req.resp->read_header(buff, 1024);
+					std::cout << "header: |" << std::string(buff, len) << "|" << std::endl;
+					std::cout << "write header size: " << len << std::endl;
 					write(_sockets[i]._id, buff, len);
 				}
 				else
 				{
 					len = req.resp->read_body(buff, 1024);
-					write(_sockets[i]._id, buff, len);
-					std::cout << resp->get_status() << std::endl;
+					std::cout << "body: |" << std::string(buff, len) << "|" << std::endl;
+					std::cout << "write body size: " << len << std::endl;
+					len = write(_sockets[i]._id, buff, len);
+					std::cout << "wrote: " << len << std::endl;
 					if ( resp->is_finished() && resp->get_status() > 399 && resp->get_status() < 500)
 					{
 						std::cout << "close" << std::endl;

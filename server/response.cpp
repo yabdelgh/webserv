@@ -1,15 +1,16 @@
-#include "./response.hpp"
-#include "./request.hpp"
 #include <sstream>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
 #include "tools.hpp"
-#include "server_config_helper.hpp"
-#include "GlobalStorage.hpp"
 #include <fstream>
 #include <iostream>
 #include <set>
+#include <stdlib.h>
+#include "./response.hpp"
+#include "./request.hpp"
+#include "server_config_helper.hpp"
+#include "GlobalStorage.hpp"
 
 response::response() {}
 response::response(IParseable &rheader, std::string rbody, IParseable *sconf, short status)
@@ -63,32 +64,55 @@ size_t response::read_header(char *buff, size_t size)
     {
         if (input_type == INPIPE)
         {
-            // size_t pos;
-            //     ret = read(fd, buff, size); // non-blocking read
-            // if (ret == 0)
-            // {  // eof + header not finished
-            //     header_finished = true;
-            //     finished = true;
-            //     status = http::UNAVAILABLE;
-            // } 
-            // else if (ret == -1)
-            //     ret = 0; // no data + fd writer still exist
-            // else
-            // {
-            //     std::string str(buff, ret);
-            //     pos = str.find("\r\n\r\n");
-            //     if (pos != std::string::npos && pos + 4 != str.size())
-            //     {
-            //         ret = pos + 4;
-            //         body << &str[ret];
-            //         header_finished = true;
-            //     }
-            //     content_len = str.find("Content-Length", 0, ret) != std::string::npos;
-            // }
-            header_finished = true;
+            size_t pos;
+            strcpy(buff, header_remaining.c_str());
+            size_t remaining_size = header_remaining.length();
+            ret = read(fd, buff + remaining_size, size - remaining_size); // non-blocking read
+            if (ret == 0)
+            {  // eof + header not finished
+                header_finished = true;
+                status = http::UNAVAILABLE;
+            } 
+            else if (ret == -1)
+                ret = 0; // no data + fd writer still exist
+            else
+            {
+                ret += remaining_size;
+                std::string str(buff, ret);
+                pos = str.find("\r\n\r\n");
+                if (pos != std::string::npos)
+                {
+                    ret = pos + 4;
+                    body << &str[ret];
+                    header.write(str.c_str(), ret - 2);
+                    input_type = INBODYPIPE;
+                    std::string head = header.str();
+                    if (head.find("Content-Length", 0, ret) == std::string::npos)
+                    {
+                        content_len = false;
+                        set_header("Transfer-Encoding", "chunked");
+                    }
+                    pos = head.find("Status: ", 0, ret);
+                    strcpy(buff, "HTTP/1.1 202 KO\r\n");
+                    if (pos != std::string::npos)
+                    {
+                        pos += 8;
+                        strncpy(buff + 9 , &head[pos] , head.find("\r\n", pos) - pos + 2);
+                    }
+                    return strlen(buff);
+                }
+                else
+                {
+                    header_remaining = str.substr(str.size() - std::min(size_t(3), str.size()));
+                    ret -= std::min(size_t(3), str.size());
+                    header.write(str.c_str(), ret);
+                }
+            }
+            return 0;
         }
         else
         {
+            std::cerr << "reading simple header" << std::endl;
             if (header.tellg() == 0)
                 header << "\r\n";
             ret = header.read(buff, size).gcount();
@@ -110,28 +134,39 @@ size_t response::read_body(char *buff, size_t size)
             if (body.eof())
                 finished = true;
         }
-        else if (input_type == INPIPE)
+        else if (input_type == INPIPE || input_type == INBODYPIPE)
         {
-        	// if (content_len == false)
-            // {
-                // std::stringstream sstream;
-                // sstream << std::hex << size;
-                // std::string result = sstream.str();
-                // ret = ::read(fd, buff, size - 6(\r\n * 3) - result.size());
-                // if (ret == 0)
-                //     //end_body() +  return val;
-                // else if (ret == -1)
-                //     return (0) // no data + fd writer still exist
-                // // non-blocking read and size must be greater than 22
-                // sstream << std::hex << ret;
-                // result	 = sstream.str() + "\r\n";
-                // result.append(buff, ret);
-                // resutl	+= "\r\n\r\n";
-                // return (result.copy(buff, result.size()));
-            // }
-            ret = read(fd, buff, size);
-            if (ret == 0)
-                finished = true;            
+        	if (content_len == false)
+            {
+                size -= 20;
+                size_t bsize = body.read(buff, size).gcount();
+                ret = ::read(fd, buff + bsize, size - bsize);
+                if (ret == -1)
+                    ret = bsize;
+                else if (ret + bsize == 0)
+                {
+                    strcpy(buff, "0\r\n\r\n");
+                    ret = 5;
+                    finished = true;
+                }
+                else
+                // no data + fd writer still exist
+                // non-blocking read and size must be greater than 22
+                {
+                    char hex_buff[20];
+                    ret += bsize;
+                    // std::itoa(ret + bsize, hex_buff, 16);
+                    int n = sprintf(hex_buff,"%zx", ret);
+                    std::cout << hex_buff << std::endl;
+                    strcat(hex_buff + n, "\r\n");
+                    memmove(buff + n + 2, buff, ret);
+                    memmove(buff, hex_buff, n + 2);
+                    std::cout << "reader body|" << std::string(buff, ret+n+2) << "|" << std::endl;
+                    memcpy(buff + n + ret + 2, "\r\n", 2);
+                    ret += n + 4;
+                    // return (result.copy(buff, result.size()));
+                }
+            }       
         }
         else if (bodyfile->is_open())
         {
@@ -286,12 +321,9 @@ void response::handle_cgi_req(IParseable &rheader, std::string &rbody)
             else if (join_index(path))
             {
                 // fd = call_cgi(rheader, rbody, sconf, loc, path);
-                fd = launch_cgi(rheader, *sconf, rbody, path.c_str());
+                fd = launch_cgi(rheader, *sconf, *loc, rbody, &path[0]);
                 if (fd > 0)
-                {
-                    content_len = false;
                     input_type = INPIPE;
-                }
                 else
                     generate_response_error(http::INTERNAL_SERVER_ERROR);
             }
@@ -302,12 +334,9 @@ void response::handle_cgi_req(IParseable &rheader, std::string &rbody)
         }
         else if (s.st_mode & S_IFREG) // Is File
         {
-            fd = launch_cgi(rheader, *sconf, rbody, path.c_str());
+            fd = launch_cgi(rheader, *sconf, *loc, rbody, &path[0]);
             if (fd > 0)
-            {
-                content_len = false;
                 input_type = INPIPE;
-            }
             else
                 generate_response_error(http::INTERNAL_SERVER_ERROR);
         }

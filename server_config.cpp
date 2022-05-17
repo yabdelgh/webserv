@@ -29,7 +29,7 @@ IParseable *get_server_config()
 
     Directive server_name;
     server_name.push_parseable(String(p["spaces"]));
-    server_name.push_parseable(String(p["\\S"]));
+    server_name.push_parseable("value", String(p["\\S"]));
 
      Directive error_page;
      error_page.push_parseable(String(p["spaces"]));

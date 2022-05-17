@@ -6,8 +6,9 @@
 #include "GlobalStorage.hpp"
 
 
-request:: request(/* args */):header(*get_request_header())
+request:: request(/* args */)
 {
+    header = nullptr;
     socket_id = -1;
     resp = nullptr;
     body_stream = nullptr;
@@ -20,8 +21,9 @@ request:: request(/* args */):header(*get_request_header())
     strcpy(body_filename, "/tmp/webserv_XXXXXXXXXXXXXXX");
 }
 
-request:: request(int socket_id):header(*get_request_header())
+request:: request(int socket_id)
 {
+    header = nullptr;
     this->socket_id = socket_id;
     resp = nullptr;
     body_stream = nullptr;
@@ -34,8 +36,11 @@ request:: request(int socket_id):header(*get_request_header())
     strcpy(body_filename, "/tmp/webserv_XXXXXXXXXXXXXXX");
 }
 
-request::request(request const& other):header(*get_request_header())
+request::request(request const& other)
 {
+    header = nullptr;
+    resp = nullptr;
+    body_stream = nullptr;
     *this = other;
 }
 
@@ -98,7 +103,7 @@ void request::parse_header()
     size_t idx = 0;
     if (status == HEADER_READY)
     {
-        if (!header.parse(content, idx) || !header[1].contains("host"))
+        if (!header->parse(content, idx) || !(*header)[1].contains("host"))
         {
             std::cout << "bad header" << std::endl;
             status = REQUEST_READY;
@@ -106,8 +111,8 @@ void request::parse_header()
             req_conf = find_server_conf(GS.socket_confs[socket_id], "");
             return;
         }
-        req_conf = find_server_conf(GS.socket_confs[socket_id], header[1]["host"].str());
-        loc_conf = find_location((*req_conf)["location"], header[0]["uri"].str());
+        req_conf = find_server_conf(GS.socket_confs[socket_id], (*header)[1]["host"].str());
+        loc_conf = find_location((*req_conf)["location"], (*header)[0]["uri"].str());
         content = std::vector<char>(&content[idx], &content[content.size()]);
         status = INCOMPLETE_BODY;
     }
@@ -118,18 +123,18 @@ void request::parse_body()
     size_t idx = 0;
     if (status == INCOMPLETE_BODY)
     {  
-        if (header[0]["method"].get_string() == "GET")
+        if ((*header)[0]["method"].get_string() == "GET")
             status = REQUEST_READY;
-        else if (header[0]["method"].get_string() == "DELETE")
+        else if ((*header)[0]["method"].get_string() == "DELETE")
             status = REQUEST_READY;
-        else if (header[0]["method"].get_string() == "POST")
+        else if ((*header)[0]["method"].get_string() == "POST")
         {
-            if (header[1].contains("Content-Length"))
+            if ((*header)[1].contains("Content-Length"))
             {
-                header[1]["Content-Length"].num();
+                (*header)[1]["Content-Length"].num();
                 body_size_limit = get_client_body_limit(*req_conf, loc_conf);
                 chunked = false;
-                body_size  = remainder_body_size = header[1]["Content-Length"].num();
+                body_size  = remainder_body_size = (*header)[1]["Content-Length"].num();
                 std::cout << "content_length: " << body_size << "limit: " << body_size_limit << std::endl;
                 if (body_size > body_size_limit)
                 {
@@ -139,7 +144,7 @@ void request::parse_body()
                 status = SAVING_BODY;
                 body_stream = new std::ofstream(mktemp(body_filename), std::ios::trunc);
             }
-            else if (header[1].contains("Transfer-Encoding") && header[1]["Transfer-Encoding"].str() == "chunked")
+            else if ((*header)[1].contains("Transfer-Encoding") && (*header)[1]["Transfer-Encoding"].str() == "chunked")
             {
                 std::cout << "body chunked" << std::endl;
                 chunked = true;
@@ -183,6 +188,8 @@ void request::handle()
 {
     if (socket_id < 0)
         throw std::runtime_error("request error : invalide socket id");
+    if (header == nullptr)
+        header = get_request_header();
     parse_header();
     parse_body();
 }
@@ -190,7 +197,9 @@ void request::handle()
 response &request::gen_response()
 {
     delete resp;
-    resp = new response(header, body_filename, req_conf, resp_status);
+    resp = new response(*header, body_filename, req_conf, resp_status);
+    delete header;
+    header = nullptr;
     status = INCOMPLETE_HEADER;
     return *resp;
 }

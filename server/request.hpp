@@ -21,7 +21,7 @@ private:
     size_t remainder_body_size;
     size_t body_size_limit;
     std::ofstream *body_stream;
-    IParseable &header;
+    IParseable *header;
     std::stringstream body;
     RequestStatus status;
     http::HttpStatusCode resp_status;

@@ -5,7 +5,11 @@
 #include <sstream>
 #include "enum.hpp"
 
-int launch_cgi(IParseable &header, IParseable &loc, std::string &filename, const char *path);
+int launch_cgi(IParseable &header,
+               IParseable &sconf,
+               IParseable &loc,
+               std::string &filename,
+               char *path);
 
 class response
 {
@@ -21,6 +25,7 @@ private:
     std::stringstream header;
     std::stringstream body;
     std::ifstream *bodyfile;
+    std::string header_remaining;
 
     IParseable *sconf;
     IParseable *loc;

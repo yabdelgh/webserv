@@ -6,35 +6,21 @@ server {
 	root /Users/yabdelgh/Desktop/webserv/public/www
 	server_name weebserv
 
-	index hello.html index.html
-
-	autoindex on
-	client_body_buffer_size 10
 	
-	error_page 404 403 error.html
 
-	location *.php {
-		cgi_pass /Users/yabdelgh/homebrew/opt/php@7.4/bin/php-cgi
-		client_body_buffer_size 20k
-		index index.html
-		autoindex on
+	location *.bla {
+		cgi_pass /Users/yabdelgh/Desktop/cgi_tester
 	}
+
+	location /post_body {
+		cgi_pass /Users/yabdelgh/Desktop/cgi_tester
+		client_body_buffer_size 100o
+	}
+
+	
+
 	location / {
-		
-		client_body_buffer_size 20k
-		index index.html
-		autoindex on
-	}
-	location /moew/huaf/ {
-		
-		client_body_buffer_size 20k
-		index index.html
-		autoindex on
-	}
-	location /moew/huaf/grrrr {
-		
-		client_body_buffer_size 20k
-		index index.html
+		allow_methods GET
 		autoindex on
 	}
 }

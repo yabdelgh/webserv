@@ -6,9 +6,7 @@ AParseable::AParseable(/* args */)
     reached_end = false;
 }
 
-AParseable::~AParseable() {
-    std::cout << "AParseable destructor called" << std::endl;
-}
+AParseable::~AParseable() {}
 
 int AParseable::get_int()
 {

@@ -22,12 +22,10 @@ void set_environnement(IParseable &header, IParseable &conf, char *path)
 		setenv("CONTENT_TYPE",header[1]["content-type"].str().c_str(),1);
 	if (header[1].contains("content-length"))
 		setenv("CONTENT_LENGTH",std::to_string(header[1]["content-length"].num()).c_str(),1);
-	std::cout << "----------------> cgi setenv 1" << std::endl;
 	//if (header[1].contains("SCRIPT_NAME"))
 	//	setenv("SCRIPT_NAME",header[1]["SCRIPT_NAME"].str(),1);
 	//if (header[1].contains("PATH_INFO"))
 	//	setenv("PATH_INFO",header[0]["PAHT_INFO"].str(),1);
-	std::cout << "cgi setenv 2" << std::endl;
 	if (header[1].contains("HTTP_COOKIE"))
 		setenv("HTTP_COOKIE",header[1]["COOKIE"].str().c_str(),1);
 	if (header[1].contains("HTTP_ACCEPT"))
@@ -62,9 +60,9 @@ int launch_cgi(IParseable &header,
 			throw std::runtime_error("error: pipe()");
 		if ( (pid = fork()) == -1 )
 			throw std::runtime_error("error: fork()");
+			set_environnement(header, sconf, path);
 		if (pid == 0)
 		{
-			set_environnement(header, sconf, path);
 			if (header[0]["METHOD"].str() == "POST")
 			{
 				fd_body = open(filename.c_str(), O_RDONLY);

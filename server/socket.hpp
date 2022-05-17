@@ -24,6 +24,7 @@ class sock // AF_INET AND SOCK_STREAM
 	struct	sockaddr_in	_sin;
 	request             _request;
 	int					_parent_id;
+	std::string			buffer;
 
 	public:
 	sock& operator=(const sock &copy);

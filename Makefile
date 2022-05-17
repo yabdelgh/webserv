@@ -8,6 +8,7 @@ CXX = g++
 # CPPFLAGS =  -g -O3  -fsanitize=address -std=c++98
 CPPFLAGS = -g -std=c++98
 
+
 CPPINCLUDE =	-I ./regex\
 		     	-I ./config_parser\
 				-I ./tools

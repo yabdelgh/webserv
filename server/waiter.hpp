@@ -54,6 +54,7 @@ class waiter
 
 	public:
 	void	insert(const sock &s, short events);
+	void	connections_handler();
 	void	poll();
 	void 	accept();
 	void	remove();

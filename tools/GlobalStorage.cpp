@@ -15,6 +15,7 @@ using namespace rgx;
 
 GlobalStorage::GlobalStorage() 
 {
+	sig_pipe = false;
     set_content_types();
     set_http_errors();
     set_content_types();

@@ -41,6 +41,8 @@ private:
 
 public:
     IParseable *server_conf;
+	bool sig_pipe;
+	size_t nlisteners;
     std::map<std::string, std::string> content_types;
     std::map<short, std::string> http_errors;
     std::map<std::string, rgx::Pattern> patterns;

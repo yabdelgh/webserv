@@ -1,6 +1,8 @@
 #include "waiter.hpp"
 #include <algorithm>
 #include <fcntl.h>
+#include <GlobalStorage.hpp>
+
 waiter::waiter() : _sockets(), _pfd() {}
 
 waiter::waiter(const waiter & copy) : _sockets(copy._sockets), _pfd(copy._pfd) {}
@@ -24,79 +26,84 @@ void waiter::insert(const sock &s, short events)
 
 void waiter::poll()
 {
-	// std::cout << std::endl << "waiting on poll()" << std::endl;
 	if (::poll(&_pfd[0], _pfd.size(), -1) == -1)
 		throw std::runtime_error("erro: poll()");
-	// std::cout << std::endl << "take the hand()" << std::endl;
+}
 
+void sig_pipe_handler(int n)
+{
+	GS.sig_pipe = true;
+}
+
+void write_save_remainder(int &fd, std::string &buffer, char *to_write, size_t len)
+{
+	size_t ret;
+	signal(SIGPIPE, &sig_pipe_handler);
+	ret = write(fd, to_write, len);
+	if (ret == -1 && GS.sig_pipe)
+		close(fd) , fd = -1;
+	else
+		buffer.assign(to_write + ret, len - ret);
+	signal(SIGPIPE,SIG_DFL);
+	GS.sig_pipe = true;
+}
+
+void waiter::connections_handler()
+{
+	int		ret = 0;
+	char	buff[1025];
+
+	for (size_t i = GS.nlisteners; i < _pfd.size(); i++)
+	{
+		request &req = _sockets[i]._request;
+		response *resp = req.resp;
+
+		if ((_pfd[i].revents & POLLIN) && (resp == nullptr || resp->is_finished())) // read and handle new request
+		{
+			ret = read(_sockets[i]._id, buff, 1024);
+			if (ret == 0)
+			{
+				close(_sockets[i]._id), _sockets[i]._id = -1;
+				continue;
+			}
+			if (ret > 0)
+			{
+				buff[j] = '\0';
+				req.append_data(buff, j);
+				req.handle();
+			}
+		}
+		if (req.get_status() == REQUEST_READY)
+		{
+			req.gen_response();
+			resp = req.resp;
+		}
+		if (resp && !resp->is_finished() && (_pfd[i].revents & POLLOUT) )
+		{
+			if (_sockets[i].buffer.size() > 0)
+				write_save_remainder(_sockets[i]._id, _sockets[i].buffer, (char*)_sockets[i].buffer.c_str(), _sockets[i].buffer.size());	   
+			else if (!req.resp->is_header_finished())
+				write_save_remainder(_sockets[i]._id, _sockets[i].buffer, buff,  req.resp->read_header(buff, 1024));
+			else
+			{
+				write_save_remainder(_sockets[i]._id, _sockets[i].buffer, buff,  req.resp->read_body(buff, 1024));
+				if ( resp->is_finished() && resp->get_status() > 399 && resp->get_status() < 500)
+					close(_sockets[i]._id) , _sockets[i]._id = -1;
+			}
+		}
+	}
 }
 
 void waiter::accept()
 {
-	signal(SIGPIPE, SIG_IGN); // tmp
-	char buff[1025];
-	int j = 0;
-	for (size_t i = 0; i < _pfd.size(); i++)
+	for (size_t i = 0; i < GS.nlisteners; i++)
 	{
-		if (_sockets[i]._status == 1 && (_pfd[i].revents & POLLIN))
+		if (_pfd[i].revents & POLLIN)
 		{
 			sock csock(_sockets[i]._id);
-			std::cout << "accept" << std::endl;
 			_sockets[i].accept(csock);
 			insert(csock, POLLIN | POLLOUT);
 			fcntl(csock._id, F_SETFL, O_NONBLOCK);
-		}
-		else if (_sockets[i]._status == 0)
-		{
-			request &req = _sockets[i]._request;
-			response *resp = req.resp;
-			
-			if ((_pfd[i].revents & POLLIN) && (resp == nullptr || resp->is_finished())) // read and handle new request
-			{
-				j = read(_sockets[i]._id, buff, 1024);
-				if (j == 0)
-				{
-					std::cout << "close" << std::endl;
-					close(_sockets[i]._id);
-					_sockets[i]._id = -1;
-					continue;
-				}
-				if (j > 0)
-				{
-					buff[j] = '\0';
-					req.append_data(buff, j);
-					req.handle();
-				}
-			}
-			if (req.get_status() == REQUEST_READY)
-			{
-				req.gen_response();
-				resp = req.resp;
-			}
-			if (resp && !resp->is_finished() && (_pfd[i].revents & POLLOUT) )
-			{
-				int len = 0;
-				std::cout << "POLLOUT" << std::endl;
-				if (!req.resp->is_header_finished())
-				{
-					len = req.resp->read_header(buff, 1024);
-					write(_sockets[i]._id, buff, len);
-				}
-				else
-				{
-					len = req.resp->read_body(buff, 1024);
-					std::cout << "body: |" << std::string(buff, len) << "|" << std::endl;
-					std::cout << "write body size: " << len << std::endl;
-					len = write(_sockets[i]._id, buff, len);
-					std::cout << "wrote: " << len << std::endl;
-					if ( resp->is_finished() && resp->get_status() > 399 && resp->get_status() < 500)
-					{
-						std::cout << "close" << std::endl;
-						close(_sockets[i]._id);
-						_sockets[i]._id = -1;
-					}
-				}
-			}
 		}
 	}
 }
@@ -108,7 +115,6 @@ void waiter::remove()
 
 	while (it != _sockets.end())
 	{
-		//	if (!(lit->revents & POLLIN) && (lit->revents & POLLHUP))
 		if (it->_id == -1)
 		{
 			_sockets.erase(it);
@@ -116,7 +122,6 @@ void waiter::remove()
 		}
 		else if (lit->revents & POLLHUP)
 		{
-
 			std::cout << "close" << std::endl;
 			close(it->_id);
 			_sockets.erase(it);

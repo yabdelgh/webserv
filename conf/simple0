@@ -25,4 +25,16 @@ server {
 		index index.html
 		autoindex on
 	}
+	location /moew/huaf/ {
+		
+		client_body_buffer_size 20k
+		index index.html
+		autoindex on
+	}
+	location /moew/huaf/grrrr {
+		
+		client_body_buffer_size 20k
+		index index.html
+		autoindex on
+	}
 }

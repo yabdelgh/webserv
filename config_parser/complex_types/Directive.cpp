@@ -9,6 +9,15 @@ Directive::Directive(Directive const &other):last_index(0)
     *this = other;
 }
 
+Directive::~Directive()
+{
+    for (size_t i = 0 ; i < parseables.size() ; i++)
+    {
+        delete parseables[i].second;
+    }
+    parseables.clear();
+}
+
 Directive &Directive::operator=(Directive const &other)
 {
     if (this != &other)
@@ -27,7 +36,6 @@ Directive &Directive::operator=(Directive const &other)
     return *this;
 }
 
-Directive::~Directive() {}
 
 bool Directive::parseme(string const &str, size_t &idx)
 {

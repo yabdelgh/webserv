@@ -7,6 +7,17 @@ Frequent::Frequent(Frequent const &other):parseable(nullptr)
     *this = other;
 }
 
+Frequent::~Frequent()
+{
+    for (size_t i = 0 ; i < parseables.size() ; i++)
+    {
+        delete parseables[i];
+    }
+    parseables.clear();
+    delete this->parseable;
+    std::cout << "Frequent destructor called" << std::endl;
+}
+
 Frequent &Frequent::operator=(Frequent const &other) {
     if (this != &other) 
     {
@@ -25,7 +36,6 @@ Frequent &Frequent::operator=(Frequent const &other) {
     return *this;
 }
 
-Frequent::~Frequent() {}
 
 bool Frequent::parseme(std::string const &str, size_t &idx)
 {

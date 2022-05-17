@@ -12,7 +12,6 @@
 #include "server_config_helper.hpp"
 #include "GlobalStorage.hpp"
 
-response::response() {}
 response::response(IParseable &rheader, std::string rbody, IParseable *sconf, short status)
 {
     this->pos = 0;
@@ -26,9 +25,11 @@ response::response(IParseable &rheader, std::string rbody, IParseable *sconf, sh
     this->redire = false;
     this->finished = false;
     this->header_finished = false;
-    this->status = status;
     this->content_len = true;
+    this->status = status;
     this->fd = -1;
+    this->body_filename = rbody;
+    this->bodyfile = nullptr;
 
     std::cout << "start response" << std::endl;
     if (extract_config(rheader))
@@ -55,7 +56,13 @@ response::response(IParseable &rheader, std::string rbody, IParseable *sconf, sh
         generate_response_error(http::INTERNAL_SERVER_ERROR);
 }
 
-response::~response() {}
+response::~response()
+{
+    if (fd > 0)
+        close(fd);
+    delete bodyfile;
+    remove(body_filename.c_str());
+}
 
 size_t response::read_header(char *buff, size_t size)
 {

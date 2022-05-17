@@ -15,7 +15,10 @@ namespace rgx
         bool reached_end;
     public:
         Pattern();
+        Pattern(Pattern const& other);
         ~Pattern();
+        Pattern &operator=(Pattern const& other);
+        void clear();
         Pattern &append(AToken const &pattern);
         Pattern &append(Pattern const &pattern);
         bool find(std::string const &str);

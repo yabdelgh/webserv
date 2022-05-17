@@ -25,6 +25,9 @@ std::map<std::pair<std::string, short>, short > get_listeners(IParseable &conf)
 
 int main(int ac, char **av)
 {
+	// delete get_server_config();
+	// return 0;
+	// sleep(100);
 	if (ac > 1)
 	{
 		std::string content;

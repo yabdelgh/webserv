@@ -25,7 +25,14 @@ Context::Context(Context const &other)
     *this = other;
 }
 
-Context::~Context() {}
+Context::~Context()
+{
+    map<string, IParseable*>::const_iterator it = parseables.begin();
+    for ( ; it != parseables.end(); it++)
+        delete it->second;
+    parseables.clear();
+    std::cout << "Context destructor called" << std::endl;
+}
 
 Context &Context::operator=(Context const &other) 
 {
@@ -208,7 +215,7 @@ Context &Context::insert_parseables(string const &key,
                                     IParseable const& parseable,
                                     bool dflt)
 {
-    parseables.insert(pair<string, IParseable *>(key, parseable.clone()));
+    parseables.insert(make_pair(key, parseable.clone()));
     if (dflt)
         dflt_parseables.insert(key);
     return *this;

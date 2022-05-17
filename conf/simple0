@@ -3,7 +3,7 @@
 server {
 	listen 0.0.0.0:8000
 
-	root /Users/aait-ihi/Desktop/webserv/public/www
+	root /Users/yabdelgh/Desktop/webserv/public/www
 	server_name weebserv
 
 	index hello.html index.html
@@ -14,7 +14,7 @@ server {
 	error_page 404 403 error.html
 
 	location *.php {
-		cgi_pass /Users/aait-ihi/.brew/opt/php@7.4/bin/php-cgi
+		cgi_pass /Users/yabdelgh/homebrew/opt/php@7.4/bin/php-cgi
 		client_body_buffer_size 20k
 		index index.html
 		autoindex on

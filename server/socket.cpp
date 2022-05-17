@@ -4,10 +4,6 @@
 
 sock::sock(const char *addr, short port, bool status)
 {
-	std::cout << "------------------------------------------" << std::endl;
-	if (addr != nullptr)
-	std::cout << "addr: " << addr << std::endl;
-	std::cout << "port: " << port << std::endl;
 	_id = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (_id == -1)
 		throw std::runtime_error("error: socketttttt()");
@@ -26,7 +22,6 @@ sock::sock(const char *addr, short port, bool status)
 
 sock::sock(int parent_id):_request(parent_id)
 {
-	std::cout << "------------------------------------------" << std::endl;
 	this->_parent_id = parent_id;
 	_id = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (_id == -1)

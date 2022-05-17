@@ -19,6 +19,7 @@ std::map<std::pair<std::string, short>, short > get_listeners(IParseable &conf)
 		for(int j = 0; j < conf["server"][i]["listen"].size(); j++)
 			mm.insert(std::make_pair( std::make_pair(conf["server"][i]["listen"][j]["host"].get_string()
 					,conf["server"][i]["listen"][j]["port"].get_int()), POLLIN));
+	GS.nlisteners = mm.size();
 	return (mm);
 }
 
@@ -38,19 +39,18 @@ int main(int ac, char **av)
 			GS.server_conf = &conf["server"];
 			waiter	serve;
 			serve.insert(get_listeners(conf), conf);
-
 			while (1)
 			{
 				serve.poll();
 				serve.remove();
 				serve.accept();
+				serve.connections_handler();
 				serve.remove();
 			}
 		}
 		catch (std::exception &e)
 		{
 			std::cout << "error: " << e.what() << std::endl;
-			perror("tata");
 		}
 	}
 	return (0);

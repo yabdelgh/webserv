@@ -44,6 +44,7 @@ int main(int ac, char **av)
 				serve.poll();
 				serve.remove();
 				serve.accept();
+				serve.remove();
 			}
 		}
 		catch (std::exception &e)

@@ -240,10 +240,16 @@ void request::write_body()
                 body_size += size;
             }
             if (size == 0)
+            {
+                body_stream->flush();
+                body_stream->close();
                 status = REQUEST_READY;
+                return;
+            }
         }
         if (body_size > body_size_limit)
         {
+            body_stream->close();
             status = REQUEST_READY;
             resp_status = http::PAYLOAD_TOO_LARGE;
         }
@@ -256,7 +262,12 @@ void request::write_body()
         remainder_body_size -= size;
         content = std::vector<char>(&content[size], &content[content.size()]);
         if (remainder_body_size == 0)
+        {
+            body_stream->flush();
+            body_stream->close();
             status = REQUEST_READY;
+            return;
+        }
     }
     if (!body_stream->is_open() || body_stream->bad())
     {

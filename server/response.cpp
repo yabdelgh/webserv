@@ -87,13 +87,16 @@ size_t response::read_header(char *buff, size_t size)
                     header.write(str.c_str(), ret - 2);
                     input_type = INBODYPIPE;
                     std::string head = header.str();
-                    if (head.find("Content-Length", 0, ret) == std::string::npos)
+                    if (head.find("Content-Length") == std::string::npos)
                     {
                         content_len = false;
+                        std::cout << "not content length" << std::endl;
                         set_header("Transfer-Encoding", "chunked");
                     }
-                    pos = head.find("Status: ", 0, ret);
-                    strcpy(buff, "HTTP/1.1 202 KO\r\n");
+                    std::cout << "header |" << head << "|" << std::endl;
+                    pos = head.find("Status: ");
+                    memset(buff, 0, size);
+                    strcpy(buff, "HTTP/1.1 200 OK\r\n");
                     if (pos != std::string::npos)
                     {
                         pos += 8;
@@ -125,56 +128,65 @@ size_t response::read_header(char *buff, size_t size)
 
 size_t response::read_body(char *buff, size_t size)
 {
+
     size_t ret = 0;
     if (!finished)
     {
+        std::cout << "body is finished ? " << finished << std::endl;
         if (input_type == STREAM)
         {
+            std::cout << "body stream" << std::endl;
             ret = body.read(buff, size).gcount();
             if (body.eof())
                 finished = true;
         }
         else if (input_type == INPIPE || input_type == INBODYPIPE)
         {
-        	if (content_len == false)
+            size -= 20;
+            size_t bsize = body.read(buff, size).gcount();
+            ret = ::read(fd, buff + bsize, size - bsize);
+            if (ret == -1)
             {
-                size -= 20;
-                size_t bsize = body.read(buff, size).gcount();
-                ret = ::read(fd, buff + bsize, size - bsize);
-                if (ret == -1)
-                    ret = bsize;
-                else if (ret + bsize == 0)
-                {
-                    strcpy(buff, "0\r\n\r\n");
-                    ret = 5;
-                    finished = true;
-                }
-                else
-                // no data + fd writer still exist
-                // non-blocking read and size must be greater than 22
-                {
-                    char hex_buff[20];
-                    ret += bsize;
-                    // std::itoa(ret + bsize, hex_buff, 16);
-                    int n = sprintf(hex_buff,"%zx", ret);
-                    std::cout << hex_buff << std::endl;
-                    strcat(hex_buff + n, "\r\n");
-                    memmove(buff + n + 2, buff, ret);
-                    memmove(buff, hex_buff, n + 2);
-                    std::cout << "reader body|" << std::string(buff, ret+n+2) << "|" << std::endl;
-                    memcpy(buff + n + ret + 2, "\r\n", 2);
-                    ret += n + 4;
-                    // return (result.copy(buff, result.size()));
-                }
-            }       
+                std::cout << "body size -1" << std::endl;
+                ret = bsize;
+            }
+            else if (ret + bsize == 0)
+            {
+                std::cout << "body size 0000000000" << std::endl;
+                strcpy(buff, "0\r\n\r\n");
+                ret = 5;
+                finished = true;
+            }
+            else if (content_len == false)
+            {
+                char hex_buff[20];
+                ret += bsize;
+                int n = sprintf(hex_buff,"%zx", ret);
+                std::cout << hex_buff << std::endl;
+                strcat(hex_buff + n, "\r\n");
+                memmove(buff + n + 2, buff, ret);
+                memmove(buff, hex_buff, n + 2);
+                std::cout << "reader body|" << std::string(buff, ret+n+2) << "|" << std::endl;
+                memcpy(buff + n + ret + 2, "\r\n", 2);
+                ret += n + 4;
+            }
+            else
+                ret += bsize;
         }
         else if (bodyfile->is_open())
         {
+            std::cout << "body file" << std::endl;
             ret = bodyfile->read(buff, size).gcount();
-            if (bodyfile->eof() || bodyfile->bad())
-                finished = true;
+            finished = bodyfile->eof() || bodyfile->bad();
+        }
+        else
+        {
+            std::cout << "end with default_config";
+            finished = true;
         }
     }
+    else 
+        std::cout << "body finished" << std::endl;
     return ret;
 }
 
@@ -383,6 +395,24 @@ void response::handle_get_req(IParseable &rheader, std::string &rbody)
 
 void response::handle_get_delete(IParseable &rheader, std::string &rbody)
 {
+    struct stat info;
+    std::string path = joinpath(root, cleanpath(rheader[0]["uri"].str()));
+    if (stat(path.c_str(), &info) == 0)
+	{
+		if (!(info.st_mode & S_IRUSR) || !(info.st_mode & S_IWUSR))
+			return generate_response_error(http::FORBIDDEN);
+		else
+		{
+			if (remove(path.c_str()) != 0)
+				generate_response_error(http::FORBIDDEN);
+		}
+	}
+	else
+		return generate_response_error(http::NOT_FOUND);
+    set_header("", "HTTP/1.1 200 OK");
+    body << "<html><body><h1>The file was removed successfully</h1></body></html>";
+    set_header("Content-Type", "text/html");
+    set_header("Content-Length", std::to_string(68));
 }
 
 std::string response::contentType(std::string path)

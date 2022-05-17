@@ -80,8 +80,6 @@ void waiter::accept()
 				if (!req.resp->is_header_finished())
 				{
 					len = req.resp->read_header(buff, 1024);
-					std::cout << "header: |" << std::string(buff, len) << "|" << std::endl;
-					std::cout << "write header size: " << len << std::endl;
 					write(_sockets[i]._id, buff, len);
 				}
 				else

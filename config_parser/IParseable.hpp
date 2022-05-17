@@ -5,6 +5,7 @@
 #include<vector>
 #include<set>
 #include<cstring>
+#include<iostream>
 
 #define INVALID_TYPE_ERROR "INVALID TYPE"
 

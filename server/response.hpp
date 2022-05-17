@@ -25,6 +25,7 @@ private:
     std::stringstream header;
     std::stringstream body;
     std::ifstream *bodyfile;
+    std::string body_filename;
     std::string header_remaining;
 
     IParseable *sconf;
@@ -37,7 +38,6 @@ private:
     bool redire;
 
 public:
-    response();
     response(IParseable &rheader, std::string rbody, IParseable *sconf, short status);
     ~response();
     // handle_get();

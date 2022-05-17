@@ -25,10 +25,9 @@ private:
     std::stringstream body;
     RequestStatus status;
     http::HttpStatusCode resp_status;
-    // std::string content;
     std::vector<char> content;
     rgx::Pattern lenght_pattern;
-    char body_filename[30];
+    char body_filename[36];
     IParseable *req_conf;
     IParseable *loc_conf;
 
@@ -45,14 +44,11 @@ public:
     request &operator=(request const& other);
     ~ request();
     RequestStatus get_status() const;
-    // void append_data(char const *data);
     void append_data(char const *data, size_t size);
     void handle();
-    // void parse_header();
     void parse_header();
     void parse_body();
     response &gen_response();
-    void set_status(RequestStatus status); // temporary
     void reset();
 };
 

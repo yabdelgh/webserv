@@ -2,25 +2,46 @@
 
 namespace rgx {
 
-    Pattern::Pattern() {}
+    Pattern::Pattern()
+    {
+        idx = 0;
+        reached_end = false;
+    }
+    Pattern::Pattern(Pattern const &other) 
+    {
+        *this = other;
+    }
 
-    // Pattern::Pattern(string const &ptrn):idx(0) {
-    //     vector<string> tokens;
-    //     size_t idx = 0;
-    //     while (idx < ptrn.size())
-    //     {
-    //         size_t start = ptrn.find('[', idx);
-    //         if (start == -1)
-    //             throw runtime_error("invalid pattern at " + to_string(idx));
+    Pattern::~Pattern()
+    {
+        clear();
 
-    //         size_t end = ptrn.find(']', idx);
-    //         end = (end == -1 ? ptrn.size() - 1 : end);
-    //         idx = end + 1;
-    //         tokens.push_back(ptrn.substr(start + 1, end - (start + 1))); // call token factory
-    //     }
-    // }
+    }
 
-    Pattern::~Pattern() {}
+    Pattern &Pattern::operator=(Pattern const &other)
+    {
+        if (this != &other)
+        {
+            idx = other.idx;
+            content = other.content;
+            reached_end = other.reached_end;
+            clear();
+            vector<AToken *>::const_iterator it = other.tokens.begin();
+            vector<AToken *>::const_iterator end = other.tokens.end();
+            for (; it != end; it++)
+                tokens.push_back((*it)->clone());
+        }
+        return *this;
+    }
+
+    void Pattern::clear()
+    {
+        vector<AToken *>::const_iterator it = tokens.begin();
+        vector<AToken *>::const_iterator end = tokens.end();
+        for (; it != end; it++)
+            delete (*it);
+        tokens.clear();
+    }
 
     Pattern &Pattern::append(AToken const &token) {
         tokens.push_back(token.clone());

@@ -9,11 +9,15 @@ namespace rgx {
     {
     protected:
         vector<AToken *> tokens;
+
+    private:
+        void clear();
+    
     public:
         ANestedToken(int min = -1, int max = -1);
         ANestedToken(ANestedToken const &);
         ANestedToken &operator=(ANestedToken const &);
-        ~ANestedToken();
+        virtual ~ANestedToken();
         ANestedToken &append(AToken const &token);
     };
 }

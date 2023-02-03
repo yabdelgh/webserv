@@ -1,1 +1,2 @@
-# webserv
+## 🧐 Description
+Webserv is a lightweight and efficient HTTP server similar to Nginx, designed to be fast, reliable, and user-friendly. It supports essential modern web server features like HTTP connection management, redirect handling, and caching, and is easily customizable through a configuration file. Ideal for small to medium-sized websites and web applications, Webserv is the perfect solution for quick and efficient web serving.
